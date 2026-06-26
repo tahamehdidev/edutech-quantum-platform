@@ -1,0 +1,33 @@
+{
+  "name": "edutech-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"tests/**/*.js\"",
+    "test": "node --test tests/",
+    "create-admin": "node scripts/create-admin.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "argon2": "^0.41.1",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.23.8",
+    "cors": "^2.8.5",
+    "cookie-parser": "^1.4.6",
+    "express-rate-limit": "^7.4.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.0",
+    "prettier": "^3.3.3",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.30.0"
+  }
+}
