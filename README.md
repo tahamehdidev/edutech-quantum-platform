@@ -1,32 +1,68 @@
 # EduTech Quantum Learning Platform
 
-An interactive learning platform for three quantum computing courses (Hardware, Algorithms, Machine Learning), built for the NUST Quantum Computing Lab.
+An interactive learning platform for three quantum computing courses — Hardware, Algorithms, and Machine Learning — built for the NUST Quantum Computing Lab.
 
-**Status:** Design phase. No application code has been written yet — see `docs/` for everything produced so far.
+**Status:** Content design complete. Backend and frontend implementation beginning.
+
+---
 
 ## Repo Structure
 
 ```
 .
-├── docs/   Design documents — produced before any code, in order
-└── code/   Empty for now. Implementation begins only after all docs below are complete.
+├── docs/    Design and content documents, produced before any code
+└── code/    Backend + frontend scaffold — application code in progress
 ```
 
-## Design Documents
+---
 
-| # | Document |
+## Documents
+
+### Architecture & Security (`docs/`)
+
+| # | Document | What it covers |
 |---|---|---|
-| 1 | [`01-data-model.md`](docs/01-data-model.md) — database schema, ER diagram, rationale |
-| 2 | [`02-api-contract.md`](docs/02-api-contract.md) — endpoints, request/response shapes, roles |
-| 3 | [`03-security-architecture.md`](docs/03-security-architecture.md) — auth flow, RBAC, rate limiting, validation strategy |
-| 4 | [`04-application-architecture.md`](docs/04-application-architecture.md) — project/folder structure, code organization |
-| 5 | Tooling & environment setup — see [`code/`](code/) |
-| 6 | [`06-threat-model.md`](docs/06-threat-model.md) — misuse scenarios and the security checklist they produce | 
+| 1 | [`01-data-model.md`](docs/01-data-model.md) | Database schema, ER diagram, design rationale |
+| 2 | [`02-api-contract.md`](docs/02-api-contract.md) | All endpoints, request/response shapes, role rules |
+| 3 | [`03-security-architecture.md`](docs/03-security-architecture.md) | Auth flow, RBAC, rate limiting, input validation |
+| 4 | [`04-application-architecture.md`](docs/04-application-architecture.md) | Folder structure, layering rules, error propagation |
+| 6 | [`06-threat-model.md`](docs/06-threat-model.md) | STRIDE threat model per actor, mitigations, accepted risks |
 
-## Code Scaffold
+### Course Content (`docs/`)
 
-The `code/` folder contains the full backend + frontend scaffold matching `04-application-architecture.md` — folder structure, ESLint (with the layering rule mechanically enforced), Prettier, CI, and dependency lists. No application code has been written yet; see [`code/README.md`](code/README.md).
+| # | Document | What it covers |
+|---|---|---|
+| 7 | [`07-course-narratives-spine.md`](docs/07-course-narratives-spine.md) | Chapter-level narrative spine for all three courses |
+| 8 | [`08-quantum-machine-learning-course.md`](docs/08-quantum-machine-learning-course.md) | Full lesson/screen breakdown — QML (6 chapters, 25 lessons, 118 screens) |
+| 9 | [`09-quantum-algorithms-course.md`](docs/09-quantum-algorithms-course.md) | Full lesson/screen breakdown — Algorithms (6 chapters, 24 lessons, 106 screens) |
+| 10 | [`10-quantum-computing-hardware-course.md`](docs/10-quantum-computing-hardware-course.md) | Full lesson/screen breakdown — Hardware (6 chapters, 22 lessons, 89 screens) |
+
+---
+
+## Code
+
+See [`code/README.md`](code/README.md) for full details.
+
+### Backend (`code/backend/`)
+
+Node.js + Express REST API. Folder structure matches `04-application-architecture.md` exactly:
+`routes/ → controllers/ → services/ → repositories/` with no exceptions enforced by ESLint.
+
+**Seed data** in `code/backend/seeds/` — three JSON files, one per course, containing all chapters, lessons, screens, and questions with final learner-facing copy. Load order and instructions in [`code/backend/seeds/README.md`](code/backend/seeds/README.md).
+
+### Frontend (`code/frontend/`)
+
+React (Vite). Component library built around the lesson-screen pattern observed on Brilliant.org.
+
+### CI (`code/.github/workflows/ci.yml`)
+
+Runs on every push and pull request to `main`:
+- Backend: lint (including layering-rule enforcement), format check, test suite
+- Frontend: lint, format check, build
+
+---
 
 ## Author
 
-Taha Mehdi 
+Taha Mehdi — Backend Engineer
+Internship, Quantum Computing Lab, NUST — June 2026
