@@ -1,0 +1,2342 @@
+{
+  "title": "Quantum Algorithms",
+  "narrative": "Quantum algorithms exploit superposition, entanglement, and interference to solve specific problems — most famously unstructured search (Grover's) and integer factoring (Shor's) — exponentially or quadratically faster than any known classical algorithm, with direct consequences for the cryptography the internet runs on.",
+  "created_by_id": "00000000-0000-0000-0000-000000000001",
+  "chapters": [
+    {
+      "order_index": 1,
+      "title": "Gates, Circuits, and What \"Computing\" Means Here",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "Qubits, Quickly (A Self-Contained Refresher)",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "A qubit is a two-state quantum system, written |0⟩ and |1⟩, that can also exist in a superposition — a combination |ψ⟩ = a|0⟩ + b|1⟩, where measuring it returns |0⟩ with probability a² or |1⟩ with probability b², with a² + b² = 1. Until measured, both possibilities are genuinely \"in play\" at once — not merely unknown to us."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "simulation",
+              "content": {
+                "widgetType": "bloch_sphere",
+                "params": {
+                  "mode": "free_placement"
+                }
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2000
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "This picture works for a single, isolated qubit in a pure state. Once two qubits become entangled — covered in Chapter 2 — neither qubit individually has its own well-defined arrow anymore. A different description is needed, covered when it's actually relevant."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2000,
+              "prompt": "On the Bloch sphere, where does a qubit with exactly 50% probability of measuring \\|0⟩ and 50% of measuring \\|1⟩ sit?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "At the north pole",
+                  "At the south pole",
+                  "Somewhere on the equator",
+                  "Outside the sphere"
+                ],
+                "correctOptionIndex": 2
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "Gates: The Verbs of Quantum Computing",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "A quantum gate is an operation that transforms a qubit's state — visually, it rotates the Bloch arrow to a new position. Gates are the quantum equivalent of classical logic gates, but because a qubit's state is continuous, gates can do more than flip a bit. They can create and manipulate superposition."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "simulation",
+              "content": {
+                "widgetType": "bloch_sphere",
+                "params": {
+                  "mode": "gate_application"
+                }
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2001
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "The Z gate leaves |0⟩ unchanged but flips the phase of |1⟩ — a sign flip invisible in simple measurement probabilities, but critically important once interference comes into play in Chapter 3's algorithms. One precision note worth planting now: this \"phase flip\" is a sign flip, which is a special case of something more general. In full generality, a quantum state's coefficients can be complex numbers, and phase can be any point on a circle — mathematically, e^(iφ) for any angle φ — not just +1 or −1. Chapter 5's Quantum Fourier Transform uses this more general picture directly."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "explanation",
+              "content": {
+                "text": "One precision note worth planting now, since it becomes directly relevant in Chapter 5's Quantum Fourier Transform: the phase flip Z performs is a sign flip — multiplying by −1 — which is a special case of something more general. In full generality, a quantum state's coefficients can be complex numbers, and \"phase\" can be any point on a circle — mathematically, e^(iφ) for any angle φ — not just +1 or −1. This course keeps the visuals simple by mostly using gates whose effects are sign flips or real-valued rotations, but the more general complex-phase picture is what's actually running underneath."
+              }
+            },
+            {
+              "order_index": 6,
+              "type": "question",
+              "content": {},
+              "question_ref": 2002
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2001,
+              "prompt": "Which gate is the standard way to create an equal superposition from a definite state like \\|0⟩?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "X",
+                  "Z",
+                  "Hadamard (H)",
+                  "Measurement"
+                ],
+                "correctOptionIndex": 2
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2002,
+              "prompt": "Why might a Z gate's effect be invisible if you only check the probability of measuring \\|0⟩ vs \\|1⟩?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Z doesn't actually change anything",
+                  "Z changes phase, not measurement probability directly — its effect shows up through interference with other gates, not in isolation",
+                  "Z only works on \\|1⟩",
+                  "Z is identical to X"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "Building Circuits: Gates in Sequence",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "A quantum circuit is a sequence of gates applied to one or more qubits, drawn left to right on horizontal lines — one line per qubit. Reading a circuit diagram is mechanical: follow each qubit's line and apply each gate it passes through, in order."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "With two or more qubits, circuits can include gates that act on multiple qubits at once — where genuinely new behavior, not reachable with single-qubit gates alone, starts to appear."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2003
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "One unifying fact worth knowing before circuits get more complex: a small handful of gates — including X, H, Z, and CNOT coming up next — form a universal gate set. This means any quantum operation whatsoever can be built, or closely approximated, by chaining gates from that small set. This is the direct quantum analogue of how a handful of classical gates can build any classical circuit — and it's why courses, and real hardware, focus on a small gate vocabulary rather than an endless list."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2004
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2003,
+              "prompt": "In a quantum circuit diagram, what does each horizontal line represent?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "A classical bit",
+                  "One qubit, tracked through the sequence of gates it passes through",
+                  "A measurement event",
+                  "A unit of time, unrelated to qubits"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2004,
+              "prompt": "What does it mean for a small set of gates to be 'universal'?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "They are the only gates that physically exist",
+                  "Any quantum operation can be built, or closely approximated, by combining gates from that set",
+                  "They can only be used once per circuit",
+                  "They replace the need for qubits"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "Two Qubits, and the First Genuinely Two-Qubit Gate",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Every gate so far has acted on one qubit independently. The CNOT, or controlled-NOT, gate acts on two: a control qubit and a target qubit. The rule: if the control qubit is |1⟩, flip the target. If the control is |0⟩, leave the target alone. On its own, this looks like a fancy classical conditional — the genuinely new behavior shows up when the control qubit is in superposition."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2005
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "What happens if the control qubit is in superposition — neither definitely |0⟩ nor definitely |1⟩ — when CNOT is applied? The intuitive classical answer, \"it depends, randomly,\" turns out to be wrong in a very specific and useful way. That's exactly where Chapter 2 begins."
+              }
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 200,
+              "title": "Practice: Two Qubits, and the First Genuinely Two-Qubit Gate",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2006,
+                    "prompt": "What does the Hadamard gate do to \\|0⟩?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "produces an equal superposition (the \\|+⟩ state).",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2007,
+                    "prompt": "Why is the effect of a Z gate not visible in simple \\|0⟩/\\|1⟩ measurement probabilities?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it changes phase, which only shows up through interference, not direct measurement.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2008,
+                    "prompt": "Is \"phase\" limited to just +1 and −1 in general quantum mechanics?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "no — phase can be any point on a circle (complex e^iφ); sign flips are a special case.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2009,
+                    "prompt": "What does it mean for a gate set to be universal?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "any quantum operation can be built or closely approximated using only gates from that set.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2010,
+                    "prompt": "In a circuit diagram, what does the left-to-right order of gates on a line represent?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the order in which operations are applied to that qubit, over time.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2011,
+                    "prompt": "What makes CNOT fundamentally different from every single-qubit gate covered so far?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it acts on two qubits jointly, and its effect on the target depends on the control qubit's state.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2005,
+              "prompt": "A CNOT gate has its control qubit in state \\|1⟩ and its target in state \\|0⟩. What happens to the target?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It flips to \\|1⟩",
+                  "It stays \\|0⟩",
+                  "It becomes a superposition",
+                  "It is measured immediately"
+                ],
+                "correctOptionIndex": 0
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order_index": 2,
+      "title": "Entanglement: Bell States and Teleportation",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "Building a Bell State",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Take two qubits, both starting at |0⟩. Apply a Hadamard to the first qubit, creating superposition, then a CNOT with that first qubit as control and the second as target. The result is a Bell state: the superposition |00⟩ + |11⟩ (normalized). It has a genuinely strange property: if you measure the first qubit and get |0⟩, the second qubit is guaranteed to also read |0⟩. And the same for |1⟩. Yet before measurement, neither qubit individually was definitely |0⟩ or |1⟩."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2012
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "This correlation is entanglement, and it's fundamentally different from a classical correlation — like two coins glued together, both always landing the same way. A classical pair has a definite state all along, just unknown to you. An entangled pair genuinely has no definite individual states until measurement, only a definite joint outcome."
+              }
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "The Bloch sphere — one arrow per qubit — cannot represent either qubit of this Bell state individually. Describing an entangled pair properly requires tracking the joint two-qubit state, not two separate single-qubit pictures. This isn't a failure of the Bloch sphere; it's a sign that entanglement is information that doesn't live in either qubit alone."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "explanation",
+              "content": {
+                "text": "One important misconception worth heading off right here: entanglement, by itself, cannot be used to send any information at all. If Alice does something to her qubit of a Bell pair — applies a gate, measures it — Bob's qubit's measurement statistics, considered on their own with no other information, are completely unaffected. Bob has no way to detect, from his qubit alone, whether Alice has done anything yet. This is called the no-communication theorem, and it's the deeper reason teleportation still needs a classical channel: entanglement provides correlation, not signaling."
+              }
+            },
+            {
+              "order_index": 6,
+              "type": "question",
+              "content": {},
+              "question_ref": 2013
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2012,
+              "prompt": "Two qubits are prepared in a Bell state. The first is measured and gives \\|1⟩. What do you know about the second qubit, before even measuring it?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Nothing — it's still completely random",
+                  "It is now certain to measure \\|1⟩ as well",
+                  "It is now certain to measure \\|0⟩",
+                  "It no longer exists"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2013,
+              "prompt": "Alice has a Bell pair partner with Bob. She applies a gate to her qubit. Without any classical message from Alice, can Bob detect that she did anything, just by looking at his own qubit's statistics?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Yes, immediately",
+                  "No — this is exactly what the no-communication theorem rules out; entanglement alone carries no signal",
+                  "Only if they are far apart",
+                  "Only if Alice measures first"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "Entanglement Is a Resource, Not Just a Curiosity",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Entanglement isn't just a strange phenomenon to marvel at — it's a genuine resource, the same way a classical shared secret key is a resource for cryptography. Once two parties share an entangled pair, one qubit each, that shared entanglement enables protocols with no classical equivalent. Two of the most famous: quantum teleportation, sending a qubit's exact state using entanglement plus two classical bits; and superdense coding, sending two classical bits using entanglement plus one qubit."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2014
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2014,
+              "prompt": "Why is entanglement described as a 'resource' rather than just an interesting effect?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It can be bought and sold",
+                  "Once established, it enables specific communication/computation protocols that are impossible without it",
+                  "It makes qubits last longer",
+                  "It only matters for cryptography"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "Quantum Teleportation",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The setup: Alice has a qubit in some unknown state she wants to send to Bob. She can't just measure it and tell Bob the result — measuring would collapse it and destroy the very superposition she's trying to send. Teleportation solves this using a shared Bell pair."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "The protocol, precisely. First, Alice and Bob each hold one qubit of a pre-shared Bell pair. Second, Alice applies a CNOT gate using her unknown qubit as the control and her half of the Bell pair as the target. Then she applies a Hadamard gate specifically to the original unknown qubit — in that order, the Hadamard after the CNOT, applied only to the unknown qubit. Third, she measures both of her qubits, getting two classical bits. Fourth, Alice sends those two classical bits to Bob over an ordinary classical channel. Fifth, Bob applies one of four possible correction gates to his qubit, chosen based on which two bits he received. After this, Bob's qubit is in exactly the state Alice's original qubit was in."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2015
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "Two misconceptions to close off directly. First: this is not faster-than-light communication — Bob's qubit isn't usable until he receives Alice's two classical bits, and those travel at or below light speed. Second: this is not cloning — Alice's original qubit is destroyed by her measurement. Only one copy of the state ever exists, it just moves from Alice's qubit to Bob's."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2016
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2015,
+              "prompt": "Order the steps of the teleportation protocol.",
+              "type": "drag_drop",
+              "content": {
+                "items": [
+                  "Alice measures her two qubits",
+                  "Alice and Bob share a Bell pair",
+                  "Bob applies a correction gate based on the received bits",
+                  "Alice sends two classical bits to Bob",
+                  "Alice applies CNOT (unknown qubit as control, her Bell-pair qubit as target)",
+                  "Alice applies Hadamard to the unknown qubit"
+                ],
+                "correctOrder": [
+                  1,
+                  4,
+                  5,
+                  0,
+                  3,
+                  2
+                ]
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2016,
+              "prompt": "Does quantum teleportation allow faster-than-light communication?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Yes, that's the entire point",
+                  "No — Bob needs Alice's classical bits, which travel no faster than light, before his qubit is usable",
+                  "Only over short distances",
+                  "Only if the qubits are pre-measured"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "Superdense Coding: The Mirror-Image Protocol",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Teleportation sends one qubit's state using entanglement plus two classical bits. Superdense coding does roughly the reverse: it sends two classical bits of information using entanglement plus the transmission of just one qubit. Alice wants to send Bob one of four possible two-bit messages: 00, 01, 10, or 11."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "The protocol: Alice applies one of four specific gate combinations to her half of the Bell pair, depending on which two-bit message she wants to send — one combination per possible message. She then sends just that one qubit to Bob. Bob, now holding both qubits of the original Bell pair, applies a fixed two-qubit measurement that perfectly distinguishes which of the four operations Alice performed, recovering both bits exactly."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2017
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "The comparison is worth drawing explicitly: teleportation trades 2 classical bits plus entanglement for 1 qubit of quantum information. Superdense coding trades 1 transmitted qubit plus entanglement for 2 classical bits. Same shared resource — a Bell pair — running in opposite directions to solve different problems. Concrete evidence that entanglement has a precise, quantifiable substitution value."
+              }
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 201,
+              "title": "Practice: Superdense Coding: The Mirror-Image Protocol",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2018,
+                    "prompt": "What gate combination creates a Bell state from two \\|0⟩ qubits?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "Hadamard on the first qubit, then CNOT with that qubit as control.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2019,
+                    "prompt": "Why can't the Bloch sphere represent either qubit of an entangled pair individually?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "entanglement is information held jointly, not in either qubit's individual state.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2020,
+                    "prompt": "What does the no-communication theorem say about shared entanglement alone?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it cannot be used to send any information; Bob's measurement statistics are unaffected by anything Alice does, without a classical message.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2021,
+                    "prompt": "In teleportation, what is the correct gate order Alice applies, and to which qubits?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "CNOT (unknown qubit as control, her Bell-pair qubit as target), then Hadamard on the unknown qubit specifically.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2022,
+                    "prompt": "Why doesn't teleportation allow faster-than-light communication?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the receiver needs classical bits, which travel no faster than light, to complete the protocol.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2023,
+                    "prompt": "How many classical bits can superdense coding send using one transmitted qubit plus a shared Bell pair?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "two.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2017,
+              "prompt": "What does superdense coding allow Alice to send, using one transmitted qubit plus pre-shared entanglement?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "One classical bit",
+                  "Two classical bits",
+                  "An unlimited amount of classical information",
+                  "One full qubit of quantum information"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order_index": 3,
+      "title": "Search, But Quadratically Faster: Grover's Algorithm",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "The Search Problem, Stated Precisely",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The problem: you have N items in no particular order — unsorted, so no shortcuts like binary search apply — and exactly one satisfies some condition you can check. Classically, in the worst case you might check all N items; on average, about N/2. There's no cleverer classical approach for a genuinely unstructured search — this is a proven lower bound, not a temporary gap in classical algorithm design."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2024
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "Grover's algorithm, published by Lov Grover in 1996, finds the marked item using roughly √N oracle queries — a quadratic speedup. Worth stating precisely so it isn't oversold: this is a real, mathematically proven speedup for unstructured search specifically, and it's quadratic, not exponential — qualitatively different from, and much more modest than, the exponential speedups claimed for problems like factoring, covered later in this course."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2024,
+              "prompt": "Why can't a classical algorithm do better than roughly N/2 checks, on average, for a truly unstructured search of N items?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Classical computers are too slow",
+                  "With no structure to exploit, there's no way to rule out multiple candidates with a single check, unlike sorted-list search",
+                  "It's possible, just not yet discovered",
+                  "N must be very large for this to apply"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "The Oracle: Marking the Answer with Phase",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Grover's algorithm starts by putting all N possibilities into an equal superposition — every candidate \"exists\" at once, each with the same small amplitude. The oracle is a black-box circuit that recognizes the correct answer and marks it, but in a specifically quantum way: it flips the sign — the phase — of the marked state's amplitude, leaving every other amplitude untouched."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "This is genuinely strange the first time you see it: flipping a sign doesn't change a measurement probability at all — probability depends on the square of the amplitude, and (−a)² = a². So immediately after the oracle runs, if you measured right then, you'd see no difference whatsoever from before. The marking is real, but invisible until the next step does something with it."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2025
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2025,
+              "prompt": "Immediately after the oracle phase-flips the marked state's amplitude, what would you observe if you measured the system right then?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "The marked state, with certainty",
+                  "No detectable difference — the probabilities are unchanged, since squaring removes the sign",
+                  "A classical error",
+                  "The system collapses to all-zero"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "The Diffusion Operator: Turning Phase Into Probability",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The second piece, the diffusion operator, takes the current set of amplitudes and reflects each one about their average. Picture a bar chart of all N amplitudes, all roughly equal in height, except one — the marked one — which is now negative instead of positive. Reflecting about the average pulls every amplitude toward — and the marked one past — the average, specifically boosting the marked amplitude's height while shrinking the others."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "simulation",
+              "content": {
+                "widgetType": "amplitude_bar_chart",
+                "params": {}
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2026
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "One application of oracle, then diffusion operator together is called a Grover iteration. A single iteration only boosts the marked amplitude a little. Repeating the iteration boosts it further each time — which is exactly why this is an iterative algorithm, not a one-shot circuit."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2026,
+              "prompt": "What does the diffusion operator do to the amplitudes after the oracle has phase-flipped the marked state?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It measures the system",
+                  "It reflects all amplitudes about their average, which amplifies the marked state's amplitude and shrinks the others",
+                  "It deletes the unmarked states",
+                  "It applies the oracle a second time"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "How Many Iterations? And What Happens If You Do Too Many?",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The marked amplitude's growth across repeated Grover iterations follows a smooth, wave-like pattern — it rises toward a peak, but if you keep iterating past that peak, it actually starts falling back down again. The optimal number of iterations is approximately (π/4)√N — close to this number, the probability of measuring the correct answer approaches certainty. Well past it, the probability degrades."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2027
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "The (π/4)√N scaling is exactly where the \"quadratic speedup\" claim comes from: √N iterations, each needing one oracle call, versus N classical checks. But it also means Grover's isn't a \"the more you run it, the better\" tool — getting the iteration count right matters."
+              }
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "One practical limitation worth flagging directly: computing (π/4)√N requires knowing N — the size of the search space — in advance. If N isn't known precisely, the optimal iteration count can't be computed directly. Workarounds exist, like a related technique called quantum counting that estimates N without knowing it upfront — worth knowing such workarounds exist, even without covering them in depth here."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "explanation",
+              "content": {
+                "text": "Everything so far assumed exactly one marked item. If instead there are M marked items out of N — where M is known — the same oracle-and-diffusion approach still works, just with a different optimal iteration count: approximately (π/4)√(N/M). Fewer iterations are needed as M grows, which matches intuition: more correct answers among the haystack should be easier to find. The mechanism is identical; only the formula changes."
+              }
+            },
+            {
+              "order_index": 6,
+              "type": "question",
+              "content": {},
+              "question_ref": 2028
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 202,
+              "title": "Practice: How Many Iterations? And What Happens If You Do Too Many?",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2029,
+                    "prompt": "What kind of speedup does Grover's algorithm provide over classical unstructured search?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "quadratic (roughly √N vs. N), not exponential.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2030,
+                    "prompt": "How does the Grover oracle \"mark\" the correct answer?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "by flipping the sign (phase) of its amplitude, leaving measurement probability unchanged at that exact moment.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2031,
+                    "prompt": "What does the diffusion operator do?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "reflects all amplitudes about their average, amplifying the marked state's amplitude.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2032,
+                    "prompt": "Roughly how many Grover iterations are optimal for a search space of size N (single marked item)?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "approximately (π/4)√N.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2033,
+                    "prompt": "What happens if you significantly exceed the optimal iteration count?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the success probability can decrease, since the amplitude oscillates past its peak.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2034,
+                    "prompt": "What do you need to know in advance to compute the optimal iteration count directly?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "N, the size of the search space (and M, the number of marked items, in the general case).",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 7,
+                  "question": {
+                    "id": 2035,
+                    "prompt": "How does the optimal iteration count change with M marked items instead of one?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "approximately (π/4)√(N/M).",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2027,
+              "prompt": "What happens if you run significantly more Grover iterations than the optimal (π/4)√N?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Nothing — more iterations always help",
+                  "The success probability can actually decrease, since the amplitude oscillates past its peak and starts shrinking again",
+                  "The algorithm crashes",
+                  "It becomes exponentially faster"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2028,
+              "prompt": "If a search space of size N has M marked (correct) items instead of just one, how does the optimal number of Grover iterations change?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It stays exactly (π/4)√N regardless of M",
+                  "It becomes approximately (π/4)√(N/M) — fewer iterations needed as M grows",
+                  "It becomes (π/4)√(N×M)",
+                  "Grover's algorithm cannot handle multiple marked items at all"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order_index": 4,
+      "title": "The Crypto the Internet Runs On",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "The Idea Behind Public-Key Cryptography",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Classical symmetric encryption — like AES — uses the same secret key to lock and unlock a message. This works perfectly once both parties already share a key, but raises an obvious chicken-and-egg problem: how do you securely share that first key, over a channel someone might be listening to?"
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "Public-key cryptography solves this with a clever asymmetry: a mathematical operation that's easy to do in one direction, but extremely hard to undo without a special piece of information — the private key. Each user publishes a public key (anyone can use it to encrypt a message to them) and keeps a private key secret (needed to decrypt). The security of the whole system rests entirely on that \"easy one way, hard to undo\" asymmetry actually being hard."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2036
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2036,
+              "prompt": "What's the core security idea behind public-key cryptography like RSA?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "The key is changed every few seconds",
+                  "A mathematical operation that's easy to perform but extremely hard to reverse without a private key",
+                  "Messages are sent through multiple servers",
+                  "The key is physically hidden"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "Modular Arithmetic and the Factoring Problem",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Modular arithmetic is clock arithmetic — numbers wrap around after reaching a fixed value, the modulus. On a 12-hour clock, 9 + 5 = 2 (wrapping past 12), written 9 + 5 ≡ 2 (mod 12). RSA's math runs entirely in modular arithmetic, with a modulus that's the product of two large prime numbers."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "RSA's specific \"easy one way, hard to undo\" operation is the factoring problem: multiplying two large prime numbers together is computationally easy. But given only the resulting product, finding the original two primes back out is dramatically harder — and gets exponentially harder, classically, as the primes get larger. RSA's public key is built from that product; the private key requires knowing the original primes."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2037
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "An important caveat worth naming directly: factoring being \"hard\" is not a mathematical proof. No one has proven a fast classical factoring algorithm is impossible — only that nobody has found one despite decades of serious effort. RSA's real-world security rests on this practical, empirical hardness, not a theorem."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2037,
+              "prompt": "What is the 'easy one way, hard to undo' operation that RSA's security is built on?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Addition and subtraction",
+                  "Multiplying two large primes (easy) versus factoring their product back into those primes (hard)",
+                  "Encryption and decryption with the same key",
+                  "Random number generation"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "How RSA Actually Uses This (At a Working Level)",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "At a working level — not a full derivation: RSA's public key includes a number N, the product of two secret large primes p and q. To encrypt, a sender does modular exponentiation using N and a public exponent. To decrypt, the receiver needs a private exponent that can only be correctly computed if you know p and q individually — not just their product N."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2038
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "\"Breaking RSA\" isn't a vague metaphor. It specifically means \"efficiently factoring N\" — because once you have p and q, everything else in the RSA system follows mechanically. That is exactly the precise mechanism Chapter 5 describes."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2038,
+              "prompt": "If an attacker could efficiently factor N back into its original primes p and q, what would that let them do?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Nothing — p and q aren't useful on their own",
+                  "Compute the private decryption exponent and read any message encrypted with that public key",
+                  "Only forge new messages, not read old ones",
+                  "Crash the encryption system"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "The Wider Picture: Diffie-Hellman and AES",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "RSA isn't the only algorithm doing this kind of work. Diffie-Hellman key exchange lets two parties agree on a shared secret over an open channel, using a different hard problem with a similar \"easy one way, hard to undo\" structure. AES, by contrast, is symmetric — same key both directions — and is normally used for the bulk of actual data encryption once a key has been agreed upon."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "Worth being precise about exactly how Diffie-Hellman differs from RSA: RSA's hardness rests on factoring — recovering p and q from their product N. Diffie-Hellman's hardness rests on a related but genuinely different problem called the discrete logarithm problem — given a result of repeated modular multiplication, finding how many times the multiplication was applied. Both are currently hard for classical computers, and both happen to be the kind of \"hidden periodic structure\" problem that Shor's algorithm is built to exploit — but they are not the same problem, and Shor's algorithm has to be run as two distinct variants to break each in turn."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2039
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "A typical real connection — visiting an HTTPS website, for example — uses several of these together: RSA or Diffie-Hellman to securely agree on a one-time shared key, then AES with that key to actually encrypt the session, since AES is much faster for bulk data. This layered design is exactly why \"is quantum computing a threat to encryption\" has a more nuanced answer than a single yes or no."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2040
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 203,
+              "title": "Practice: The Wider Picture: Diffie-Hellman and AES",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2041,
+                    "prompt": "What problem is RSA's security built on?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the difficulty of factoring the product of two large primes back into those primes.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2042,
+                    "prompt": "Is RSA's hardness a mathematical proof or an empirical/practical observation?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "empirical/practical — no proof that fast factoring is impossible exists.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2043,
+                    "prompt": "What does an attacker gain by factoring RSA's public modulus N?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the ability to compute the private decryption exponent and read messages.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2044,
+                    "prompt": "What hard problem underlies Diffie-Hellman, and is it the same as RSA's?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the discrete logarithm problem — related to, but distinct from, RSA's factoring problem.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2045,
+                    "prompt": "Does breaking RSA via Shor's algorithm also automatically break Diffie-Hellman?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "not automatically — a different variant of Shor's algorithm, tuned for discrete logarithms, is needed.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2046,
+                    "prompt": "What's the typical division of labor between RSA/Diffie-Hellman and AES in a real connection?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "RSA/Diffie-Hellman establishes a shared key; AES handles fast bulk encryption with that key.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2039,
+              "prompt": "What hard problem does Diffie-Hellman's security rest on, and how does it relate to RSA's?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "The exact same factoring problem as RSA",
+                  "The discrete logarithm problem — related to factoring in spirit, but a genuinely different problem, requiring a different variant of Shor's algorithm to break",
+                  "A problem unrelated to anything quantum algorithms can address",
+                  "AES's key length"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2040,
+              "prompt": "In a typical HTTPS connection, what is RSA or Diffie-Hellman typically used for, versus AES?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "They do the same job redundantly",
+                  "RSA/Diffie-Hellman securely establishes a shared key; AES then uses that key for fast bulk encryption",
+                  "AES establishes the key; RSA encrypts the data",
+                  "Neither is used in HTTPS"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order_index": 5,
+      "title": "Shor's Algorithm: Breaking RSA",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "Reframing Factoring as a Period-Finding Problem",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Shor's real insight wasn't a quantum factoring trick directly — it was realizing that factoring a number N can be reduced to a completely different-looking problem: finding the period of the function f(x) = aˣ mod N, for a cleverly chosen number a. Period here means: the function's output repeats every r steps, for some r — find that r. This reduction itself is pure classical number theory, no quantum computer needed yet."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "\"Cleverly chosen\" deserves to be made concrete. Before anything quantum happens, there's a quick classical pre-check: pick a random number a, then classically compute the greatest common divisor of a and N using Euclid's algorithm. If that GCD is anything other than 1, you've actually gotten lucky and stumbled onto a factor of N directly — no quantum step needed for that particular attempt. If the GCD is 1, which is the much more common case, the quantum period-finding step runs using that a."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2047
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "Once you have the period r, a small amount of further classical math — computing the greatest common divisor of a^(r/2) ± 1 and N — recovers the actual factors of N, with high probability. \"With high probability\" matters here and is returned to precisely in Lesson 5.4. The only genuinely hard step — the one needing a quantum computer — is finding that period r efficiently. Everything before and after it is ordinary classical computation."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2048
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2047,
+              "prompt": "What does the classical pre-check (computing gcd(a, N)) accomplish before any quantum step runs?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It computes the final answer directly, every time",
+                  "It occasionally finds a factor of N by pure luck, with no quantum step needed; otherwise it confirms a is a valid choice to proceed with the quantum period-finding step",
+                  "It verifies the qubits are working correctly",
+                  "It encrypts the chosen value of a"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2048,
+              "prompt": "What is the one specific sub-problem inside Shor's algorithm that actually requires a quantum computer?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Multiplying the two primes together",
+                  "Choosing the random number a",
+                  "Finding the period of the function f(x) = aˣ mod N",
+                  "Verifying the final answer"
+                ],
+                "correctOptionIndex": 2
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "Why Classical Period-Finding Is Slow",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Classically, finding the period of f(x) = aˣ mod N for the large N values used in real RSA keys would require checking an enormous number of x values one at a time — the period can be close to the size of N itself, and N for real RSA keys is hundreds of digits long."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2049
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2049,
+              "prompt": "Why is finding the period of f(x) = aˣ mod N classically slow for cryptographically large N?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "The function is undefined for large N",
+                  "The period can be enormous, and checking values one at a time doesn't scale to numbers hundreds of digits long",
+                  "Modular arithmetic doesn't work for large numbers",
+                  "There's no period for large N"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "The Quantum Core: Superposition, Modular Exponentiation, and the Quantum Fourier Transform",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The quantum part of Shor's algorithm runs three steps in order. First: prepare a register of qubits in an equal superposition of every possible value of x at once, via Hadamard gates — the same superposition-creation tool from Chapter 1, applied to many qubits together. Second: apply the function f(x) = aˣ mod N to this superposition, computed reversibly so all the results exist in superposition simultaneously. This is where the function's periodic structure becomes baked into the quantum state's pattern, even though no single measurement has happened yet."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "Third: apply the Quantum Fourier Transform, or QFT. The QFT's job, conceptually, is exactly the same as a classical Fourier transform's: it doesn't add new information, it changes how the existing information is organized — turning a hidden periodic pattern, buried inside the superposition from step 2 and not visible by inspection, into something that shows up clearly as a spike in measurement probability at specific, period-related values. After the QFT, measuring the register reveals a number directly related to the period r."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2050
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "The QFT is, mechanically, just another sequence of gates — a circuit — built specifically to perform this perspective-shift operation. It isn't a separate kind of \"magic\" outside everything covered so far in this course, even though what it accomplishes is genuinely remarkable."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2050,
+              "prompt": "Order the three quantum steps of Shor's algorithm's core.",
+              "type": "drag_drop",
+              "content": {
+                "items": [
+                  "Apply the Quantum Fourier Transform",
+                  "Create an equal superposition of all possible x values",
+                  "Compute f(x) = aˣ mod N on the superposition",
+                  "Measure the register"
+                ],
+                "correctOrder": [
+                  1,
+                  2,
+                  3,
+                  0
+                ]
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "Finishing the Job, and the Honest \"How Close Are We\" Question",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "After measurement reveals — with high probability, not certainty — a number related to the period r, ordinary classical math attempts to finish the job: compute the greatest common divisor of a^(r/2) ± 1 and N. This succeeds in recovering N's actual prime factors most of the time — but not always."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "Two specific situations make this final step fail, requiring the whole procedure to restart with a freshly chosen random a. First: if the period r turns out to be an odd number, the expression a^(r/2) isn't even a valid integer, and the method can't proceed. Second: even if r is even, if a^(r/2) ≡ −1 (mod N), the GCD calculation produces a trivial, useless result — either 1 or N itself, neither of which is an actual factor. Both cases are detected immediately, so a restart costs only a fresh attempt. But it does mean the algorithm is correctly described as succeeding \"with high probability per attempt,\" not as a guaranteed one-shot success."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2051
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "The honest, current state of things: Shor's algorithm has been experimentally demonstrated, but only on very small numbers — factoring numbers like 15 or 21 — nowhere near the hundreds-of-digits keys real RSA deployments use. Running Shor's algorithm at a cryptographically meaningful scale would require a quantum computer with far more qubits than exist today, and — critically — qubits protected by error correction robust enough to run a long, precise computation without the result being scrambled by noise. This is not available today."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2052
+            },
+            {
+              "order_index": 6,
+              "type": "explanation",
+              "content": {
+                "text": "This honest gap is exactly why the field is acting now rather than waiting. Data encrypted today, even if uncrackable in 2026, could be recorded and decrypted later once sufficiently powerful quantum computers exist — a real, named concern called \"harvest now, decrypt later.\" For data that needs to stay confidential for years or decades, this future threat is being treated as actionable today."
+              }
+            },
+            {
+              "order_index": 7,
+              "type": "question",
+              "content": {},
+              "question_ref": 2053
+            },
+            {
+              "order_index": 8,
+              "type": "explanation",
+              "content": {
+                "text": "This honest gap is exactly why the field is acting now rather than waiting. Data encrypted today — even if uncrackable in 2026 — could be recorded by an adversary and decrypted later, once sufficiently powerful quantum computers exist. This is a real, named concern called \"harvest now, decrypt later.\" For data that needs to stay confidential for years or decades — state secrets, long-term medical records, certain financial data — this future threat is being treated as actionable today, not dismissed as too far off to matter."
+              }
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 204,
+              "title": "Practice: Finishing the Job, and the Honest \"How Close Are We\" Question",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2054,
+                    "prompt": "What classical problem does Shor's algorithm reduce factoring to?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "finding the period of f(x) = aˣ mod N.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2055,
+                    "prompt": "What does the classical gcd(a, N) pre-check accomplish?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "occasionally finds a factor by luck with no quantum step, otherwise confirms a is valid to proceed with.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2056,
+                    "prompt": "What does the Quantum Fourier Transform do, conceptually?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "reorganizes the information in a superposition so a hidden periodic pattern becomes visible upon measurement.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2057,
+                    "prompt": "What two conditions cause the final GCD step to fail, requiring a restart with a new a?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "an odd period r, or a^(r/2) ≡ −1 (mod N).",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2058,
+                    "prompt": "Is Shor's algorithm guaranteed to succeed on the first attempt?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "no — it succeeds with high probability per attempt, not with certainty.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2059,
+                    "prompt": "Has Shor's algorithm broken real, cryptographically-sized RSA keys as of today?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "no — demonstrated only on small numbers; real-scale RSA requires far more qubits and error correction than currently exist.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 7,
+                  "question": {
+                    "id": 2060,
+                    "prompt": "What is \"harvest now, decrypt later\"?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the practice of recording currently-encrypted data today with the intent of decrypting it once sufficiently powerful quantum computers exist in the future.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2051,
+              "prompt": "What are the two specific situations that require restarting Shor's algorithm with a new value of a?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Whenever N is even",
+                  "When the found period r is odd, or when a^(r/2) ≡ −1 (mod N) — both make the GCD step fail to produce a real factor",
+                  "Whenever the qubits decohere",
+                  "This never happens; the algorithm always succeeds on the first attempt"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2052,
+              "prompt": "After the quantum period-finding step succeeds and the GCD check passes, what kind of computation actually recovers the factors of N?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Another quantum circuit",
+                  "Ordinary classical computation (a greatest-common-divisor calculation)",
+                  "A repeat of the QFT",
+                  "No further computation is needed"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2053,
+              "prompt": "What's the honest current answer to 'can a quantum computer break real RSA encryption today'?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Yes, this happens routinely already",
+                  "No — Shor's algorithm is proven correct and demonstrated on tiny numbers, but breaking real RSA keys requires far more qubits and error correction than currently exist",
+                  "No, and it never will be possible",
+                  "Yes, but only for AES, not RSA"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "order_index": 6,
+      "title": "After Shor's: A World Preparing (Capstone)",
+      "lessons": [
+        {
+          "order_index": 1,
+          "title": "Not All Encryption Is Equally Threatened",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "A precise distinction worth making explicit: Shor's algorithm specifically threatens RSA and Diffie-Hellman, because both rely on problems — factoring and discrete logarithms — that Shor's solves efficiently. AES is not vulnerable to Shor's at all, since it isn't built on either of those problems."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "AES does face a different, much smaller threat: Grover's algorithm could, in principle, speed up a brute-force key search against AES quadratically. Since this is only a quadratic speedup, not exponential, the practical fix is comparatively simple: doubling AES's key length restores its original security margin against a quantum attacker. This is far less dramatic than RSA's problem, which can't be fixed by simply using bigger keys — Shor's exponential speedup eats any feasible key-size increase."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2061
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "One piece of formal vocabulary worth having, for reading further: the class of problems a quantum computer can solve efficiently has a name — BQP, Bounded-error Quantum Polynomial time, the quantum analogue of the classical complexity class P. Whether BQP is strictly larger than P — whether quantum computers can efficiently solve problems classical computers provably cannot — is itself a major open question in theoretical computer science. Factoring is believed, but not proven, to be in BQP and not in P. This is the precise, formal version of the \"structurally cannot compute efficiently\" question this entire course opened with."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2062
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2061,
+              "prompt": "How does the quantum threat to AES differ from the quantum threat to RSA?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "They're identical",
+                  "AES only faces a quadratic speedup from Grover's, fixable by longer keys; RSA faces an exponential break from Shor's, which longer keys can't fix",
+                  "AES is completely unaffected, RSA is completely safe",
+                  "RSA is more secure against quantum attacks than AES"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2062,
+              "prompt": "What does the complexity class BQP represent?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "All problems that are impossible to solve",
+                  "The class of problems a quantum computer can solve efficiently — the quantum analogue of the classical class P",
+                  "Only cryptography problems",
+                  "A specific quantum algorithm"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 2,
+          "title": "Post-Quantum Cryptography: New Hard Problems",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "The fix for RSA's vulnerability isn't to patch RSA — it's to replace it with algorithms built on different hard problems that, as far as anyone currently knows, Shor's algorithm and no other known quantum algorithm can efficiently solve. This is called post-quantum cryptography, or PQC: classical algorithms, runnable on ordinary computers today, designed specifically to resist quantum attack."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "After a multi-year public evaluation process, the US National Institute of Standards and Technology finalized its first PQC standards in August 2024: ML-KEM for key exchange, replacing RSA and Diffie-Hellman's role; ML-DSA for digital signatures; and SLH-DSA, a hash-based signature scheme kept deliberately independent of lattice math as a backup in case weaknesses are ever found there. A further backup key-exchange algorithm, HQC, based on different math than ML-KEM, was selected in 2025 as additional insurance."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2063
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "ML-KEM is lattice-based — its security rests on problems involving high-dimensional geometric lattices that, as far as currently known, don't reduce to the kind of periodic structure Shor's algorithm is built to exploit. This is genuinely different math from factoring, not just a bigger version of the same idea."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "explanation",
+              "content": {
+                "text": "Here's why SLH-DSA is such a trustworthy conservative backup: hash functions — the building block SLH-DSA is built from — are, like AES, only vulnerable to Grover's modest quadratic speedup, not to anything resembling Shor's. Even in a scenario where unexpected weaknesses are someday found in lattice-based math, SLH-DSA's hash-based security would still only face the comparatively modest, well-understood Grover's threat — the same kind AES already withstands today by using longer keys."
+              }
+            },
+            {
+              "order_index": 6,
+              "type": "question",
+              "content": {},
+              "question_ref": 2064
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2063,
+              "prompt": "What is ML-KEM, and what does it replace?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "A new symmetric encryption algorithm replacing AES",
+                  "A NIST-standardized post-quantum key-exchange algorithm, replacing the role RSA/Diffie-Hellman currently play",
+                  "A faster version of Shor's algorithm",
+                  "A quantum hardware standard"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2064,
+              "prompt": "Why is SLH-DSA (hash-based) considered a particularly conservative, trustworthy backup against future surprises?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It's the newest algorithm available",
+                  "Hash functions, like AES, are only vulnerable to Grover's modest quadratic speedup, not to anything like Shor's exponential break",
+                  "It uses the same lattice math as ML-KEM, doubled for safety",
+                  "It doesn't require any key at all"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 3,
+          "title": "Why This Is Happening Now, Not Later",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "This migration is already actively underway. Major browsers, operating systems, and messaging platforms have begun deploying hybrid approaches — combining a classical algorithm with a post-quantum one for the same connection — so security holds even if either approach alone is later found to have a weakness. Governments have set concrete deadlines: US national security systems are required to fully migrate to post-quantum algorithms by 2030, and broader federal migration deadlines exist as current policy."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 2065
+            },
+            {
+              "order_index": 3,
+              "type": "explanation",
+              "content": {
+                "text": "This course set out to answer what a quantum computer can compute that a classical one structurally cannot, and why that threatens cryptography. The honest answer, now fully earned: Grover's gives a real but modest, fixable speedup. Shor's gives a real, exponential, much harder-to-fix break — proven correct, demonstrated at small scale, not yet achievable at cryptographic scale, but close enough that the world is actively migrating away from vulnerable algorithms today rather than waiting for the threat to fully arrive."
+              }
+            }
+          ],
+          "practice_sets": [],
+          "inline_questions": [
+            {
+              "id": 2065,
+              "prompt": "Why are organizations deploying 'hybrid' classical-plus-post-quantum encryption right now, rather than waiting and switching directly later?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "Hybrid approaches are required for performance reasons only",
+                  "It protects against both a classical break and an unforeseen weakness in the new post-quantum algorithms, while addressing harvest-now-decrypt-later today",
+                  "Post-quantum algorithms don't work without a classical algorithm present",
+                  "It's a temporary testing phase with no real security purpose"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        },
+        {
+          "order_index": 4,
+          "title": "The Other Quantum Response: Quantum Key Distribution",
+          "screens": [
+            {
+              "order_index": 1,
+              "type": "explanation",
+              "content": {
+                "text": "Post-quantum cryptography replaces vulnerable classical algorithms with different classical algorithms believed to resist quantum attack — still running on ordinary computers. Quantum Key Distribution, or QKD, uses quantum mechanics itself to establish a shared secret key. Its security guarantee comes from physics, not computational hardness."
+              }
+            },
+            {
+              "order_index": 2,
+              "type": "explanation",
+              "content": {
+                "text": "The core idea, using entangled qubits — Bell pairs, from Chapter 2, put to a new use: Alice and Bob each measure their half of entangled qubit pairs. Because measuring a quantum state generally disturbs it, any eavesdropper who tries to intercept and measure the qubits in transit unavoidably disturbs them — leaving statistical evidence Alice and Bob can detect by comparing a subset of their results afterward over an ordinary public channel."
+              }
+            },
+            {
+              "order_index": 3,
+              "type": "question",
+              "content": {},
+              "question_ref": 2066
+            },
+            {
+              "order_index": 4,
+              "type": "explanation",
+              "content": {
+                "text": "QKD's eavesdropping-detection guarantee doesn't rely on factoring, discrete logs, or lattice problems being hard at all — it relies on a property of quantum measurement itself, collapse, which no future algorithm can get around, since it's not a computational assumption to begin with. Once Alice and Bob confirm no eavesdropping occurred, the resulting shared key can be used with a one-time pad — a classical encryption method that is provably perfectly secure, if and only if the key is truly random, used only once, and kept secret."
+              }
+            },
+            {
+              "order_index": 5,
+              "type": "question",
+              "content": {},
+              "question_ref": 2067
+            },
+            {
+              "order_index": 6,
+              "type": "explanation",
+              "content": {
+                "text": "QKD's physics-based guarantee is real, but deploying it has real practical costs that PQC doesn't: it requires actual quantum hardware and typically dedicated fiber links or satellite connections with real distance limitations. This is why PQC, not QKD, is the primary near-term answer for migrating the broader internet — PQC is pure software running on existing classical infrastructure — while QKD sees more targeted use in high-security links where the hardware investment is justified."
+              }
+            },
+            {
+              "order_index": 7,
+              "type": "question",
+              "content": {},
+              "question_ref": 2068
+            }
+          ],
+          "practice_sets": [
+            {
+              "id": 205,
+              "title": "Practice: The Other Quantum Response: Quantum Key Distribution",
+              "questions": [
+                {
+                  "order_index": 1,
+                  "question": {
+                    "id": 2069,
+                    "prompt": "Why is AES's quantum vulnerability far less severe than RSA's?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it only faces a quadratic (Grover's) speedup, fixable by longer keys, not an exponential (Shor's) break.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 2,
+                  "question": {
+                    "id": 2070,
+                    "prompt": "What does BQP represent, and how does it relate to the question this course opened with?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the class of problems quantum computers solve efficiently; whether it's strictly larger than classical P is the formal version of \"what can quantum computers do that classical ones structurally cannot.\"",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 3,
+                  "question": {
+                    "id": 2071,
+                    "prompt": "Name the three NIST-finalized post-quantum standards (2024) and what each does.",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "ML-KEM (key exchange), ML-DSA (signatures), SLH-DSA (hash-based signature backup).",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 4,
+                  "question": {
+                    "id": 2072,
+                    "prompt": "Why is SLH-DSA considered a particularly safe backup?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it's hash-based, so it only faces Grover's modest quadratic threat, not Shor's, even if lattice math is someday weakened.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 5,
+                  "question": {
+                    "id": 2073,
+                    "prompt": "What underlying type of hard problem is ML-KEM built on?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "lattice-based problems, structurally different from the factoring/discrete-log problems Shor's algorithm solves.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 6,
+                  "question": {
+                    "id": 2074,
+                    "prompt": "Why are organizations deploying hybrid classical+post-quantum encryption now, rather than waiting?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "it addresses harvest-now-decrypt-later today while hedging against unforeseen weaknesses in either algorithm alone.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 7,
+                  "question": {
+                    "id": 2075,
+                    "prompt": "What does QKD's security guarantee rest on, instead of a computational hardness assumption?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "the physical fact that measuring a quantum state disturbs it, making eavesdropping detectable.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                },
+                {
+                  "order_index": 8,
+                  "question": {
+                    "id": 2076,
+                    "prompt": "Why is PQC, not QKD, the primary near-term solution for the broader internet's migration?",
+                    "type": "mcq",
+                    "content": {
+                      "options": [
+                        "PQC is software-only and deployable on existing infrastructure; QKD requires real quantum hardware with practical distance limitations.",
+                        "[Distractor A]",
+                        "[Distractor B]",
+                        "[Distractor C]"
+                      ],
+                      "correctOptionIndex": 0,
+                      "_note": "Distractor options require manual authoring before production use"
+                    },
+                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                  }
+                }
+              ]
+            }
+          ],
+          "inline_questions": [
+            {
+              "id": 2066,
+              "prompt": "What makes QKD's security fundamentally different from RSA's or even post-quantum cryptography's?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It uses larger keys",
+                  "Its security comes from the physical fact that measuring quantum states disturbs them, not from a computational problem being hard to solve",
+                  "It doesn't require any secret key at all",
+                  "It only works over very short distances"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2067,
+              "prompt": "Why is QKD combined with a one-time pad considered such a strong security combination, in principle?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "It's the fastest encryption method available",
+                  "QKD provides a provably eavesdropping-detectable shared key, and the one-time pad is provably perfectly secure given such a key — neither link relies on an unproven computational hardness assumption",
+                  "It doesn't require Alice and Bob to share anything in advance",
+                  "It works without any quantum hardware at all"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 2068,
+              "prompt": "Why is post-quantum cryptography (PQC), not QKD, the primary near-term solution for migrating the broader internet?",
+              "type": "mcq",
+              "content": {
+                "options": [
+                  "QKD is less secure than PQC",
+                  "PQC is pure software deployable on existing classical infrastructure, while QKD requires real quantum hardware and has practical distance limitations",
+                  "QKD has been proven insecure",
+                  "PQC and QKD solve completely unrelated problems"
+                ],
+                "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
