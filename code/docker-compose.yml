@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      # Bootstrap/admin role only -- owns the schema, runs migrations. The running application
+      # never connects as this role. See backend/migrations/000_create_app_role.sql for why this
+      # separation matters (audit_log's REVOKE/GRANT is a no-op against a superuser/table owner).
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_admin_password
+      POSTGRES_DB: edutech_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d edutech_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
