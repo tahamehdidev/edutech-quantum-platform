@@ -8,6 +8,10 @@ import { authMiddleware } from "./middleware/auth.middleware.js";
 import { asyncHandler } from "./utils/asyncHandler.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import courseRoutes from "./routes/course.routes.js";
+import chapterRoutes from "./routes/chapter.routes.js";
+import lessonRoutes from "./routes/lesson.routes.js";
+import screenRoutes from "./routes/screen.routes.js";
 
 export const app = express();
 
@@ -42,6 +46,10 @@ app.get(
 
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/courses", courseRoutes);
+app.use("/chapters", chapterRoutes);
+app.use("/lessons", lessonRoutes);
+app.use("/screens", screenRoutes);
 
 // Further resource routes mount here as each is built -- see 04-application-architecture.md §7
 // for the full intended registration order.

@@ -22,8 +22,15 @@ async function ensureConnected() {
 }
 
 // Wipes every data table (not schema_migrations, which tracks applied migrations, not test data)
-// between test files. TRUNCATE ... CASCADE handles FK ordering automatically and RESTART IDENTITY
+// between tests. TRUNCATE ... CASCADE handles FK ordering automatically and RESTART IDENTITY
 // keeps serial ids predictable across runs.
+//
+// IMPORTANT: every integration test file shares this same physical database, and Node's test
+// runner runs test *files* concurrently by default -- if two files' beforeEach hooks fire this
+// at the same time, one file's TRUNCATE wipes rows another file is mid-test relying on, causing
+// deadlocks and FK-violation errors that have nothing to do with real bugs. package.json's "test"
+// script passes --test-concurrency=1 specifically to serialize test files against this shared
+// database; do not remove that flag without giving each test file its own database/schema first.
 export async function resetDb() {
   await ensureConnected();
   await adminClient.query(`
