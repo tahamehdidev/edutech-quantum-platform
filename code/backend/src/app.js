@@ -4,7 +4,10 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import { checkDbConnection } from "./config/db.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import { authMiddleware } from "./middleware/auth.middleware.js";
 import { asyncHandler } from "./utils/asyncHandler.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 export const app = express();
 
@@ -20,6 +23,11 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// 03-security-architecture.md §3.2 -- global JWT verification + public-route whitelist. Runs on
+// every request from here on; /health and /auth/{signup,login,refresh} are the whitelisted
+// exceptions defined inside auth.middleware.js itself.
+app.use(authMiddleware);
+
 // 02-api-contract.md §0.4 -- public, no auth required, reachable by external monitors.
 app.get(
   "/health",
@@ -32,7 +40,10 @@ app.get(
   })
 );
 
-// Resource routes mount here as each is built (auth/users first, Milestone 1) -- see
-// 04-application-architecture.md §7 for the full intended registration order.
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+
+// Further resource routes mount here as each is built -- see 04-application-architecture.md §7
+// for the full intended registration order.
 
 app.use(errorHandler); // MUST be registered last (04-application-architecture.md §7)

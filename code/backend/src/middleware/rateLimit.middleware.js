@@ -1,0 +1,70 @@
+import rateLimit from "express-rate-limit";
+import { RateLimitedError } from "../errors/index.js";
+import { normalizeEmail } from "../utils/normalizeEmail.js";
+
+// Standardized error shape instead of express-rate-limit's default plain-text response
+// (02-api-contract.md §0.3) -- every limiter below uses this same handler.
+function rateLimitHandler(req, res, next) {
+  next(new RateLimitedError());
+}
+
+// 03-security-architecture.md §4.2 full limit table -- exported as plain data so it's directly
+// unit-testable (tests/unit/rateLimit.test.js) without needing to trigger 429s through
+// express-rate-limit's internals to prove the configured values are correct.
+export const RATE_LIMITS = {
+  signupPerIp: { windowMs: 60 * 60 * 1000, limit: 5 },
+  loginPerIp: { windowMs: 15 * 60 * 1000, limit: 20 },
+  loginPerAccount: { windowMs: 15 * 60 * 1000, limit: 5 },
+  logoutPerAccount: { windowMs: 60 * 1000, limit: 10 },
+};
+
+// Disabled only when BOTH NODE_ENV=test AND RATE_LIMIT_TEST_MODE=1 are set (tests/preload.js) --
+// the integration suite calls signup/login far more than 5-20 times per run across its test
+// cases, and would otherwise trip these limits itself long before any test intentionally
+// exercises them. Requiring two independent flags means a single misconfigured NODE_ENV can
+// never silently disable rate limiting in a real deployment. The *configured* values above are
+// unchanged and are what ships to production and what tests/unit/rateLimit.test.js checks
+// against the docs; only whether they're enforced changes here, and only for the test process.
+const rateLimitingDisabled =
+  process.env.NODE_ENV === "test" && process.env.RATE_LIMIT_TEST_MODE === "1";
+const effectiveLimit = (limit) => (rateLimitingDisabled ? Number.MAX_SAFE_INTEGER : limit);
+
+export const signupIpLimiter = rateLimit({
+  windowMs: RATE_LIMITS.signupPerIp.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.signupPerIp.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+// Per-IP catches one script spraying attempts across many accounts.
+export const loginIpLimiter = rateLimit({
+  windowMs: RATE_LIMITS.loginPerIp.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.loginPerIp.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: rateLimitHandler,
+});
+
+// Per-account (keyed on normalized email) catches distributed credential stuffing across many
+// IPs against one account -- stacked alongside loginIpLimiter, not a replacement for it.
+export const loginAccountLimiter = rateLimit({
+  windowMs: RATE_LIMITS.loginPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.loginPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => normalizeEmail(req.body?.email ?? ""),
+  handler: rateLimitHandler,
+});
+
+// Prevents logout-spam abuse of a stolen but still-valid access token. Keyed on the authenticated
+// user's id -- global JWT verification (auth.middleware.js) always runs before route-specific
+// rate limiters, so req.user is already populated here.
+export const logoutAccountLimiter = rateLimit({
+  windowMs: RATE_LIMITS.logoutPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.logoutPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});

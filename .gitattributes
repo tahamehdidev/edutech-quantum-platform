@@ -1,0 +1,16 @@
+# Normalize line endings to LF in the repository regardless of a contributor's local
+# core.autocrlf setting -- prevents Windows checkouts from silently converting committed LF
+# files to CRLF, which then fails `prettier --check` (configured for LF) on every checkout.
+* text=auto eol=lf
+
+# Binary files -- never touch line endings.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
