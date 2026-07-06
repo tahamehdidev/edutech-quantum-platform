@@ -1,0 +1,84 @@
+.modal {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 0;
+  max-width: 480px;
+  width: 90vw;
+  background-color: var(--color-overlay);
+  color: var(--color-foreground);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Entrance only, via @starting-style -- a fully animated exit needs JS to defer dialog.close()
+   until a transitionend fires, which is more orchestration than this milestone's scope earns.
+   An instant close is a common, acceptable tradeoff; revisit in the Phase 5 polish pass. */
+.modal {
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+}
+@starting-style {
+  .modal[open] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.modal::backdrop {
+  background-color: rgb(0 0 0 / 0.6);
+  transition:
+    opacity var(--duration-base) var(--ease-out),
+    overlay var(--duration-base) allow-discrete,
+    display var(--duration-base) allow-discrete;
+}
+@starting-style {
+  .modal[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal::backdrop {
+    transition: none;
+  }
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal__title {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+}
+
+.modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+.modal__close:hover {
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+.modal__body {
+  padding: var(--space-5);
+}

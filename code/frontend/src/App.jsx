@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { PublicLayout } from "./components/layouts/PublicLayout.jsx";
 import { AuthenticatedLayout } from "./components/layouts/AuthenticatedLayout.jsx";
+import { ProtectedRoute } from "./components/auth/ProtectedRoute.jsx";
 import { LandingPage } from "./pages/LandingPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { SignupPage } from "./pages/SignupPage.jsx";
@@ -21,12 +22,14 @@ export function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
       </Route>
-      <Route element={<AuthenticatedLayout />}>
-        <Route path="/courses" element={<CourseCatalogPage />} />
-        <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-        <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
-        <Route path="/practice-sets/:practiceSetId" element={<PracticeSetPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AuthenticatedLayout />}>
+          <Route path="/courses" element={<CourseCatalogPage />} />
+          <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+          <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
+          <Route path="/practice-sets/:practiceSetId" element={<PracticeSetPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Route>
       </Route>
     </Routes>
   );

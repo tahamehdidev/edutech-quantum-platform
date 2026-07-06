@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import prettierConfig from "eslint-config-prettier";
+import globals from "globals";
 
 export default [
   js.configs.recommended,
@@ -21,11 +22,10 @@ export default [
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },
-      globals: {
-        window: "readonly",
-        document: "readonly",
-        fetch: "readonly",
-      },
+      // The full standard browser global set (window, document, fetch, HTMLDialogElement,
+      // Event, etc.) -- a hand-maintained list kept growing one API at a time as new code
+      // needed it (console, then HTMLDialogElement, then Event); this is the actual fix.
+      globals: globals.browser,
     },
     rules: {
       "react/prop-types": "off",

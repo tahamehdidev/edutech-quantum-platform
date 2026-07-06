@@ -1,0 +1,29 @@
+.xp-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.xp-streak-badge__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  background-color: var(--color-muted);
+  /* Text stays neutral (6.10:1 on --color-muted) -- accent blue on this same background
+     measured only 4.25:1, failing 4.5:1 for this 14px/medium-weight text (too small/light to
+     qualify for the 3:1 large-text exception). Only the icon carries the category color below,
+     since icons need just 3:1 and both pass with a wide margin. */
+  color: var(--color-muted-foreground);
+}
+
+.xp-streak-badge__item--xp svg {
+  color: var(--color-accent);
+}
+
+.xp-streak-badge__item--streak svg {
+  color: var(--color-warning);
+}

@@ -1,0 +1,165 @@
+/* Design tokens — EduTech Quantum Platform (Frontend Milestone 2)
+ *
+ * Direction: dark-mode-only, "precision scientific instrument" (PRODUCT.md/DESIGN.md) —
+ * restrained color strategy, one calm accent, semantic colors reserved strictly for their
+ * meaning. OKLCH throughout (perceptually uniform lightness steps); every hex equivalent is
+ * noted in a comment for quick reference during dev, but oklch() is the source of truth.
+ *
+ * Every text/background pair below was verified against WCAG AA (4.5:1 normal text, 3:1 large
+ * text/UI components) before this file was finalized -- see the two split roles below
+ * (--color-accent vs --color-accent-strong, --color-destructive vs --color-destructive-text)
+ * and --color-on-success/--color-on-warning, all of which exist specifically because the
+ * "obvious" first choice (one blue for everything, white text on every semantic fill) failed
+ * that check.
+ */
+
+:root {
+  /* ---------- Color: surfaces & text ---------- */
+  --color-background: oklch(15.2% 0.011 285.1); /* #0B0B10 */
+  --color-foreground: oklch(98.4% 0.003 247.9); /* #F8FAFC */
+  --color-card: oklch(23.7% 0.009 285.7); /* #1E1E23 -- first elevation step above background */
+  --color-overlay: oklch(31% 0.009 285.7); /* #303035 -- modals/popovers, second elevation step */
+  --color-muted: oklch(25.8% 0.009 285.7); /* #232328 -- subtle fills, disabled backgrounds */
+  --color-muted-foreground: oklch(71.1% 0.035 256.8); /* #94A3B8 -- secondary/de-emphasized text */
+
+  /* Two border roles, not one -- the decorative divider color measured ~1.3:1 against the
+     background, nowhere near the 3:1 a form input's own outline needs to meet as a UI
+     component boundary. Use --color-border for hairline dividers with no functional meaning;
+     use --color-border-strong for anything a user must perceive as an interactive boundary
+     (input outlines, select controls). */
+  --color-border: oklch(27.9% 0.037 260); /* #1E293B -- decorative dividers only */
+  --color-border-strong: oklch(55% 0.05 260); /* #61728F -- input/control outlines, 3:1+ verified */
+
+  /* Accent: two roles, not one. The original palette's #3B82F6 passed as link/icon text on
+     --color-background (5.34:1) but only 4.513:1 on --color-card -- technically AA, but a
+     0.013 margin is too fragile for a value global.css applies to every <a> by default, which
+     will render on cards constantly. Lightened to L=65% (same hue/chroma) for real margin on
+     both surfaces (5.96:1 / 5.04:1). Still too light to hold white text as a solid fill
+     (--color-accent-strong is the fill-safe shade for that). */
+  --color-accent: oklch(65% 0.188 259.8); /* #438BFF -- links, icons, borders, focus rings */
+  --color-accent-strong: oklch(54.6% 0.215 262.9); /* #2563EB -- solid button/fill backgrounds */
+  --color-on-accent: oklch(100% 0 0); /* #FFFFFF -- text/icons on --color-accent-strong fills */
+  --color-ring: var(--color-foreground); /* focus ring -- 18.8:1 / 15.9:1 against bg/card */
+
+  /* ---------- Color: semantic (answer states, XP/streak) ---------- */
+  /* Reserved strictly for their meaning (correct/incorrect/caution) -- never reused as a
+     decorative accent, and never the only signal (pair with an icon or label, per WCAG
+     color-not-only). */
+  --color-destructive: oklch(63.7% 0.208 25.3); /* #EF4444 -- icons, borders, fills (non-text) */
+  --color-destructive-text: oklch(71.1% 0.166 22.2); /* #F87171 -- destructive-colored TEXT only;
+    #EF4444 itself missed AA by 0.09 on --color-card (4.41:1 vs 4.5:1 required) */
+  --color-destructive-strong: oklch(50% 0.208 25.3); /* #BD0018 -- solid destructive-button fills
+    (paired with --color-on-accent/white); raw --color-destructive under white text is only
+    3.76:1, failing 4.5:1 -- same "text-safe vs fill-safe" split as the accent pair above */
+  --color-success: oklch(72.3% 0.192 149.6); /* #22C55E -- correct-answer text, icons, fills */
+  --color-warning: oklch(76.9% 0.165 70.1); /* #F59E0B -- XP/streak indicators */
+
+  /* White text on a solid success/warning fill measured 2.28:1 / 2.15:1 -- both fail even the
+     3:1 large-text floor. Dark text (reusing --color-background) is what actually passes
+     (8.62:1 / 9.14:1), so these are NOT --color-foreground/white despite matching the
+     --color-on-accent pattern above. */
+  --color-on-success: var(--color-background);
+  --color-on-warning: var(--color-background);
+
+  /* ---------- Typography ---------- */
+  /* "Developer Mono" pairing, narrowed to product-register convention: one family (Plex Sans)
+     carries all general UI -- nav, buttons, page headings, labels, body prose. JetBrains Mono
+     is reserved for content that is actually monospaced by nature: equations, gate/qubit
+     notation, code-like values, and the Bloch sphere widget's technical parameter labels. It is
+     not a second headings font. */
+  --font-sans:
+    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+  /* Fixed rem scale, ~1.11-1.25 ratio between steps (product register: fixed, not fluid clamp()
+     -- this is task UI viewed at consistent DPI, not a marketing hero). --text-4xl is reserved
+     for the landing page's single hero heading; every other screen tops out at --text-3xl. */
+  --text-xs: 0.75rem; /* 12px -- captions, timestamps */
+  --text-sm: 0.875rem; /* 14px -- secondary UI, metadata, labels */
+  --text-base: 1rem; /* 16px -- body text floor, never smaller */
+  --text-lg: 1.125rem; /* 18px -- lead text, subheadings */
+  --text-xl: 1.25rem; /* 20px -- section headings */
+  --text-2xl: 1.5rem; /* 24px -- page-section headings */
+  --text-3xl: 1.875rem; /* 30px -- page-level headings */
+  --text-4xl: 2.25rem; /* 36px -- landing page hero only */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Light-on-dark text needs compensation on three axes (line-height, letter-spacing, and
+     ideally weight) or it reads as visually thinner than the same text dark-on-light --
+     --leading-relaxed and --tracking-wide below are each already bumped from the usual
+     light-mode defaults for this reason. */
+  --leading-tight: 1.2; /* headings */
+  --leading-normal: 1.5; /* UI text, labels, buttons */
+  --leading-relaxed: 1.65; /* body prose -- bumped ~0.1 above the light-mode-typical 1.5-1.55 */
+
+  --tracking-tight: -0.01em; /* large headings only; never below WCAG/impeccable's -0.04em floor */
+  --tracking-normal: 0em;
+  --tracking-wide: 0.015em; /* body prose on dark background */
+  --tracking-wider: 0.06em; /* all-caps labels, if ever used -- sparingly, per PRODUCT.md's
+    anti-reflex against tiny tracked-uppercase eyebrows as default scaffolding */
+
+  /* ---------- Spacing ---------- */
+  /* 8px-based scale; --space-5 (24px) doubles as the vertical-rhythm unit for body text
+     (16px * --leading-relaxed-ish 1.5 base ≈ 24px), so stacked body content and its
+     surrounding spacing share a common multiple. */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.5rem; /* 24px */
+  --space-6: 2rem; /* 32px */
+  --space-8: 3rem; /* 48px */
+  --space-10: 4rem; /* 64px */
+  --space-12: 6rem; /* 96px */
+
+  /* ---------- Radius ---------- */
+  /* Restrained/crisp, not the 12-16px "soft rounded" look associated with playful or
+     neumorphic UI -- matches "precision instrument," not "friendly app." */
+  --radius-sm: 0.25rem; /* 4px -- inputs, small controls, tags */
+  --radius-md: 0.5rem; /* 8px -- cards, buttons */
+  --radius-lg: 0.75rem; /* 12px -- modals, larger panels */
+  --radius-full: 9999px; /* pills -- XP/streak badge only */
+
+  /* ---------- Elevation ---------- */
+  /* Dark-mode depth comes primarily from surface lightness (background -> card -> overlay),
+     not shadow -- shadows below are a secondary, subtle assist for floating content
+     (dropdowns, modals) separating from busy content behind them, not the main depth cue. */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 8px 32px rgb(0 0 0 / 0.5); /* modals */
+
+  /* ---------- Motion ---------- */
+  /* Calm and functional only -- state feedback (hover/focus/loading/reveal), never decorative
+     choreography. Ease-out exponential curves, no bounce/elastic, per PRODUCT.md's "precision
+     instrument" personality. */
+  --duration-fast: 120ms; /* micro-interactions: press feedback */
+  --duration-base: 200ms; /* standard: hover, focus, state change */
+  --duration-slow: 320ms; /* larger: modal open/close, panel reveal */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+
+  /* ---------- Z-index ---------- */
+  /* Semantic scale, never arbitrary 999/9999 values. */
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+}
+
+/* Breakpoints (documented, not custom properties -- CSS variables cannot be used inside
+   @media conditions): 375px (mobile), 768px (tablet), 1024px (desktop), 1440px (wide desktop).
+   Use these exact values in every component's @media queries for consistency. */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

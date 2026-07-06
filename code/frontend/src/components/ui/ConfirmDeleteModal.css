@@ -1,0 +1,34 @@
+.confirm-delete__warning {
+  color: var(--color-destructive-text);
+  margin-bottom: var(--space-4);
+}
+
+.confirm-delete__instruction {
+  margin-bottom: var(--space-3);
+}
+
+.confirm-delete__label {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+  margin-bottom: var(--space-2);
+}
+
+.confirm-delete__input {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-5);
+}
+
+.confirm-delete__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}

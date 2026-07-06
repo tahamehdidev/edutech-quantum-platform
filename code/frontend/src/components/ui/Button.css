@@ -1,0 +1,74 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px; /* touch target minimum */
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.button--primary {
+  background-color: var(--color-accent-strong);
+  color: var(--color-on-accent);
+}
+.button--primary:hover:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-accent-strong), white 10%);
+}
+.button--primary:active:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-accent-strong), black 10%);
+}
+
+.button--secondary {
+  background-color: transparent;
+  color: var(--color-foreground);
+  border: 1px solid var(--color-border-strong);
+}
+.button--secondary:hover:not(:disabled) {
+  background-color: var(--color-muted);
+}
+.button--secondary:active:not(:disabled) {
+  background-color: var(--color-card);
+}
+
+.button--destructive {
+  background-color: var(--color-destructive-strong);
+  color: var(--color-on-accent);
+}
+.button--destructive:hover:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-destructive-strong), white 10%);
+}
+.button--destructive:active:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-destructive-strong), black 10%);
+}
+
+.button__spinner {
+  animation: button-spin 800ms linear infinite;
+}
+
+@keyframes button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button__spinner {
+    animation-duration: 1600ms;
+  }
+}
