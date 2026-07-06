@@ -5,11 +5,14 @@ import prettierConfig from "eslint-config-prettier";
 
 export default [
   js.configs.recommended,
+  react.configs.flat.recommended,
+  react.configs.flat["jsx-runtime"], // React 17+ JSX transform -- no `import React` needed per file
   prettierConfig,
   {
     files: ["**/*.{js,jsx}"],
+    // react is already registered by react.configs.flat.recommended above -- only react-hooks
+    // needs registering here, since no extended config provides it.
     plugins: {
-      react,
       "react-hooks": reactHooks,
     },
     languageOptions: {

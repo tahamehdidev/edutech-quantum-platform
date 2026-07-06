@@ -56,7 +56,7 @@ jobs:
       - run: npm test
 
   frontend:
-    name: Frontend — Lint, Format Check, Build
+    name: Frontend — Lint, Format Check, Test, Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -71,4 +71,5 @@ jobs:
       - run: npm install
       - run: npm run lint
       - run: npm run format:check
+      - run: npm test
       - run: npm run build
