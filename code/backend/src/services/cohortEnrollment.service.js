@@ -1,8 +1,14 @@
 import { cohortEnrollmentRepository } from "../repositories/cohortEnrollment.repository.js";
 import { progressRepository } from "../repositories/progress.repository.js";
+import { userRepository } from "../repositories/user.repository.js";
+import {
+  InvalidRoleForActionError,
+  DuplicateResourceError,
+  NotFoundError,
+} from "../errors/index.js";
 
-// Minimal service built ahead of Milestone 5's full Cohort/CohortEnrollment CRUD -- backs
-// requireStudentOwnership (ownership.middleware.js), the only thing that needs this in Milestone 4.
+// checkStudentOwnership was built in Milestone 4, ahead of the rest of this file, since
+// requireStudentOwnership (ownership.middleware.js) needed it then.
 //
 // 02-api-contract.md §5.2 "Why courseId became required" (threat-model gap #3): a teaching
 // relationship alone used to be sufficient, letting an instructor connected via one course see a
@@ -19,4 +25,38 @@ async function checkStudentOwnership(instructorId, targetUserId, courseId) {
   return progressRepository.existsForUserAndCourse(targetUserId, courseId);
 }
 
-export const cohortEnrollmentService = { checkStudentOwnership };
+// 02-api-contract.md §6.4's validation order, steps 2-4 (step 1, cohort ownership, is
+// requireCohortOwnership before this ever runs). "Doesn't exist" and "isn't a learner" are one
+// combined check -- INVALID_ROLE_FOR_ACTION either way, same treatment as cohort.service.js's own
+// instructorId check, since a nonexistent user trivially isn't a learner either.
+async function enroll(cohortId, userId) {
+  const user = await userRepository.findById(userId);
+  if (!user || user.role !== "learner") {
+    throw new InvalidRoleForActionError(
+      "userId must reference an existing learner account.",
+      "userId"
+    );
+  }
+
+  const enrollment = await cohortEnrollmentRepository.create(cohortId, userId);
+  if (!enrollment) {
+    throw new DuplicateResourceError(
+      "This student already has an active enrollment in this cohort."
+    );
+  }
+  return enrollment;
+}
+
+async function listForCohort(cohortId) {
+  return cohortEnrollmentRepository.findAllForCohort(cohortId);
+}
+
+async function remove(cohortId, userId) {
+  const enrollment = await cohortEnrollmentRepository.markRemoved(cohortId, userId);
+  if (!enrollment) {
+    throw new NotFoundError("No active enrollment found for this student in this cohort.");
+  }
+  return enrollment;
+}
+
+export const cohortEnrollmentService = { checkStudentOwnership, enroll, listForCohort, remove };

@@ -1,10 +1,19 @@
 import { courseService } from "../services/course.service.js";
 import { questionService } from "../services/question.service.js";
+import { cohortService } from "../services/cohort.service.js";
 import { cohortEnrollmentService } from "../services/cohortEnrollment.service.js";
 import { ForbiddenError, ValidationError } from "../errors/index.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// 03-security-architecture.md §3.4 Variant A. Goes through cohort.service.js, never
+// cohort.repository.js directly, same layering rule as every other ownership check here.
+export const requireCohortOwnership = asyncHandler(async (req, res, next) => {
+  if (req.user.role === "admin") return next();
+  req.cohort = await cohortService.checkOwnership(req.user.id, Number(req.params.cohortId));
+  next();
+});
 
 // 03-security-architecture.md §3.4 Variant C. Admins bypass every ownership check by design
 // (§3.6) -- ownership questions are architecturally meaningless for a platform-wide role.

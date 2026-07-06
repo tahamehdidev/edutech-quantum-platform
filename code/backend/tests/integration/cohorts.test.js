@@ -1,0 +1,350 @@
+import { test, beforeEach, after } from "node:test";
+import assert from "node:assert/strict";
+import request from "supertest";
+import { app } from "../../src/app.js";
+import { pool } from "../../src/config/db.js";
+import { resetDb, closeTestDb } from "../setup.js";
+import { createUserWithToken } from "../helpers/testUsers.js";
+import { buildCourseHierarchy } from "../helpers/courseHierarchy.js";
+
+beforeEach(async () => {
+  await resetDb();
+});
+
+after(async () => {
+  await pool.end();
+  await closeTestDb();
+});
+
+test("POST /cohorts as instructor creates a cohort owned by that instructor; a body instructorId is ignored", async () => {
+  const { accessToken, user: instructor } = await createUserWithToken({ role: "instructor" });
+  const { user: otherInstructor } = await createUserWithToken({ role: "instructor" });
+
+  const res = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ name: "Cohort A", instructorId: otherInstructor.id });
+
+  assert.equal(res.status, 201);
+  assert.equal(res.body.cohort.instructor_id, instructor.id); // body instructorId ignored
+});
+
+test("POST /cohorts as admin with a valid instructorId creates a cohort on that instructor's behalf", async () => {
+  const { accessToken: adminToken } = await createUserWithToken({ role: "admin" });
+  const { user: instructor } = await createUserWithToken({ role: "instructor" });
+
+  const res = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({ name: "Admin-created Cohort", instructorId: instructor.id });
+
+  assert.equal(res.status, 201);
+  assert.equal(res.body.cohort.instructor_id, instructor.id);
+});
+
+test("POST /cohorts as admin with an instructorId that isn't a real instructor -> 400 INVALID_ROLE_FOR_ACTION", async () => {
+  const { accessToken: adminToken } = await createUserWithToken({ role: "admin" });
+  const { user: learner } = await createUserWithToken({ role: "learner" });
+
+  const res = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({ name: "Bad Cohort", instructorId: learner.id });
+
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, "INVALID_ROLE_FOR_ACTION");
+});
+
+test("GET /cohorts?instructorId=me lists only the caller's own cohorts", async () => {
+  const { accessToken: instructorAToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: instructorBToken } = await createUserWithToken({ role: "instructor" });
+
+  await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${instructorAToken}`)
+    .send({ name: "A's Cohort" });
+  await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${instructorBToken}`)
+    .send({ name: "B's Cohort" });
+
+  const res = await request(app)
+    .get("/cohorts?instructorId=me")
+    .set("Authorization", `Bearer ${instructorAToken}`);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.cohorts.length, 1);
+  assert.equal(res.body.cohorts[0].name, "A's Cohort");
+});
+
+test("cross-instructor access to GET/PATCH/DELETE /cohorts/:id -> 403; admin bypasses", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: strangerToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: adminToken } = await createUserWithToken({ role: "admin" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Owned Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  const getRes = await request(app)
+    .get(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${strangerToken}`);
+  assert.equal(getRes.status, 403);
+
+  const patchRes = await request(app)
+    .patch(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${strangerToken}`)
+    .send({ name: "Hijacked" });
+  assert.equal(patchRes.status, 403);
+
+  const deleteRes = await request(app)
+    .delete(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${strangerToken}`);
+  assert.equal(deleteRes.status, 403);
+
+  const adminGetRes = await request(app)
+    .get(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${adminToken}`);
+  assert.equal(adminGetRes.status, 200);
+});
+
+test("PATCH /cohorts/:id by admin reassigning instructorId writes a cohort.instructor_reassigned AuditLog row; a plain rename does not", async () => {
+  const { accessToken: ownerToken, user: owner } = await createUserWithToken({
+    role: "instructor",
+  });
+  const { accessToken: adminToken, user: admin } = await createUserWithToken({ role: "admin" });
+  const { user: newInstructor } = await createUserWithToken({ role: "instructor" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  const renameRes = await request(app)
+    .patch(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Renamed Cohort" });
+  assert.equal(renameRes.status, 200);
+  assert.equal(renameRes.body.cohort.name, "Renamed Cohort");
+
+  const reassignRes = await request(app)
+    .patch(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${adminToken}`)
+    .send({ instructorId: newInstructor.id });
+  assert.equal(reassignRes.status, 200);
+  assert.equal(reassignRes.body.cohort.instructor_id, newInstructor.id);
+
+  const auditRows = await pool.query(
+    "SELECT * FROM audit_log WHERE action = 'cohort.instructor_reassigned' AND user_id = $1",
+    [admin.id]
+  );
+  assert.equal(auditRows.rows.length, 1);
+  assert.equal(auditRows.rows[0].metadata.fromInstructorId, owner.id);
+  assert.equal(auditRows.rows[0].metadata.toInstructorId, newInstructor.id);
+});
+
+test("DELETE /cohorts/:id writes a cohort.deleted AuditLog row and removes enrollment rows", async () => {
+  const { accessToken: ownerToken, user: owner } = await createUserWithToken({
+    role: "instructor",
+  });
+  const { user: learner } = await createUserWithToken({ role: "learner" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+
+  const deleteRes = await request(app)
+    .delete(`/cohorts/${cohortId}`)
+    .set("Authorization", `Bearer ${ownerToken}`);
+  assert.equal(deleteRes.status, 200);
+
+  const auditRows = await pool.query(
+    "SELECT * FROM audit_log WHERE action = 'cohort.deleted' AND user_id = $1",
+    [owner.id]
+  );
+  assert.equal(auditRows.rows.length, 1);
+  assert.equal(auditRows.rows[0].metadata.removedEnrollments, 1);
+
+  const enrollmentRows = await pool.query("SELECT * FROM cohort_enrollment WHERE cohort_id = $1", [
+    cohortId,
+  ]);
+  assert.equal(enrollmentRows.rows.length, 0);
+});
+
+test("POST /cohorts/:id/students enrolls a learner; enrolling a non-learner or nonexistent userId -> 400 INVALID_ROLE_FOR_ACTION", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { user: learner } = await createUserWithToken({ role: "learner" });
+  const { user: otherInstructor } = await createUserWithToken({ role: "instructor" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  const enrollRes = await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+  assert.equal(enrollRes.status, 201);
+
+  const nonLearnerRes = await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: otherInstructor.id });
+  assert.equal(nonLearnerRes.status, 400);
+  assert.equal(nonLearnerRes.body.error.code, "INVALID_ROLE_FOR_ACTION");
+
+  const nonexistentRes = await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: "00000000-0000-0000-0000-000000000000" });
+  assert.equal(nonexistentRes.status, 400);
+  assert.equal(nonexistentRes.body.error.code, "INVALID_ROLE_FOR_ACTION");
+});
+
+test("double active enrollment for the same student in the same cohort -> 409 DUPLICATE_RESOURCE", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { user: learner } = await createUserWithToken({ role: "learner" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+
+  const dupeRes = await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+  assert.equal(dupeRes.status, 409);
+  assert.equal(dupeRes.body.error.code, "DUPLICATE_RESOURCE");
+});
+
+test("GET /cohorts/:id/students lists the active roster; PATCH removal drops them from it but preserves the row, and allows re-enrollment", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { user: learner } = await createUserWithToken({ role: "learner", name: "Ada Learner" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+
+  const listBefore = await request(app)
+    .get(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`);
+  assert.equal(listBefore.body.students.length, 1);
+  assert.equal(listBefore.body.students[0].name, "Ada Learner");
+
+  const removeRes = await request(app)
+    .patch(`/cohorts/${cohortId}/students/${learner.id}`)
+    .set("Authorization", `Bearer ${ownerToken}`);
+  assert.equal(removeRes.status, 200);
+  assert.equal(removeRes.body.enrollment.status, "removed");
+
+  const listAfter = await request(app)
+    .get(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`);
+  assert.equal(listAfter.body.students.length, 0);
+
+  // The row still exists, just marked removed -- confirmed by re-enrollment succeeding rather
+  // than colliding with a stale unique-violation from the old (now inactive) row.
+  const reEnrollRes = await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ userId: learner.id });
+  assert.equal(reEnrollRes.status, 201);
+});
+
+test("PATCH removal of a student with no active enrollment -> 404", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { user: learner } = await createUserWithToken({ role: "learner" });
+
+  const createRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = createRes.body.cohort.id;
+
+  const res = await request(app)
+    .patch(`/cohorts/${cohortId}/students/${learner.id}`)
+    .set("Authorization", `Bearer ${ownerToken}`);
+  assert.equal(res.status, 404);
+});
+
+test("requireStudentOwnership keeps access via a removed (historical) enrollment -- a fix that adds a status='active' filter here should break this test", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken, user: learner } = await createUserWithToken({
+    role: "learner",
+  });
+  const { screen, course } = await buildCourseHierarchy(instructorToken);
+
+  const questionRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({
+      prompt: "2+2?",
+      type: "mcq",
+      content: { options: ["3", "4"], correctOptionIndex: 1 },
+    });
+  const questionId = questionRes.body.question.id;
+  await request(app)
+    .post(`/screens/${screen.id}/questions`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ questionId });
+
+  await request(app)
+    .post("/attempts")
+    .set("Authorization", `Bearer ${learnerToken}`)
+    .send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex: 1 },
+    });
+
+  const cohortRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = cohortRes.body.cohort.id;
+  await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ userId: learner.id });
+
+  const beforeRemoval = await request(app)
+    .get(`/attempts?userId=${learner.id}&courseId=${course.id}`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(beforeRemoval.status, 200);
+
+  await request(app)
+    .patch(`/cohorts/${cohortId}/students/${learner.id}`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+
+  const afterRemoval = await request(app)
+    .get(`/attempts?userId=${learner.id}&courseId=${course.id}`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(afterRemoval.status, 200); // historical access preserved, not revoked
+  assert.equal(afterRemoval.body.attempts.length, 1);
+});

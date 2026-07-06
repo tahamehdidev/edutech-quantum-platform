@@ -16,6 +16,7 @@ import questionRoutes from "./routes/question.routes.js";
 import practiceSetRoutes from "./routes/practiceSet.routes.js";
 import attemptRoutes from "./routes/attempt.routes.js";
 import progressRoutes from "./routes/progress.routes.js";
+import cohortRoutes from "./routes/cohort.routes.js";
 
 export const app = express();
 
@@ -58,6 +59,7 @@ app.use("/questions", questionRoutes);
 app.use("/practice-sets", practiceSetRoutes);
 app.use("/attempts", attemptRoutes);
 app.use("/progress", progressRoutes);
+app.use("/cohorts", cohortRoutes);
 
 // Further resource routes mount here as each is built -- see 04-application-architecture.md §7
 // for the full intended registration order.

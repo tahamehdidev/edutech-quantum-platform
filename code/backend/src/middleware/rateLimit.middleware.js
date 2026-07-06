@@ -19,6 +19,8 @@ export const RATE_LIMITS = {
   questionSearchPerAccount: { windowMs: 60 * 1000, limit: 30 },
   attemptSubmitPerAccount: { windowMs: 60 * 1000, limit: 60 },
   studentDataPerAccount: { windowMs: 60 * 1000, limit: 30 },
+  cohortEnrollPerAccount: { windowMs: 60 * 1000, limit: 20 },
+  cohortAdminReassignPerAdmin: { windowMs: 60 * 1000, limit: 10 },
 };
 
 // Disabled only when BOTH NODE_ENV=test AND RATE_LIMIT_TEST_MODE=1 are set (tests/preload.js) --
@@ -103,5 +105,30 @@ export const studentDataLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});
+
+// Reduces the risk of using role-mismatch/duplicate-enrollment responses to enumerate real
+// learner UUIDs (02-api-contract.md §6.1).
+export const cohortEnrollLimiter = rateLimit({
+  windowMs: RATE_LIMITS.cohortEnrollPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.cohortEnrollPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});
+
+// Only applies to the one action in the contract that assigns Cohort ownership to a different
+// user -- an admin's POST /cohorts with instructorId set (02-api-contract.md §6.1). Every other
+// POST /cohorts call (instructor, or admin without instructorId) is an ordinary content-authoring
+// write and stays unthrottled, same as Groups 2-3 (03-security-architecture.md §4.2).
+export const cohortAdminReassignLimiter = rateLimit({
+  windowMs: RATE_LIMITS.cohortAdminReassignPerAdmin.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.cohortAdminReassignPerAdmin.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  skip: (req) => !(req.user?.role === "admin" && req.body?.instructorId),
   handler: rateLimitHandler,
 });
