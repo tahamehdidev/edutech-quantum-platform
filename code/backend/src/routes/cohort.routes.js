@@ -21,6 +21,10 @@ import {
   enrollStudentController,
   removeStudentController,
 } from "../controllers/cohortEnrollment.controller.js";
+import {
+  getCompletionController,
+  getLessonPacingController,
+} from "../controllers/dashboard.controller.js";
 
 const router = Router();
 
@@ -89,6 +93,23 @@ router.patch(
   requireRole("instructor", "admin"),
   requireCohortOwnership,
   removeStudentController
+);
+
+// Read-only, aggregated, same ownership check as the rest of this file (02-api-contract.md §7.1).
+router.get(
+  "/:cohortId/dashboard/completion",
+  validateIntParam("cohortId"),
+  requireRole("instructor", "admin"),
+  requireCohortOwnership,
+  getCompletionController
+);
+
+router.get(
+  "/:cohortId/dashboard/lesson-pacing",
+  validateIntParam("cohortId"),
+  requireRole("instructor", "admin"),
+  requireCohortOwnership,
+  getLessonPacingController
 );
 
 export default router;

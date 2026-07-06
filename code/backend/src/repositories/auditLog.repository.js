@@ -1,7 +1,5 @@
 import { pool } from "../config/db.js";
 
-// create() only for now (Milestone 1) -- scripts/create-admin.js needs it immediately. The read
-// side (GET /audit-log) and its controller/service are built in Milestone 6.
 async function create({ userId, action, resourceType, resourceId, metadata = null }) {
   const result = await pool.query(
     `INSERT INTO audit_log (user_id, action, resource_type, resource_id, metadata)
@@ -11,4 +9,34 @@ async function create({ userId, action, resourceType, resourceId, metadata = nul
   return result.rows[0];
 }
 
-export const auditLogRepository = { create };
+// GET /audit-log (02-api-contract.md §8.3) -- filterable, combinable, all filters optional. Same
+// conditions/params-array pattern as question.repository.js's findAll(), the established shape
+// for filtered+paginated queries in this codebase.
+async function findAll({ resourceType, userId, since, page = 1, limit = 20 }) {
+  const conditions = [];
+  const params = [];
+  if (resourceType) {
+    params.push(resourceType);
+    conditions.push(`resource_type = $${params.length}`);
+  }
+  if (userId) {
+    params.push(userId);
+    conditions.push(`user_id = $${params.length}`);
+  }
+  if (since) {
+    params.push(since);
+    conditions.push(`created_at >= $${params.length}`);
+  }
+  const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  const rowsParams = [...params, limit, (page - 1) * limit];
+  const result = await pool.query(
+    `SELECT * FROM audit_log ${whereClause} ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`,
+    rowsParams
+  );
+  const countResult = await pool.query(`SELECT COUNT(*) FROM audit_log ${whereClause}`, params);
+
+  return { entries: result.rows, total: Number(countResult.rows[0].count) };
+}
+
+export const auditLogRepository = { create, findAll };

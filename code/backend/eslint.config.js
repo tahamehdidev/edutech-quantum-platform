@@ -67,4 +67,29 @@ export default [
       ],
     },
   },
+
+  // Services must go through a repository, never config/db.js directly. dashboard.service.js is
+  // the one named exception (Milestone 6): bespoke cross-resource aggregate reporting queries
+  // with no single-resource repository to belong to. Every other service stays mechanically
+  // blocked from the same shortcut, rather than relying on comments/reviews to keep this
+  // contained as more services get added.
+  {
+    files: ["src/services/**/*.js"],
+    ignores: ["src/services/dashboard.service.js"],
+    rules: {
+      "import/no-restricted-paths": [
+        "error",
+        {
+          zones: [
+            {
+              target: ["src/services"],
+              from: ["src/config/db.js"],
+              message:
+                "Services must not import config/db.js directly — call a repository instead. dashboard.service.js is the one named exception (Milestone 6).",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];

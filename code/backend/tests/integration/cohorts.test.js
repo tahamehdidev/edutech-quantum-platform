@@ -348,3 +348,168 @@ test("requireStudentOwnership keeps access via a removed (historical) enrollment
   assert.equal(afterRemoval.status, 200); // historical access preserved, not revoked
   assert.equal(afterRemoval.body.attempts.length, 1);
 });
+
+test("GET /cohorts/:id/dashboard/completion buckets students into completed/inProgress/notStarted correctly", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { user: learnerA } = await createUserWithToken({ role: "learner" });
+  const { accessToken: learnerBToken, user: learnerB } = await createUserWithToken({
+    role: "learner",
+  });
+  const { user: learnerC } = await createUserWithToken({ role: "learner" });
+  const { screen, course } = await buildCourseHierarchy(instructorToken);
+
+  const questionRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({
+      prompt: "2+2?",
+      type: "mcq",
+      content: { options: ["3", "4"], correctOptionIndex: 1 },
+    });
+  const questionId = questionRes.body.question.id;
+  await request(app)
+    .post(`/screens/${screen.id}/questions`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ questionId });
+
+  const cohortRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = cohortRes.body.cohort.id;
+  for (const learner of [learnerA, learnerB, learnerC]) {
+    await request(app)
+      .post(`/cohorts/${cohortId}/students`)
+      .set("Authorization", `Bearer ${instructorToken}`)
+      .send({ userId: learner.id });
+  }
+
+  // learnerA: never attempts -- not started.
+  // learnerB: attempts correctly, then the Progress row is marked completed directly (no
+  // endpoint sets completed_at anywhere in this codebase -- course-completion detection is
+  // unspecified and out of scope; this proves the aggregation query reads whatever's there).
+  const learnerBToken2 = learnerBToken;
+  await request(app)
+    .post("/attempts")
+    .set("Authorization", `Bearer ${learnerBToken2}`)
+    .send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex: 1 },
+    });
+  await pool.query(
+    "UPDATE progress SET completed_at = now() WHERE user_id = $1 AND course_id = $2",
+    [learnerB.id, course.id]
+  );
+
+  const res = await request(app)
+    .get(`/cohorts/${cohortId}/dashboard/completion`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.courses.length, 1);
+  const stats = res.body.courses[0];
+  assert.equal(stats.courseId, course.id);
+  assert.equal(stats.totalStudents, 3);
+  assert.equal(stats.completed, 1);
+  assert.equal(stats.inProgress, 0);
+  assert.equal(stats.notStarted, 2);
+  assert.equal(stats.averageXp, 10); // only learnerB has a Progress row, at 10 xp
+});
+
+test("GET /cohorts/:id/dashboard/lesson-pacing averages the gap between a user's consecutive attempts in a lesson", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken, user: learner } = await createUserWithToken({
+    role: "learner",
+  });
+  const { screen, lesson } = await buildCourseHierarchy(instructorToken);
+
+  const questionRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({
+      prompt: "2+2?",
+      type: "mcq",
+      content: { options: ["3", "4"], correctOptionIndex: 1 },
+    });
+  const questionId = questionRes.body.question.id;
+  await request(app)
+    .post(`/screens/${screen.id}/questions`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ questionId });
+
+  const cohortRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = cohortRes.body.cohort.id;
+  await request(app)
+    .post(`/cohorts/${cohortId}/students`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ userId: learner.id });
+
+  // Two attempts inserted directly with a controlled 100-second gap -- the real /attempts
+  // endpoint can't produce a deterministic gap at wall-clock speed, and this test is about the
+  // aggregation query's arithmetic, not attempt-submission behavior (already covered elsewhere).
+  await request(app)
+    .post("/attempts")
+    .set("Authorization", `Bearer ${learnerToken}`)
+    .send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex: 1 },
+    });
+  await pool.query(
+    `UPDATE attempt SET attempted_at = now() - interval '100 seconds'
+     WHERE id = (SELECT id FROM attempt WHERE user_id = $1 ORDER BY id LIMIT 1)`,
+    [learner.id]
+  );
+  await pool.query(
+    `INSERT INTO attempt (user_id, question_id, context_type, context_id, answer, is_correct, attempted_at)
+     VALUES ($1, $2, 'screen', $3, '{"selectedOptionIndex":1}', true, now())`,
+    [learner.id, questionId, screen.id]
+  );
+
+  const res = await request(app)
+    .get(`/cohorts/${cohortId}/dashboard/lesson-pacing`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(res.status, 200);
+  assert.equal(res.body.lessons.length, 1);
+  const pacing = res.body.lessons[0];
+  assert.equal(pacing.lessonId, lesson.id);
+  assert.equal(pacing.sampleSize, 1);
+  assert.ok(
+    Math.abs(pacing.averageInterQuestionSeconds - 100) <= 1,
+    `expected ~100s, got ${pacing.averageInterQuestionSeconds}`
+  );
+  assert.match(pacing.note, /Approximate/);
+});
+
+test("cross-instructor access to the dashboard endpoints -> 403; admin bypasses", async () => {
+  const { accessToken: ownerToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: strangerToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: adminToken } = await createUserWithToken({ role: "admin" });
+
+  const cohortRes = await request(app)
+    .post("/cohorts")
+    .set("Authorization", `Bearer ${ownerToken}`)
+    .send({ name: "Cohort" });
+  const cohortId = cohortRes.body.cohort.id;
+
+  const completionRes = await request(app)
+    .get(`/cohorts/${cohortId}/dashboard/completion`)
+    .set("Authorization", `Bearer ${strangerToken}`);
+  assert.equal(completionRes.status, 403);
+
+  const pacingRes = await request(app)
+    .get(`/cohorts/${cohortId}/dashboard/lesson-pacing`)
+    .set("Authorization", `Bearer ${strangerToken}`);
+  assert.equal(pacingRes.status, 403);
+
+  const adminRes = await request(app)
+    .get(`/cohorts/${cohortId}/dashboard/completion`)
+    .set("Authorization", `Bearer ${adminToken}`);
+  assert.equal(adminRes.status, 200);
+  assert.deepEqual(adminRes.body.courses, []); // no students, no Progress rows
+});
