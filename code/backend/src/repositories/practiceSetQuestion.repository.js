@@ -74,10 +74,21 @@ async function applyOrder(practiceSetId, orderedQuestionIds) {
   }
 }
 
+// Backs POST /attempts step 3 (02-api-contract.md §5.3) -- prevents submitting an answer to a
+// question never actually attached to the given practice set.
+async function isAttached(practiceSetId, questionId) {
+  const result = await pool.query(
+    "SELECT 1 FROM practice_set_question WHERE practice_set_id = $1 AND question_id = $2 LIMIT 1",
+    [practiceSetId, questionId]
+  );
+  return result.rows.length > 0;
+}
+
 export const practiceSetQuestionRepository = {
   attach,
   detach,
   findQuestionsForPracticeSet,
   findSiblingQuestionIds,
   applyOrder,
+  isAttached,
 };

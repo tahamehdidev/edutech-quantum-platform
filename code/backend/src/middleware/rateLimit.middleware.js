@@ -17,6 +17,8 @@ export const RATE_LIMITS = {
   loginPerAccount: { windowMs: 15 * 60 * 1000, limit: 5 },
   logoutPerAccount: { windowMs: 60 * 1000, limit: 10 },
   questionSearchPerAccount: { windowMs: 60 * 1000, limit: 30 },
+  attemptSubmitPerAccount: { windowMs: 60 * 1000, limit: 60 },
+  studentDataPerAccount: { windowMs: 60 * 1000, limit: 30 },
 };
 
 // Disabled only when BOTH NODE_ENV=test AND RATE_LIMIT_TEST_MODE=1 are set (tests/preload.js) --
@@ -75,6 +77,29 @@ export const logoutAccountLimiter = rateLimit({
 export const questionSearchLimiter = rateLimit({
   windowMs: RATE_LIMITS.questionSearchPerAccount.windowMs,
   limit: effectiveLimit(RATE_LIMITS.questionSearchPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});
+
+// A backstop, not a throughput limit for real use -- set deliberately far above plausible human
+// throughput (02-api-contract.md §5.1: a fast learner tops out around 20-30/min) so it never
+// punishes legitimate use, while still bounding worst-case scripted flooding.
+export const attemptSubmitLimiter = rateLimit({
+  windowMs: RATE_LIMITS.attemptSubmitPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.attemptSubmitPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});
+
+// GET /attempts?userId=:id and GET /progress?userId=:id both run an ownership-check join query
+// before fetching data (02-api-contract.md §5.1) -- same tier as questionSearchLimiter.
+export const studentDataLimiter = rateLimit({
+  windowMs: RATE_LIMITS.studentDataPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.studentDataPerAccount.limit),
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?.id ?? req.ip,

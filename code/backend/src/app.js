@@ -14,6 +14,8 @@ import lessonRoutes from "./routes/lesson.routes.js";
 import screenRoutes from "./routes/screen.routes.js";
 import questionRoutes from "./routes/question.routes.js";
 import practiceSetRoutes from "./routes/practiceSet.routes.js";
+import attemptRoutes from "./routes/attempt.routes.js";
+import progressRoutes from "./routes/progress.routes.js";
 
 export const app = express();
 
@@ -54,6 +56,8 @@ app.use("/lessons", lessonRoutes);
 app.use("/screens", screenRoutes);
 app.use("/questions", questionRoutes);
 app.use("/practice-sets", practiceSetRoutes);
+app.use("/attempts", attemptRoutes);
+app.use("/progress", progressRoutes);
 
 // Further resource routes mount here as each is built -- see 04-application-architecture.md §7
 // for the full intended registration order.

@@ -32,4 +32,14 @@ async function findQuestionsForScreen(screenId) {
   return result.rows;
 }
 
-export const screenQuestionRepository = { attach, detach, findQuestionsForScreen };
+// Backs POST /attempts step 3 (02-api-contract.md §5.3) -- prevents submitting an answer to a
+// question never actually shown in the given screen.
+async function isAttached(screenId, questionId) {
+  const result = await pool.query(
+    "SELECT 1 FROM screen_question WHERE screen_id = $1 AND question_id = $2 LIMIT 1",
+    [screenId, questionId]
+  );
+  return result.rows.length > 0;
+}
+
+export const screenQuestionRepository = { attach, detach, findQuestionsForScreen, isAttached };
