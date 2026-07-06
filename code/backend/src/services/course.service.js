@@ -63,8 +63,11 @@ async function resolveCourseId(params) {
   if (params.chapterId) return courseRepository.resolveFromChapterId(Number(params.chapterId));
   if (params.lessonId) return courseRepository.resolveFromLessonId(Number(params.lessonId));
   if (params.screenId) return courseRepository.resolveFromScreenId(Number(params.screenId));
+  if (params.practiceSetId) {
+    return courseRepository.resolveFromPracticeSetId(Number(params.practiceSetId));
+  }
   throw new Error(
-    "resolveCourseId: no courseId/chapterId/lessonId/screenId param present on this request."
+    "resolveCourseId: no courseId/chapterId/lessonId/screenId/practiceSetId param present on this request."
   );
 }
 

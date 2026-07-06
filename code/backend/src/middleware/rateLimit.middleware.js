@@ -16,6 +16,7 @@ export const RATE_LIMITS = {
   loginPerIp: { windowMs: 15 * 60 * 1000, limit: 20 },
   loginPerAccount: { windowMs: 15 * 60 * 1000, limit: 5 },
   logoutPerAccount: { windowMs: 60 * 1000, limit: 10 },
+  questionSearchPerAccount: { windowMs: 60 * 1000, limit: 30 },
 };
 
 // Disabled only when BOTH NODE_ENV=test AND RATE_LIMIT_TEST_MODE=1 are set (tests/preload.js) --
@@ -63,6 +64,17 @@ export const loginAccountLimiter = rateLimit({
 export const logoutAccountLimiter = rateLimit({
   windowMs: RATE_LIMITS.logoutPerAccount.windowMs,
   limit: effectiveLimit(RATE_LIMITS.logoutPerAccount.limit),
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => req.user?.id ?? req.ip,
+  handler: rateLimitHandler,
+});
+
+// The cheapest-to-abuse open read reachable by any logged-in role including learner
+// (03-security-architecture.md §4.2).
+export const questionSearchLimiter = rateLimit({
+  windowMs: RATE_LIMITS.questionSearchPerAccount.windowMs,
+  limit: effectiveLimit(RATE_LIMITS.questionSearchPerAccount.limit),
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?.id ?? req.ip,

@@ -76,6 +76,20 @@ async function resolveFromScreenId(screenId) {
   return result.rows[0]?.id ?? null;
 }
 
+// Added in Milestone 3 for PracticeSet's own ownership-gated routes (update/delete/attach-
+// question/reorder-questions) -- same join-up-the-chain shape as the other three resolvers.
+async function resolveFromPracticeSetId(practiceSetId) {
+  const result = await pool.query(
+    `SELECT c.id FROM course c
+     JOIN chapter ch ON ch.course_id = c.id
+     JOIN lesson l ON l.chapter_id = ch.id
+     JOIN practice_set ps ON ps.lesson_id = l.id
+     WHERE ps.id = $1`,
+    [practiceSetId]
+  );
+  return result.rows[0]?.id ?? null;
+}
+
 export const courseRepository = {
   findAll,
   findById,
@@ -86,4 +100,5 @@ export const courseRepository = {
   resolveFromChapterId,
   resolveFromLessonId,
   resolveFromScreenId,
+  resolveFromPracticeSetId,
 };

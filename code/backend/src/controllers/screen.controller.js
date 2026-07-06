@@ -3,7 +3,7 @@ import { screenService } from "../services/screen.service.js";
 import { validateScreenContent } from "../validators/screen.validator.js";
 
 export const listScreensController = asyncHandler(async (req, res) => {
-  const screens = await screenService.listForLesson(Number(req.params.lessonId));
+  const screens = await screenService.listForLesson(Number(req.params.lessonId), req.user.role);
   res
     .status(200)
     .json({ screens, pagination: { page: 1, limit: screens.length, total: screens.length } });

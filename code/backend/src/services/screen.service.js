@@ -1,9 +1,23 @@
 import { screenRepository } from "../repositories/screen.repository.js";
+import { screenQuestionRepository } from "../repositories/screenQuestion.repository.js";
+import { questionService } from "./question.service.js";
 import { isExactSetMatch } from "../utils/exactSetMatch.js";
 import { NotFoundError, ReorderSetMismatchError } from "../errors/index.js";
 
-async function listForLesson(lessonId) {
-  return screenRepository.findAllForLesson(lessonId);
+// Embeds each screen's attached question(s) (via ScreenQuestion), shaped per caller role the same
+// way question.service.js shapes them standalone -- 02-api-contract.md §4.4's field-shaping
+// applies here too, since this is one of the endpoints that returns Question.content embedded.
+async function listForLesson(lessonId, callerRole) {
+  const screens = await screenRepository.findAllForLesson(lessonId);
+  return Promise.all(
+    screens.map(async (screen) => {
+      const questions = await screenQuestionRepository.findQuestionsForScreen(screen.id);
+      return {
+        ...screen,
+        questions: questions.map((q) => questionService.toPublicQuestion(q, callerRole)),
+      };
+    })
+  );
 }
 
 async function getById(id) {

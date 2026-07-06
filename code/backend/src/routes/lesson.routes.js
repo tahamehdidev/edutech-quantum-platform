@@ -5,6 +5,7 @@ import { requireRole } from "../middleware/role.middleware.js";
 import { requireCourseOwnership } from "../middleware/ownership.middleware.js";
 import { UpdateLessonSchema } from "../validators/lesson.validator.js";
 import { CreateScreenSchema } from "../validators/screen.validator.js";
+import { CreatePracticeSetSchema } from "../validators/practiceSet.validator.js";
 import { ReorderIdsSchema } from "../validators/common.validator.js";
 import {
   updateLessonController,
@@ -15,6 +16,10 @@ import {
   createScreenController,
   reorderScreensController,
 } from "../controllers/screen.controller.js";
+import {
+  listPracticeSetsController,
+  createPracticeSetController,
+} from "../controllers/practiceSet.controller.js";
 
 const router = Router();
 
@@ -50,6 +55,16 @@ router.patch(
   requireCourseOwnership,
   validateBody(ReorderIdsSchema),
   reorderScreensController
+);
+
+router.get("/:lessonId/practice-sets", validateIntParam("lessonId"), listPracticeSetsController);
+router.post(
+  "/:lessonId/practice-sets",
+  validateIntParam("lessonId"),
+  requireRole("admin", "instructor"),
+  requireCourseOwnership,
+  validateBody(CreatePracticeSetSchema),
+  createPracticeSetController
 );
 
 export default router;
