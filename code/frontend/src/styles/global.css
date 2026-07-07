@@ -72,3 +72,20 @@ textarea {
   outline: 2px solid var(--color-ring);
   outline-offset: 2px;
 }
+
+/* Standard "hidden visually, present to assistive tech" pattern -- unlike display:none/opacity:0,
+   content stays in the accessibility tree and reachable by screen readers. First needed for the
+   amplitude bar chart's data table (the chart itself is decorative; this carries the real values),
+   and will be reused by every other visual-only widget (PRODUCT.md's accessibility section calls
+   this out by name for the Bloch sphere's non-visual controls). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

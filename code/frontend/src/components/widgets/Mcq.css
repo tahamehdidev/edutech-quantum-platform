@@ -1,0 +1,92 @@
+.mcq {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.mcq__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mcq__options:disabled {
+  opacity: 1; /* fieldset:disabled shouldn't wash out an already-graded answer */
+}
+
+.mcq__prompt {
+  padding: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-normal);
+  color: var(--color-foreground);
+}
+
+.mcq__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-base) var(--ease-out),
+    background-color var(--duration-base) var(--ease-out);
+}
+
+.mcq__option:has(input:disabled) {
+  cursor: not-allowed;
+}
+
+.mcq__option:hover:not(:has(input:disabled)) {
+  border-color: var(--color-accent);
+}
+
+.mcq__option:active:not(:has(input:disabled)) {
+  background-color: color-mix(in oklch, var(--color-card), white 6%);
+}
+
+/* The native radio's own focus ring is only 20px -- easy to miss. Ringing the whole card gives
+   keyboard users the same clear affordance mouse users get from the option's full click target. */
+.mcq__option:has(input:focus-visible) {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.mcq__option--selected {
+  border-color: var(--color-accent);
+}
+
+.mcq__option--correct {
+  border-color: var(--color-success);
+}
+
+.mcq__option--incorrect {
+  border-color: var(--color-destructive);
+}
+
+.mcq__option input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.mcq__option span {
+  flex: 1;
+  color: var(--color-foreground);
+  font-size: var(--text-base);
+}
+
+.mcq__option-icon--correct {
+  color: var(--color-success);
+}
+
+.mcq__option-icon--incorrect {
+  color: var(--color-destructive-text);
+}

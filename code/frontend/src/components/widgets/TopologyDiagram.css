@@ -1,0 +1,80 @@
+.topology-diagram {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.topology-diagram__caption {
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+}
+
+.topology-diagram__canvas {
+  position: relative;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.topology-diagram__edges {
+  position: absolute;
+  inset: 0;
+}
+
+.topology-diagram__edge {
+  stroke: var(--color-border-strong);
+  stroke-width: 2;
+}
+
+.topology-diagram__edge--highlighted {
+  stroke: var(--color-accent);
+  stroke-width: 3;
+}
+
+.topology-diagram__node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background-color: var(--color-muted);
+  border: 2px solid var(--color-border-strong);
+  color: var(--color-foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.topology-diagram__node:hover {
+  border-color: var(--color-accent);
+}
+
+.topology-diagram__node:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.topology-diagram__node--selected {
+  border-color: var(--color-accent);
+  background-color: color-mix(in oklch, var(--color-accent), transparent 80%);
+}
+
+.topology-diagram__node--connected {
+  border-color: var(--color-success);
+  background-color: color-mix(in oklch, var(--color-success), transparent 80%);
+}
+
+.topology-diagram__node--not-connected {
+  border-color: var(--color-destructive);
+  background-color: color-mix(in oklch, var(--color-destructive), transparent 80%);
+}
+
+.topology-diagram__result {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+}

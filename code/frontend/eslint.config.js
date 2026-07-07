@@ -37,4 +37,17 @@ export default [
       react: { version: "detect" },
     },
   },
+  {
+    // react-three-fiber's custom reconciler turns three.js constructor args/properties (args,
+    // intensity, wireframe, transparent, depthWrite, geometry, ...) into JSX props that don't
+    // exist on real DOM elements -- eslint-plugin-react's DOM-property check doesn't know about
+    // them. Scoped to just the one file using r3f JSX, not disabled project-wide.
+    files: ["src/components/widgets/BlochSphereScene.jsx"],
+    rules: {
+      "react/no-unknown-property": [
+        "error",
+        { ignore: ["args", "intensity", "wireframe", "transparent", "depthWrite", "geometry"] },
+      ],
+    },
+  },
 ];

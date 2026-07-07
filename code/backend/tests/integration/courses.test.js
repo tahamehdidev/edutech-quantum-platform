@@ -309,3 +309,119 @@ test("Screen.content accepts a valid simulation payload", async () => {
   assert.equal(res.status, 201);
   assert.equal(res.body.screen.content.widgetType, "bloch_sphere");
 });
+
+// bloch_sphere's params are now validated per mode (Frontend Milestone 4 closed the gap the
+// project plan named explicitly), not just "params is some object" -- these cover the three modes
+// that had no documented shape at all before this, plus proof the tightened schema actually
+// rejects bad input now rather than accepting anything object-shaped. node:test has no test.each,
+// so a plain loop registers one test per case (each still reported individually).
+const validBlochSphereParamsByMode = [
+  { mode: "rotation_slider", sliderLabel: "Feature value" },
+  { mode: "measurement", startState: "+" },
+  { mode: "t1_decay", startState: "1", t1Ms: 1500 },
+];
+
+for (const params of validBlochSphereParamsByMode) {
+  test(`Screen.content accepts a valid bloch_sphere ${params.mode} payload`, async () => {
+    const { accessToken } = await createUserWithToken({ role: "instructor" });
+    const courseRes = await request(app)
+      .post("/courses")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ title: "Course" });
+    const chapterRes = await request(app)
+      .post(`/courses/${courseRes.body.course.id}/chapters`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ title: "Chapter" });
+    const lessonRes = await request(app)
+      .post(`/chapters/${chapterRes.body.chapter.id}/lessons`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ title: "Lesson" });
+
+    const res = await request(app)
+      .post(`/lessons/${lessonRes.body.lesson.id}/screens`)
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send({ type: "simulation", content: { widgetType: "bloch_sphere", params } });
+    assert.equal(res.status, 201);
+    assert.equal(res.body.screen.content.params.mode, params.mode);
+  });
+}
+
+test("Screen.content rejects a bloch_sphere payload with an unrecognized mode", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const chapterRes = await request(app)
+    .post(`/courses/${courseRes.body.course.id}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter" });
+  const lessonRes = await request(app)
+    .post(`/chapters/${chapterRes.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson" });
+
+  const res = await request(app)
+    .post(`/lessons/${lessonRes.body.lesson.id}/screens`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      type: "simulation",
+      content: { widgetType: "bloch_sphere", params: { mode: "not_a_real_mode" } },
+    });
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, "VALIDATION_ERROR");
+});
+
+test("Screen.content rejects a bloch_sphere t1_decay payload with a negative t1Ms", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const chapterRes = await request(app)
+    .post(`/courses/${courseRes.body.course.id}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter" });
+  const lessonRes = await request(app)
+    .post(`/chapters/${chapterRes.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson" });
+
+  const res = await request(app)
+    .post(`/lessons/${lessonRes.body.lesson.id}/screens`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      type: "simulation",
+      content: { widgetType: "bloch_sphere", params: { mode: "t1_decay", t1Ms: -5 } },
+    });
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, "VALIDATION_ERROR");
+});
+
+// amplitude_bar_chart/topology_diagram/quadrant_selector/basis_encoder have no per-mode schema yet
+// -- confirms they still fall back to the generic "params is an object" placeholder rather than
+// bloch_sphere's tightened validation leaking onto widget types that don't have it.
+test("Screen.content still accepts any object-shaped params for widget types without a per-mode schema", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const chapterRes = await request(app)
+    .post(`/courses/${courseRes.body.course.id}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter" });
+  const lessonRes = await request(app)
+    .post(`/chapters/${chapterRes.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson" });
+
+  const res = await request(app)
+    .post(`/lessons/${lessonRes.body.lesson.id}/screens`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      type: "simulation",
+      content: { widgetType: "amplitude_bar_chart", params: { anything: true } },
+    });
+  assert.equal(res.status, 201);
+});
