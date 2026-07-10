@@ -1,0 +1,166 @@
+.course-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+.course-catalog__banner {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-destructive);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-muted);
+  color: var(--color-destructive-text);
+  font-size: var(--text-sm);
+}
+
+.course-catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+.course-catalog__card-link {
+  color: inherit;
+  text-decoration: none;
+  /* A quiet staggered entrance for the initial content swap (skeleton -> real cards), scoped to
+     a list of genuinely parallel items -- not the "identical reflex on every section" pattern,
+     since this fires once, on one grid, for items being compared side by side. backwards keeps
+     each card invisible for its own delay instead of flashing at full opacity first. */
+  animation: course-catalog-card-in var(--duration-slow) var(--ease-out) backwards;
+}
+
+.course-catalog__card-link:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.course-catalog__card-link:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.course-catalog__card-link:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+@keyframes course-catalog-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-catalog__card-link {
+    animation: none;
+  }
+}
+
+.course-catalog__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  border: 1px solid transparent;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.course-catalog__card-link:hover .course-catalog__card,
+.course-catalog__card-link:focus-visible .course-catalog__card {
+  transform: translateY(-2px);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+/* Full border-color, not a side-stripe (the general absolute-ban list forbids colored
+   border-left/border-right as an accent) -- lets a returning learner spot the one course they
+   left off in before reading any of the three status slots (critique's "Alex" persona note).
+   A solid token color, deliberately not color-mix()-with-transparent: that combination, on a
+   property already in this element's own `transition` list, has twice before (DragDrop,
+   TopologyDiagram) silently resolved to the wrong opaque color live in the browser despite
+   looking correct in jsdom tests. --color-accent is already documented as border-safe usage. */
+.course-catalog__card--in-progress {
+  border-color: var(--color-accent);
+}
+
+.course-catalog__card h2 {
+  font-size: var(--text-xl);
+}
+
+.course-catalog__narrative {
+  margin: 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  /* Defensive safety net, not the primary truncation mechanism -- the real cutting-to-length now
+     happens in JS (truncateAtWordBoundary, word-safe), specifically because this CSS-only clamp
+     has no word-boundary awareness and was confirmed live cutting all 3 real seeded narratives
+     off mid-word ("...superconducting mi", "...trainable mode"). Kept here only in case a future
+     narrative is somehow still too long despite the JS budget. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-catalog__status {
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.course-catalog__not-started {
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+}
+
+.course-catalog__completed {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-success);
+}
+
+/* ---------- Skeleton ---------- */
+
+.course-catalog__card--skeleton {
+  gap: var(--space-3);
+}
+
+.course-catalog__skeleton-line {
+  height: 1em;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-muted);
+  animation: course-catalog-pulse 1.4s ease-in-out infinite;
+}
+
+.course-catalog__skeleton-line--title {
+  width: 60%;
+  height: var(--text-xl);
+}
+
+.course-catalog__skeleton-line--short {
+  width: 40%;
+}
+
+@keyframes course-catalog-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-catalog__skeleton-line {
+    animation: none;
+  }
+}

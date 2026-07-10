@@ -14,6 +14,13 @@ test("listForChapter fetches /chapters/:id/lessons and returns the full body", a
   expect(result).toEqual(body);
 });
 
+test("getById fetches /lessons/:id and returns the lesson", async () => {
+  apiClient.get.mockResolvedValue({ data: { lesson: { id: 3, title: "Qubits 101" } } });
+  const result = await lessonService.getById(3);
+  expect(apiClient.get).toHaveBeenCalledWith("/lessons/3");
+  expect(result).toEqual({ id: 3, title: "Qubits 101" });
+});
+
 test("create posts to /chapters/:id/lessons and returns the created lesson", async () => {
   apiClient.post.mockResolvedValue({ data: { lesson: { id: 3, title: "L1" } } });
   const result = await lessonService.create(2, { title: "L1" });

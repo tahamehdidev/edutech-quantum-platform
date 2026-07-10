@@ -8,6 +8,11 @@ export const listLessonsController = asyncHandler(async (req, res) => {
     .json({ lessons, pagination: { page: 1, limit: lessons.length, total: lessons.length } });
 });
 
+export const getLessonController = asyncHandler(async (req, res) => {
+  const lesson = await lessonService.getById(Number(req.params.lessonId));
+  res.status(200).json({ lesson });
+});
+
 export const createLessonController = asyncHandler(async (req, res) => {
   const lesson = await lessonService.create(Number(req.params.chapterId), req.validatedBody);
   res.status(201).json({ lesson });

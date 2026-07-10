@@ -53,24 +53,35 @@ export function AuthProvider({ children }) {
     configureAuth({ getAccessToken: () => accessTokenRef.current, refreshAccessToken });
   }, [refreshAccessToken]);
 
+  // Guards against React 18 StrictMode's dev-only double-invocation of this effect -- confirmed
+  // live (not just theorized) that without this guard, the mount effect calls refreshAccessToken()
+  // twice against the same starting refresh cookie. Refresh tokens are single-use with rotation,
+  // and reuse triggers the backend's deliberate mass-revocation security response (correct
+  // behavior for a real stolen-token replay) -- so the second, spurious call reads as "reuse" and
+  // revokes every token for the user, including the one the first call just legitimately rotated
+  // to. Net effect without this guard: every reload silently logs the user back out almost
+  // immediately in dev. AuthProvider is mounted once at the app root for the app's entire
+  // lifetime (main.jsx), so there's no real unmount case to protect against here -- the previous
+  // `cancelled`-on-cleanup pattern was guarding the wrong thing (StrictMode's synthetic unmount,
+  // which it can't actually prevent) instead of preventing the second call from firing at all.
+  const hasAttemptedRestoreRef = useRef(false);
   useEffect(() => {
-    let cancelled = false;
+    if (hasAttemptedRestoreRef.current) return;
+    hasAttemptedRestoreRef.current = true;
+
     async function restoreSession() {
       try {
         await refreshAccessToken(); // updates accessTokenRef before getMe() needs it
         const me = await userService.getMe();
-        if (!cancelled) setUser(me);
+        setUser(me);
       } catch {
         // No valid refresh cookie, or it resolved but getMe() failed -- either way, start logged
         // out. refreshAccessToken() has already cleared user/accessToken on its own failure path.
       } finally {
-        if (!cancelled) setIsLoading(false);
+        setIsLoading(false);
       }
     }
     restoreSession();
-    return () => {
-      cancelled = true;
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally mount-only
   }, []);
 

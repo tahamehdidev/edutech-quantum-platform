@@ -1,0 +1,60 @@
+/* Shared shell for Login/Signup -- both screens are the same single-panel task (centered card,
+   no page chrome), built in the same pass; splitting this into a shared file avoids the exact
+   copy-paste-then-drift risk simplicity-principles warns about for two concrete, simultaneous
+   instances of identical structure. */
+.auth-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+.auth-page__card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.auth-page__card h1 {
+  font-size: var(--text-2xl);
+}
+
+.auth-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Two roles sharing one shell, same "text-safe vs fill-safe" split tokens.css already documents:
+   --color-destructive/--color-success are fine as a border (non-text use), but only
+   --color-destructive-text is verified as TEXT -- --color-success's own tokens.css comment
+   already lists "text" among its verified uses, so it's used directly, unlike destructive. */
+.auth-page__banner {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-muted);
+  font-size: var(--text-sm);
+}
+
+.auth-page__banner--error {
+  border: 1px solid var(--color-destructive);
+  color: var(--color-destructive-text);
+}
+
+.auth-page__banner--success {
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.auth-page__submit {
+  margin-top: var(--space-2);
+}
+
+.auth-page__switch {
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
+  text-align: center;
+}

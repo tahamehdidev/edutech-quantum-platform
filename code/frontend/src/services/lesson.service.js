@@ -5,6 +5,11 @@ async function listForChapter(chapterId) {
   return data; // { lessons, pagination }
 }
 
+async function getById(lessonId) {
+  const { data } = await apiClient.get(`/lessons/${lessonId}`);
+  return data.lesson;
+}
+
 async function create(chapterId, { title }) {
   const { data } = await apiClient.post(`/chapters/${chapterId}/lessons`, { title });
   return data.lesson;
@@ -25,4 +30,4 @@ async function remove(lessonId, { confirm = false } = {}) {
   });
 }
 
-export const lessonService = { listForChapter, create, update, reorder, remove };
+export const lessonService = { listForChapter, getById, create, update, reorder, remove };

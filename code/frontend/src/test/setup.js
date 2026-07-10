@@ -27,3 +27,20 @@ if (typeof HTMLDialogElement !== "undefined" && !HTMLDialogElement.prototype.sho
     this.dispatchEvent(new Event("close"));
   };
 }
+
+// jsdom does not implement window.matchMedia at all -- first needed by useReducedMotion.js
+// (Frontend Milestone 5's landing-page hero). Defaults to "no preference matches" (matches:
+// false) so any test not specifically exercising a media-query branch gets a sane baseline;
+// individual tests still override window.matchMedia directly when they need to simulate a
+// specific query result (see LandingHeroVisual.test.jsx/useReducedMotion.test.js).
+if (typeof window !== "undefined" && !window.matchMedia) {
+  window.matchMedia = function matchMedia(query) {
+    return {
+      matches: false,
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    };
+  };
+}

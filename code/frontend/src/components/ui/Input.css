@@ -1,0 +1,80 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-foreground);
+}
+
+.field__control-wrapper {
+  position: relative;
+}
+
+/* Recessed relative to the card it sits on (--color-card), same elevation logic tokens.css
+   documents for background -> card -> overlay -- a slightly darker fill reads as "sunken"
+   against the panel around it. */
+.field__control {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+/* Room for the show/hide toggle button, which sits on top of the input's own right edge rather
+   than beside it -- avoids a second flex/grid layer just to place one icon button. */
+.field__control--has-toggle {
+  padding-right: 44px;
+}
+
+.field__control::placeholder {
+  color: var(--color-muted-foreground);
+}
+
+.field__control:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field__control--error {
+  border-color: var(--color-destructive);
+}
+
+/* Matches the input's own 44px height exactly, flush to its right edge -- a real 44x44 touch
+   target, not a shrunken icon-only hitbox. */
+.field__toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-muted-foreground);
+  cursor: pointer;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.field__toggle:hover {
+  color: var(--color-foreground);
+}
+
+.field__error {
+  font-size: var(--text-sm);
+  color: var(--color-destructive-text);
+}
+
+.field__hint {
+  font-size: var(--text-xs);
+  color: var(--color-muted-foreground);
+}

@@ -5,6 +5,7 @@ import { app } from "../../src/app.js";
 import { pool } from "../../src/config/db.js";
 import { resetDb, closeTestDb } from "../setup.js";
 import { createUserWithToken } from "../helpers/testUsers.js";
+import { buildCourseHierarchy } from "../helpers/courseHierarchy.js";
 
 beforeEach(async () => {
   await resetDb();
@@ -56,6 +57,28 @@ test("GET /courses/:courseId returns the course with nested chapters", async () 
   assert.equal(res.status, 200);
   assert.equal(res.body.course.chapters.length, 1);
   assert.equal(res.body.course.chapters[0].title, "Chapter 1");
+});
+
+test("GET /lessons/:lessonId returns the lesson for any logged-in role, including learner", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { lesson } = await buildCourseHierarchy(instructorToken, { lessonTitle: "Qubits 101" });
+
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const res = await request(app)
+    .get(`/lessons/${lesson.id}`)
+    .set("Authorization", `Bearer ${learnerToken}`);
+
+  assert.equal(res.status, 200);
+  assert.equal(res.body.lesson.id, lesson.id);
+  assert.equal(res.body.lesson.title, "Qubits 101");
+});
+
+test("GET /lessons/:lessonId for a nonexistent lesson returns 404", async () => {
+  const { accessToken } = await createUserWithToken({ role: "learner" });
+  const res = await request(app)
+    .get("/lessons/999999")
+    .set("Authorization", `Bearer ${accessToken}`);
+  assert.equal(res.status, 404);
 });
 
 test("sequential chapter creates get distinct, incrementing order_index values", async () => {
@@ -208,6 +231,50 @@ test("DELETE /courses/:courseId?confirm=true cascades to chapters/lessons/screen
   ]);
   assert.equal(chapterCheck.rows.length, 0);
   assert.equal(lessonCheck.rows.length, 0);
+});
+
+// Regression test for a real bug found via manual dev-DB cleanup: progress.course_id's FK was
+// created without ON DELETE CASCADE (migration 012), unlike chapter/lesson/screen -- deleting a
+// course that a learner had actually submitted an attempt in threw an unhandled 500 (Postgres FK
+// violation) instead of cascading, since a Progress row is created as a side effect of the first
+// POST /attempts against that course. Fixed in migration 016.
+test("DELETE /courses/:courseId?confirm=true cascades to Progress rows too", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const { course, screen } = await buildCourseHierarchy(instructorToken);
+
+  const questionRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ prompt: "2+2?", type: "mcq", content: { options: ["3", "4"], correctOptionIndex: 1 } });
+  await request(app)
+    .post(`/screens/${screen.id}/questions`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ questionId: questionRes.body.question.id });
+  await request(app)
+    .post("/attempts")
+    .set("Authorization", `Bearer ${learnerToken}`)
+    .send({
+      questionId: questionRes.body.question.id,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex: 1 },
+    });
+
+  const progressCheck = await pool.query("SELECT * FROM progress WHERE course_id = $1", [
+    course.id,
+  ]);
+  assert.equal(progressCheck.rows.length, 1); // sanity check: the attempt really created one
+
+  const res = await request(app)
+    .delete(`/courses/${course.id}?confirm=true`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(res.status, 200);
+
+  const progressAfterDelete = await pool.query("SELECT * FROM progress WHERE course_id = $1", [
+    course.id,
+  ]);
+  assert.equal(progressAfterDelete.rows.length, 0);
 });
 
 test("an admin course-deletion writes an AuditLog entry with cascade counts", async () => {

@@ -1,0 +1,27 @@
+.authenticated-layout__welcome-toast {
+  position: fixed;
+  top: var(--space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--color-card);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+  color: var(--color-success);
+  font-size: var(--text-sm);
+  box-shadow: var(--shadow-md);
+  animation: authenticated-layout-toast-in var(--duration-slow) var(--ease-out);
+}
+
+@keyframes authenticated-layout-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

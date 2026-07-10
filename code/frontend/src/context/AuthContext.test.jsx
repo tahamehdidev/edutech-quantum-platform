@@ -1,4 +1,5 @@
 import { test, expect, vi, beforeEach } from "vitest";
+import { StrictMode } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { AuthProvider, useAuth } from "./AuthContext.jsx";
 import { authService } from "../services/auth.service.js";
@@ -57,6 +58,29 @@ test("restores a session across reload when the refresh cookie is still valid", 
   await waitFor(() => expect(screen.getByTestId("isLoading").textContent).toBe("false"));
   expect(screen.getByTestId("isAuthenticated").textContent).toBe("true");
   expect(screen.getByTestId("userName").textContent).toBe("Ada");
+});
+
+// Regression test for a real, live-confirmed bug: React 18 StrictMode double-invokes effects in
+// dev, and refresh tokens are single-use with reuse triggering the backend's mass-revocation
+// response -- without a guard, the mount effect's second (spurious) refreshAccessToken() call
+// reads as token reuse and revokes the session the first call just legitimately restored, logging
+// the user straight back out on every reload. Rendering inside a real <StrictMode> (not just
+// asserting on the guard's internals) is what actually reproduces the double-invocation.
+test("calls refreshAccessToken only once even under StrictMode's double-invoked mount effect", async () => {
+  authService.refresh.mockResolvedValue("fresh-token");
+  userService.getMe.mockResolvedValue({ id: "u1", name: "Ada" });
+
+  render(
+    <StrictMode>
+      <AuthProvider>
+        <AuthConsumer />
+      </AuthProvider>
+    </StrictMode>
+  );
+
+  await waitFor(() => expect(screen.getByTestId("isLoading").textContent).toBe("false"));
+  expect(screen.getByTestId("isAuthenticated").textContent).toBe("true");
+  expect(authService.refresh).toHaveBeenCalledTimes(1);
 });
 
 test("starts logged out when there is no valid refresh cookie", async () => {

@@ -1,0 +1,213 @@
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-5);
+}
+
+/* ---------- Hero ---------- */
+
+/* flex-wrap: wrap (not wrap-reverse) so the copy -- the first flex item in DOM order -- stays
+   above the decorative visual once they stack on tablet/mobile, instead of the visual jumping
+   above the heading/CTAs (confirmed live at 768px and 375px: wrap-reverse renders wrapped lines
+   in reverse order, putting the second item's line first). */
+.landing-page__hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-10);
+  padding-top: var(--space-8);
+}
+
+.landing-page__hero-copy {
+  flex: 1 1 420px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.landing-page__hero-copy h1 {
+  font-size: var(--text-4xl);
+  max-width: 18ch;
+}
+
+.landing-page__hero-subhead {
+  max-width: 48ch;
+  font-size: var(--text-lg);
+  color: var(--color-muted-foreground);
+}
+
+.landing-page__hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* Link elements styled as buttons (Button.jsx renders a real <button>, wrong semantics for a
+   pure navigation action) -- reuses Button.css's classes directly rather than duplicating them. */
+.landing-page__hero-actions .button {
+  text-decoration: none;
+}
+
+/* A small lift on hover/press, scoped to this page's CTAs only (not Button.css itself, which
+   stays restrained for the rest of the app's product-register screens) -- redeclares the full
+   transition list Button.css already sets since `transition` isn't additive across selectors of
+   equal property, just adds `transform` to it. */
+.landing-page__hero-actions .button,
+.landing-page__final-cta .button {
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.landing-page__hero-actions .button:hover:not(:disabled),
+.landing-page__final-cta .button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.landing-page__hero-actions .button:active:not(:disabled),
+.landing-page__final-cta .button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* LandingHeroVisual's own container sizes itself (aspect-ratio: 1, max-width: 420px) -- this just
+   keeps it from stretching the flex item taller than the copy beside it on wide viewports. */
+.landing-page__hero > .landing-hero-visual,
+.landing-page__hero > .landing-hero-visual__fallback {
+  flex: 0 1 380px;
+}
+
+/* ---------- Courses ---------- */
+
+.landing-page__courses {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.landing-page__courses h2 {
+  font-size: var(--text-3xl);
+  max-width: 24ch;
+}
+
+/* Fixed 3 columns above 1023px, single column at/below it -- auto-fit's minmax(280px, 1fr)
+   used to leave a 2-then-1 orphan layout at tablet widths (768px: two columns fit, the third
+   card wraps alone with empty space beside it, confirmed live). Three known, equally-weighted
+   items don't need a generic reflowing grid; the long question text also reads better at full
+   column width than squeezed into a cramped third of a 768px row. */
+.landing-page__course-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 1023px) {
+  .landing-page__course-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Transparent border reserved from the start (not added only on hover) so the hover state's
+   border-color change never shifts layout by the border's own width. No color-mix here --
+   background-color transitions combined with color-mix(...transparent...) have twice produced
+   the wrong opaque color live in this project (DragDrop, TopologyDiagram); border-color and
+   box-shadow with solid token colors don't share that failure mode. */
+.landing-page__course-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: 1px solid transparent;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out);
+}
+
+.landing-page__course-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.landing-page__course-card-icon {
+  color: var(--color-accent);
+}
+
+/* The course name reads as a label above the real pitch (the core question), not the other way
+   around -- the question is the substantive content here and gets full-contrast body treatment;
+   the name is categorical, so it's smaller and muted. */
+.landing-page__course-card-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.landing-page__course-card h3 {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-muted-foreground);
+}
+
+/* Plain body font, not font-mono -- tokens.css reserves JetBrains Mono for content that's
+   actually monospaced by nature (equations, gate notation); these are full prose sentences, so
+   mono was a scaffold-reflex choice, not a deliberate one. Sized up to --text-lg (vs. the
+   default --text-base) since this paragraph, not the course name, is the card's real content. */
+.landing-page__course-question {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-relaxed);
+  color: var(--color-foreground);
+}
+
+/* ---------- Method ---------- */
+
+.landing-page__method {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 65ch;
+}
+
+.landing-page__method h2 {
+  font-size: var(--text-3xl);
+}
+
+.landing-page__method p {
+  color: var(--color-muted-foreground);
+}
+
+/* ---------- Final CTA ---------- */
+
+.landing-page__final-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-10) 0 var(--space-12);
+  border-top: 1px solid var(--color-border);
+}
+
+.landing-page__final-cta h2 {
+  font-size: var(--text-3xl);
+  max-width: 24ch;
+}
+
+.landing-page__final-cta .button {
+  text-decoration: none;
+}
+
+@media (max-width: 767px) {
+  .landing-page {
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-10);
+  }
+
+  .landing-page__hero {
+    padding-top: var(--space-4);
+  }
+}

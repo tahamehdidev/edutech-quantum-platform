@@ -74,7 +74,13 @@ export function BlochSphereScene({ theta, phi, arrowColor, draggable, onDrag }) 
   );
 
   return (
-    <Canvas camera={{ position: [0, 0.6, 3.2], fov: 35 }}>
+    // frameloop="demand": render only on invalidation (any state change to a component inside
+    // this Canvas auto-invalidates), not on every requestAnimationFrame tick regardless of
+    // whether anything moved. Without this, the default "always" mode keeps re-rendering the
+    // WebGL scene at the display refresh rate even while the arrow is frozen (reduced-motion,
+    // or the landing hero after a visitor drags it and the ambient loop stops) -- real,
+    // avoidable GPU/battery cost on low-end devices for a scene that isn't visibly changing.
+    <Canvas frameloop="demand" camera={{ position: [0, 0.6, 3.2], fov: 35 }}>
       <ambientLight intensity={1.2} />
       <mesh>
         <sphereGeometry args={[1, 24, 16]} />

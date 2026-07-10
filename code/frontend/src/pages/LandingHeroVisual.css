@@ -1,0 +1,45 @@
+.landing-hero-visual {
+  width: 100%;
+  max-width: 420px;
+}
+
+.landing-hero-visual__scene {
+  width: 100%;
+  aspect-ratio: 1;
+  cursor: grab;
+}
+
+.landing-hero-visual__scene:active {
+  cursor: grabbing;
+}
+
+/* The live P(|0>)/P(|1>) readout: real numbers from the same physics module the lesson widget
+   uses, revealed only once a visitor drags the arrow -- an unannounced reward for curiosity, not
+   a label that's always there. font-mono is deliberate here (unlike the course-question prose
+   fix elsewhere): this is actual quantum notation, exactly what tokens.css reserves the mono
+   family for. Uses --duration-slow directly (not a hardcoded ms value) so it inherits
+   tokens.css's global prefers-reduced-motion override -- an instant appearance, not a fade,
+   under reduced motion, with zero extra media query needed here. */
+.landing-hero-visual__readout {
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-accent);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--duration-slow) var(--ease-out),
+    transform var(--duration-slow) var(--ease-out);
+}
+
+.landing-hero-visual__readout--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-hero-visual__fallback {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1;
+}

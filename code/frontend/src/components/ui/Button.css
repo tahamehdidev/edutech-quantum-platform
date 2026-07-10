@@ -33,6 +33,15 @@
 .button--primary:active:not(:disabled) {
   background-color: color-mix(in oklch, var(--color-accent-strong), black 10%);
 }
+/* Opacity alone on the same accent fill read as "enabled, maybe just dim" rather than clearly
+   locked (critique finding on Practice Set, where this gate is the screen's only interaction
+   mechanism) -- a genuinely muted fill removes the ambiguity for every screen using this variant's
+   disabled state, not just the one that happened to surface it. */
+.button--primary:disabled {
+  background-color: var(--color-muted);
+  color: var(--color-muted-foreground);
+  opacity: 1;
+}
 
 .button--secondary {
   background-color: transparent;

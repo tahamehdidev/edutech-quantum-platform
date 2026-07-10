@@ -308,3 +308,47 @@ test("DELETE /questions/:id cascades silently, detaching from every screen/pract
   assert.equal(screenQuestionRows.rows.length, 0);
   assert.equal(practiceSetQuestionRows.rows.length, 0);
 });
+
+// Regression test for a real bug found via FK audit after fixing the analogous
+// progress.course_id gap: attempt.question_id's FK was also created without ON DELETE CASCADE
+// (migration 011) -- deleting a question a learner had actually answered threw an unhandled 500
+// (Postgres FK violation) instead of cascading, since Attempt rows are real, ordinary application
+// data, not an edge case. Confirmed live before the fix. Fixed in migration 017.
+test("DELETE /questions/:id cascades to Attempt rows too", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const { screen } = await buildCourseHierarchy(instructorToken);
+  const questionRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send(MCQ_BODY);
+  const questionId = questionRes.body.question.id;
+  await request(app)
+    .post(`/screens/${screen.id}/questions`)
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({ questionId });
+  await request(app)
+    .post("/attempts")
+    .set("Authorization", `Bearer ${learnerToken}`)
+    .send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex: 0 },
+    });
+
+  const attemptCheck = await pool.query("SELECT * FROM attempt WHERE question_id = $1", [
+    questionId,
+  ]);
+  assert.equal(attemptCheck.rows.length, 1); // sanity check: the attempt really got created
+
+  const deleteRes = await request(app)
+    .delete(`/questions/${questionId}`)
+    .set("Authorization", `Bearer ${instructorToken}`);
+  assert.equal(deleteRes.status, 200);
+
+  const attemptAfterDelete = await pool.query("SELECT * FROM attempt WHERE question_id = $1", [
+    questionId,
+  ]);
+  assert.equal(attemptAfterDelete.rows.length, 0);
+});

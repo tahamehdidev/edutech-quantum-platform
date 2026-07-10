@@ -8,6 +8,7 @@ import { CreateScreenSchema } from "../validators/screen.validator.js";
 import { CreatePracticeSetSchema } from "../validators/practiceSet.validator.js";
 import { ReorderIdsSchema } from "../validators/common.validator.js";
 import {
+  getLessonController,
   updateLessonController,
   deleteLessonController,
 } from "../controllers/lesson.controller.js";
@@ -23,6 +24,7 @@ import {
 
 const router = Router();
 
+router.get("/:lessonId", validateIntParam("lessonId"), getLessonController);
 router.patch(
   "/:lessonId",
   validateIntParam("lessonId"),
