@@ -11,6 +11,20 @@
   color: var(--color-foreground);
 }
 
+.numeric__input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.numeric__icon--correct {
+  color: var(--color-success);
+}
+
+.numeric__icon--incorrect {
+  color: var(--color-caution);
+}
+
 .numeric__input {
   width: 100%;
   max-width: 240px;
@@ -47,8 +61,11 @@
   border-color: var(--color-success);
 }
 
+/* Graded wrong, not invalid input -- --color-caution, matching Mcq's incorrect-option border.
+   --invalid below stays on --color-destructive on purpose: an unparseable value is a real
+   client-side validation error, not an answer-state verdict. */
 .numeric__input--incorrect {
-  border-color: var(--color-destructive);
+  border-color: var(--color-caution);
 }
 
 .numeric__input--invalid {
@@ -59,4 +76,11 @@
   margin: 0;
   font-size: var(--text-sm);
   color: var(--color-destructive-text);
+}
+
+.numeric__reveal {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-foreground);
 }

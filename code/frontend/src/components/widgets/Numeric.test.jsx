@@ -1,5 +1,5 @@
 import { test, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Numeric } from "./Numeric.jsx";
 import { numericQuestion, numericSubmitScenarios } from "./Numeric.fixtures.js";
@@ -94,6 +94,47 @@ test("shows incorrect feedback and a Try Again button that clears the input", as
 
   expect(screen.getByRole("textbox")).toHaveValue("");
   expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
+});
+
+test("shows a check icon on a correct answer and an X icon on an incorrect one, not just a border color", async () => {
+  const user = userEvent.setup();
+  const { container: correctContainer } = render(
+    <Numeric question={numericQuestion} onSubmit={numericSubmitScenarios.correctFirstAttempt} />
+  );
+  await user.type(screen.getByRole("textbox"), "0.64");
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(correctContainer.querySelector(".numeric__icon--correct")).toBeInTheDocument()
+  );
+
+  const { container: incorrectContainer } = render(
+    <Numeric question={numericQuestion} onSubmit={numericSubmitScenarios.incorrect} />
+  );
+  await user.type(within(incorrectContainer).getByRole("textbox"), "0.5");
+  await user.click(within(incorrectContainer).getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(incorrectContainer.querySelector(".numeric__icon--incorrect")).toBeInTheDocument()
+  );
+  // Regression guard for the caution-color migration -- the input must carry the incorrect
+  // class (--color-caution), not silently drift back to a destructive/error color.
+  expect(incorrectContainer.querySelector(".numeric__input--incorrect")).toBeInTheDocument();
+});
+
+test("See answer reveals the correct value only after being clicked, and resets on retry", async () => {
+  const user = userEvent.setup();
+  render(<Numeric question={numericQuestion} onSubmit={numericSubmitScenarios.incorrect} />);
+
+  await user.type(screen.getByRole("textbox"), "0.5");
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+
+  expect(screen.queryByText(/Correct answer:/)).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "See answer" }));
+  expect(screen.getByText("Correct answer: 0.64")).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+  expect(screen.queryByText(/Correct answer:/)).not.toBeInTheDocument();
 });
 
 test("shows a submission-error message with a retry that preserves the input", async () => {

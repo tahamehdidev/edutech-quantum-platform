@@ -99,7 +99,10 @@ test("an incorrect answer does not unlock Next; retrying and getting it correct 
 
   attemptService.submit.mockResolvedValueOnce({ isCorrect: true, xpAwarded: true });
   await user.click(screen.getByRole("button", { name: "Try Again" }));
-  await user.click(screen.getByLabelText("superconducting circuits."));
+  // Elimination-on-retry (Frontend Milestone 6) disables the just-submitted wrong option going
+  // forward, matching a real learner who's already been told that answer is wrong.
+  expect(screen.getByLabelText("superconducting circuits.")).toBeDisabled();
+  await user.click(screen.getByLabelText("Distractor A"));
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
   expect(await screen.findByText(/Correct!/)).toBeInTheDocument();
@@ -153,7 +156,7 @@ test("the completion summary reports how many questions needed a retry", async (
 
   attemptService.submit.mockResolvedValueOnce({ isCorrect: true, xpAwarded: true });
   await user.click(screen.getByRole("button", { name: "Try Again" }));
-  await user.click(screen.getByLabelText("superconducting circuits."));
+  await user.click(screen.getByLabelText("Distractor A"));
   await user.click(screen.getByRole("button", { name: "Submit" }));
   await screen.findByText(/Correct!/);
   await user.click(screen.getByRole("button", { name: "Next" }));

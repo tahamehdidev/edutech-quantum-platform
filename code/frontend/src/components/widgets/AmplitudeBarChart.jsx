@@ -15,6 +15,12 @@ import "./AmplitudeBarChart.css";
 // The chart itself is aria-hidden -- a bar chart's visual comparison isn't something a screen
 // reader can usefully narrate bar-by-bar, so the real values are carried in a visually-hidden
 // table instead, giving screen-reader users the same data via the medium that actually suits them.
+//
+// Frontend Milestone 6 non-applicability finding: none of the four before/after-answer-state
+// concepts (pre/post attempt state, correct/incorrect indicator, xpAwarded distinction, retry
+// behavior) apply to this widget. There is no submit, no grading, no attempt -- the chart simply
+// renders whatever params the authored content carries, with nothing to answer and no verdict to
+// deliver. Out of scope for Milestone 6 by design, not an oversight.
 export function AmplitudeBarChart({ params }) {
   const { amplitudes, labels, highlightedIndex, caption } = params;
   const resolvedLabels = labels ?? amplitudes.map((_, index) => `State ${index}`);

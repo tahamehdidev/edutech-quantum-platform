@@ -1,5 +1,5 @@
 import { test, expect, vi } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { DragDrop } from "./DragDrop.jsx";
 import { dragDropQuestion, dragDropSubmitScenarios } from "./DragDrop.fixtures.js";
@@ -103,6 +103,55 @@ test("shows incorrect feedback and a Try Again button that restores the starting
 
   const items = screen.getAllByRole("listitem").map((item) => item.textContent);
   expect(items[0]).toContain(itemA);
+});
+
+test("shows a verdict on the list itself, not just the shared text feedback below it", async () => {
+  const user = userEvent.setup();
+  const { container: correctContainer } = render(
+    <DragDrop
+      question={dragDropQuestion}
+      onSubmit={dragDropSubmitScenarios.correctFirstAttempt}
+    />
+  );
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(
+      correctContainer.querySelector(".drag-drop__list-wrapper--correct")
+    ).toBeInTheDocument()
+  );
+  expect(within(correctContainer).getByText("Correct order")).toBeInTheDocument();
+
+  const { container: incorrectContainer } = render(
+    <DragDrop question={dragDropQuestion} onSubmit={dragDropSubmitScenarios.incorrect} />
+  );
+  await user.click(within(incorrectContainer).getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(
+      incorrectContainer.querySelector(".drag-drop__list-wrapper--incorrect")
+    ).toBeInTheDocument()
+  );
+  expect(within(incorrectContainer).getByText("Not the correct order")).toBeInTheDocument();
+});
+
+test("See answer reveals the correct order only after being clicked, and resets on retry", async () => {
+  const user = userEvent.setup();
+  const [itemA, itemB, itemC] = dragDropQuestion.content.items;
+  render(<DragDrop question={dragDropQuestion} onSubmit={dragDropSubmitScenarios.incorrect} />);
+
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+
+  expect(screen.queryByText("Correct order:")).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "See answer" }));
+  const revealedItems = screen
+    .getByText("Correct order:")
+    .closest(".drag-drop__reveal")
+    .querySelectorAll("li");
+  expect([...revealedItems].map((item) => item.textContent)).toEqual([itemB, itemC, itemA]);
+
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+  expect(screen.queryByText("Correct order:")).not.toBeInTheDocument();
 });
 
 test("shows a submission-error message with a retry that preserves the current order", async () => {

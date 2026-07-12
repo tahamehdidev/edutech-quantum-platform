@@ -28,6 +28,29 @@ test.each([ATTEMPT_STATUS.CORRECT, ATTEMPT_STATUS.INCORRECT])(
   }
 );
 
+test("renders See answer alongside Try Again for an incorrect, not-yet-revealed attempt", async () => {
+  const user = userEvent.setup();
+  const onReveal = vi.fn();
+  render(<AttemptActions status={ATTEMPT_STATUS.INCORRECT} onReveal={onReveal} />);
+
+  await user.click(screen.getByRole("button", { name: "See answer" }));
+  expect(onReveal).toHaveBeenCalledTimes(1);
+  expect(screen.getByRole("button", { name: "Try Again" })).toBeInTheDocument();
+});
+
+test("hides See answer once isRevealed is true, keeping Try Again", () => {
+  render(<AttemptActions status={ATTEMPT_STATUS.INCORRECT} isRevealed />);
+
+  expect(screen.queryByRole("button", { name: "See answer" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Try Again" })).toBeInTheDocument();
+});
+
+test("does not render See answer for a correct attempt", () => {
+  render(<AttemptActions status={ATTEMPT_STATUS.CORRECT} />);
+
+  expect(screen.queryByRole("button", { name: "See answer" })).not.toBeInTheDocument();
+});
+
 test("renders Retry Submission and calls onRetrySubmission for the error status", async () => {
   const user = userEvent.setup();
   const onRetrySubmission = vi.fn();

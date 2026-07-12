@@ -1,4 +1,4 @@
-import { Check, X, TriangleAlert } from "lucide-react";
+import { Check, X, TriangleAlert, Zap } from "lucide-react";
 import { ATTEMPT_STATUS } from "../../hooks/useQuestionAttempt.js";
 import "./AttemptFeedback.css";
 
@@ -6,6 +6,12 @@ import "./AttemptFeedback.css";
 // 3's simplicity review) -- the icon+text+role pairing per outcome is the one thing that must
 // never drift between widgets, so it now has exactly one implementation. `result` is only read
 // for `xpAwarded`; everything else about grading stays the server's business.
+//
+// xpAwarded gets its own visually distinct badge (Frontend Milestone 6), not just different
+// wording -- the two CORRECT outcomes previously read identically at a glance (same icon, same
+// color, same sentence shape), which is exactly the "xpAwarded visual distinction" gap the
+// milestone's shape brief flagged. Zap/--color-warning matches XpStreakBadge's own XP treatment
+// (ui/XpStreakBadge.jsx) rather than inventing a second visual language for the same concept.
 export function AttemptFeedback({ status, result }) {
   if (status === ATTEMPT_STATUS.ERROR) {
     return (
@@ -20,7 +26,15 @@ export function AttemptFeedback({ status, result }) {
     return (
       <p className="attempt-feedback attempt-feedback--correct" role="status">
         <Check size={16} aria-hidden="true" />
-        Correct! {result.xpAwarded ? "XP awarded." : "You already earned XP for this question."}
+        <span>Correct!</span>{" "}
+        {result.xpAwarded ? (
+          <span className="attempt-feedback__xp-badge">
+            <Zap size={12} aria-hidden="true" />
+            XP awarded
+          </span>
+        ) : (
+          <span>You already earned XP for this question.</span>
+        )}
       </p>
     );
   }

@@ -15,7 +15,10 @@ export const dragDropQuestion = {
 export const dragDropSubmitScenarios = {
   correctFirstAttempt: () => Promise.resolve({ isCorrect: true, xpAwarded: true }),
   correctAlreadyEarnedXp: () => Promise.resolve({ isCorrect: true, xpAwarded: false }),
-  incorrect: () => Promise.resolve({ isCorrect: false, xpAwarded: false }),
+  // correctAnswer mirrors the real API's conditional field (attempt.service.js) -- present only
+  // on an incorrect result, shaped like the submitted answer ({ order: [...] }).
+  incorrect: () =>
+    Promise.resolve({ isCorrect: false, xpAwarded: false, correctAnswer: { order: [1, 2, 0] } }),
   networkError: () =>
     Promise.reject(new Error("Could not reach the server. Check your connection.")),
 };

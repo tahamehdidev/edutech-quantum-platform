@@ -10,7 +10,10 @@ export const numericQuestion = {
 export const numericSubmitScenarios = {
   correctFirstAttempt: () => Promise.resolve({ isCorrect: true, xpAwarded: true }),
   correctAlreadyEarnedXp: () => Promise.resolve({ isCorrect: true, xpAwarded: false }),
-  incorrect: () => Promise.resolve({ isCorrect: false, xpAwarded: false }),
+  // correctAnswer mirrors the real API's conditional field (attempt.service.js) -- present only
+  // on an incorrect result, shaped like the submitted answer ({ value: 0.64 }).
+  incorrect: () =>
+    Promise.resolve({ isCorrect: false, xpAwarded: false, correctAnswer: { value: 0.64 } }),
   networkError: () =>
     Promise.reject(new Error("Could not reach the server. Check your connection.")),
 };

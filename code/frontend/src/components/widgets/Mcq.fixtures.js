@@ -20,7 +20,14 @@ export const mcqQuestion = {
 export const mcqSubmitScenarios = {
   correctFirstAttempt: () => Promise.resolve({ isCorrect: true, xpAwarded: true }),
   correctAlreadyEarnedXp: () => Promise.resolve({ isCorrect: true, xpAwarded: false }),
-  incorrect: () => Promise.resolve({ isCorrect: false, xpAwarded: false }),
+  // correctAnswer mirrors the real API's conditional field (attempt.service.js) -- present only
+  // on an incorrect result, shaped like the submitted answer ({ selectedOptionIndex: 1 }).
+  incorrect: () =>
+    Promise.resolve({
+      isCorrect: false,
+      xpAwarded: false,
+      correctAnswer: { selectedOptionIndex: 1 },
+    }),
   networkError: () =>
     Promise.reject(new Error("Could not reach the server. Check your connection.")),
 };

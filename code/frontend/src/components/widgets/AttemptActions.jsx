@@ -6,7 +6,35 @@ import "./AttemptActions.css";
 // extracted. What "retry" actually resets is genuinely per-widget (a selected option, a typed
 // value, an item order) -- onRetry/onRetrySubmission stay the caller's own callbacks; this
 // component only owns which button to show and its label/disabled/loading state.
-export function AttemptActions({ status, onRetry, onRetrySubmission, isSubmitDisabled }) {
+//
+// onReveal/isRevealed (Frontend Milestone 6) follow the same boundary: "See answer" only shows on
+// an incorrect, not-yet-revealed attempt, and this component's only job is showing/hiding that
+// button. What gets revealed -- highlighting an option, showing a value, showing an order -- is
+// entirely per-widget and deliberately does not live here, the same reason onRetry's actual reset
+// logic doesn't either.
+export function AttemptActions({
+  status,
+  onRetry,
+  onRetrySubmission,
+  onReveal,
+  isRevealed,
+  isSubmitDisabled,
+}) {
+  if (status === ATTEMPT_STATUS.INCORRECT) {
+    return (
+      <div className="attempt-actions">
+        {!isRevealed && (
+          <Button type="button" variant="secondary" onClick={onReveal}>
+            See answer
+          </Button>
+        )}
+        <Button type="button" variant="secondary" onClick={onRetry}>
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   if (isAttemptTerminal(status)) {
     return (
       <div className="attempt-actions">

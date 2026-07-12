@@ -29,6 +29,16 @@ function isDirectlyConnected(edges, qubitIdA, qubitIdB) {
 // SVG shapes -- native buttons get correct keyboard/focus/role semantics for free, matching the
 // project's "prefer native controls" rule, without needing to reimplement any of that for SVG.
 // The connecting lines are drawn in a separate aria-hidden SVG layer purely as a visual aid.
+//
+// Frontend Milestone 6 non-applicability finding: this widget does show a verdict
+// ("connected"/"not connected"), which superficially resembles a graded correct/incorrect
+// state -- it is not one. There is no submitted answer being checked against a stored correct
+// value, no useQuestionAttempt, no XP, and nothing to "retry": the connected/not-connected result
+// is a factual lookup against the params' own edges array, re-derivable for any pair at any time
+// by clicking a different qubit. None of the four before/after-answer-state concepts (pre/post
+// attempt, correct/incorrect indicator, xpAwarded distinction, retry behavior) map onto a tool
+// that has no concept of a correct answer to attempt in the first place. Out of scope for
+// Milestone 6 by design, not an oversight.
 export function TopologyDiagram({ params }) {
   const { qubits, edges, caption } = params;
   const [selectedIds, setSelectedIds] = useState([]);

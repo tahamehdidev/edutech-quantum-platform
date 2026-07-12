@@ -79,6 +79,29 @@ test("wrong -> correct -> correct again: full history preserved, xpAwarded true 
   assert.equal(progress.body.progress[0].xp, 10); // awarded exactly once
 });
 
+test("correctAnswer is present and correctly shaped on an incorrect attempt, absent on a correct one", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const { screen } = await buildCourseHierarchy(instructorToken);
+  const questionId = await attachMcqToScreen(instructorToken, screen.id);
+
+  const submit = (selectedOptionIndex) =>
+    request(app).post("/attempts").set("Authorization", `Bearer ${learnerToken}`).send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex },
+    });
+
+  const wrong = await submit(0);
+  assert.equal(wrong.body.attempt.isCorrect, false);
+  assert.deepEqual(wrong.body.attempt.correctAnswer, { selectedOptionIndex: 1 });
+
+  const correct = await submit(1);
+  assert.equal(correct.body.attempt.isCorrect, true);
+  assert.equal("correctAnswer" in correct.body.attempt, false);
+});
+
 test("context-mismatch: question exists but isn't attached to the given context -> 422", async () => {
   const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
   const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });

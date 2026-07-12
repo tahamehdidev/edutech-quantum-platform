@@ -60,6 +60,16 @@ function formatCoefficients(theta, phi) {
 //   availableGates?: string[]   gate_application only -- e.g. ["H","X","Z"] or [..., "Rx"]
 //   sliderLabel?: string        rotation_slider only -- what the slider represents (e.g. a feature value)
 //   t1Ms?: number               t1_decay only -- the decay time constant
+//
+// Frontend Milestone 6 non-applicability finding: none of the four before/after-answer-state
+// concepts (pre/post attempt state, correct/incorrect indicator, xpAwarded distinction, retry
+// behavior) apply to any mode, including `measurement`. That mode does have its own internal
+// before/after (unmeasured -> handleMeasure() sets measurementResult, rendered as "Measured |0>"
+// or "Measured |1>"), but this is a physics outcome being displayed, not a submitted answer being
+// graded -- there is no correct/incorrect verdict (a measurement collapsing to |1> isn't "wrong"),
+// no useQuestionAttempt, no submit, no XP. Worth calling out explicitly precisely because it looks
+// closest to the graded pattern of the six widgets -- it should not be retrofitted with fake
+// correct/incorrect semantics it doesn't have. Out of scope for Milestone 6 by design.
 export function BlochSphere({ params }) {
   const { mode, startState = "0", availableGates = [], sliderLabel, t1Ms = DEFAULT_T1_MS } = params;
   const startAngles = useMemo(() => startStateToAngles(startState), [startState]);

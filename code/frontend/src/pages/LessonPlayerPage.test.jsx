@@ -114,7 +114,10 @@ test("an incorrect answer does not unlock Next; retrying and getting it correct 
 
   attemptService.submit.mockResolvedValueOnce({ isCorrect: true, xpAwarded: true });
   await user.click(screen.getByRole("button", { name: "Try Again" }));
-  await user.click(screen.getByLabelText("Ground state"));
+  // Elimination-on-retry (Frontend Milestone 6) disables "Ground state" going forward, matching
+  // a real learner who's already been told that answer is wrong -- retry picks the other option.
+  expect(screen.getByLabelText("Ground state")).toBeDisabled();
+  await user.click(screen.getByLabelText("Excited state"));
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
   expect(await screen.findByText(/Correct!/)).toBeInTheDocument();

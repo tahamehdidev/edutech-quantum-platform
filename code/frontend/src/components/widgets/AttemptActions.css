@@ -1,3 +1,4 @@
 .attempt-actions {
   display: flex;
+  gap: var(--space-3);
 }

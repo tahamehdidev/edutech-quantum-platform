@@ -9,7 +9,10 @@ async function submit({ questionId, contextType, contextId, answer }) {
     contextId,
     answer,
   });
-  return data.attempt; // { id, questionId, isCorrect, xpAwarded, attemptedAt }
+  // correctAnswer is present only when isCorrect is false, shaped like the submitted `answer`
+  // ({ selectedOptionIndex } / { order } / { value }) -- powers the opt-in "See answer" action
+  // (Frontend Milestone 6). Never present on a correct attempt.
+  return data.attempt; // { id, questionId, isCorrect, xpAwarded, attemptedAt, correctAnswer? }
 }
 
 // userId defaults to "me" (own history, any role); courseId is required by the backend when

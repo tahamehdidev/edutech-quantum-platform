@@ -66,8 +66,22 @@
   border-color: var(--color-success);
 }
 
+/* The option just submitted and graded wrong -- transient, active feedback (--color-caution, not
+   --color-destructive; see tokens.css). Distinct from --eliminated below, which is a quiet,
+   permanent record of a past wrong pick, not this attempt's live verdict. */
 .mcq__option--incorrect {
-  border-color: var(--color-destructive);
+  border-color: var(--color-caution);
+}
+
+/* A wrong option from an earlier retry on this same question (Frontend Milestone 6) -- disabled
+   going forward, so it reads as "already ruled out" rather than "wrong right now". Muted, not
+   --color-caution -- that color is reserved for the live incorrect verdict above. */
+.mcq__option--eliminated {
+  opacity: 0.55;
+}
+
+.mcq__option--eliminated .mcq__option-icon--incorrect {
+  color: var(--color-muted-foreground);
 }
 
 .mcq__option input {
@@ -88,5 +102,5 @@
 }
 
 .mcq__option-icon--incorrect {
-  color: var(--color-destructive-text);
+  color: var(--color-caution);
 }

@@ -58,11 +58,74 @@ test("shows incorrect feedback and a Try Again button that clears the selection"
   await user.click(screen.getByRole("button", { name: "Submit" }));
 
   await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+  // Regression guard for the caution-color migration -- the wrong option must carry the
+  // incorrect class (--color-caution), not silently drift back to a destructive/error color.
+  expect(screen.getByLabelText(mcqQuestion.content.options[2]).closest("label")).toHaveClass(
+    "mcq__option--incorrect"
+  );
 
   await user.click(screen.getByRole("button", { name: "Try Again" }));
 
   expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
   expect(screen.getByLabelText(mcqQuestion.content.options[2])).not.toBeChecked();
+});
+
+test("Try Again eliminates the just-submitted wrong option, disabling it for future selection", async () => {
+  const user = userEvent.setup();
+  render(<Mcq question={mcqQuestion} onSubmit={mcqSubmitScenarios.incorrect} />);
+
+  await user.click(screen.getByLabelText(mcqQuestion.content.options[2]));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+
+  expect(screen.getByLabelText(mcqQuestion.content.options[2])).toBeDisabled();
+  // A different, non-eliminated option is still freely selectable.
+  expect(screen.getByLabelText(mcqQuestion.content.options[0])).toBeEnabled();
+});
+
+test("elimination accumulates across multiple wrong retries on the same question", async () => {
+  const user = userEvent.setup();
+  render(<Mcq question={mcqQuestion} onSubmit={mcqSubmitScenarios.incorrect} />);
+
+  await user.click(screen.getByLabelText(mcqQuestion.content.options[2]));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+
+  await user.click(screen.getByLabelText(mcqQuestion.content.options[3]));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+
+  expect(screen.getByLabelText(mcqQuestion.content.options[2])).toBeDisabled();
+  expect(screen.getByLabelText(mcqQuestion.content.options[3])).toBeDisabled();
+  expect(screen.getByLabelText(mcqQuestion.content.options[0])).toBeEnabled();
+});
+
+test("See answer reveals the correct option only after being clicked, and resets on retry", async () => {
+  const user = userEvent.setup();
+  render(<Mcq question={mcqQuestion} onSubmit={mcqSubmitScenarios.incorrect} />);
+
+  await user.click(screen.getByLabelText(mcqQuestion.content.options[2]));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Not quite — try again.")).toBeInTheDocument());
+
+  // Not auto-revealed: the correct option (index 1) carries no correct styling yet.
+  expect(screen.getByLabelText(mcqQuestion.content.options[1]).closest("label")).not.toHaveClass(
+    "mcq__option--correct"
+  );
+
+  await user.click(screen.getByRole("button", { name: "See answer" }));
+  expect(screen.getByLabelText(mcqQuestion.content.options[1]).closest("label")).toHaveClass(
+    "mcq__option--correct"
+  );
+  expect(screen.queryByRole("button", { name: "See answer" })).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+  expect(screen.getByLabelText(mcqQuestion.content.options[1]).closest("label")).not.toHaveClass(
+    "mcq__option--correct"
+  );
 });
 
 test("shows a submission-error message with a retry that preserves the selection", async () => {

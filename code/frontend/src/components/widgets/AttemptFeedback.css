@@ -15,7 +15,25 @@
   color: var(--color-success);
 }
 
-.attempt-feedback--incorrect,
+/* Wrong-but-retriable, not a system error -- --color-caution, never --color-destructive (that
+   stays reserved for --error below). See tokens.css's --color-caution comment for the full
+   reasoning. */
+.attempt-feedback--incorrect {
+  color: var(--color-caution);
+}
+
 .attempt-feedback--error {
   color: var(--color-destructive-text);
+}
+
+.attempt-feedback__xp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.125rem var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--color-warning);
+  color: var(--color-on-warning);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
 }

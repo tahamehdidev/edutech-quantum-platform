@@ -373,6 +373,8 @@ This check traverses two different junction-table paths up two different hierarc
 ## 5. Group 4 — Attempts & Progress
 
 > **Amendment (Step 6):** `userId` on `POST /attempts` is now explicitly stated as server-derived (5.3, was previously only implied by omission); XP is now awarded only on a user's first correct attempt per question (5.3); `GET /attempts`/`GET /progress` now require `courseId` for instructor callers (5.2); `POST /attempts` gained a 60/min per-account backstop rate limit (5.1).
+>
+> **Amendment (Frontend Milestone 6):** `POST /attempts`'s response now includes a `correctAnswer` field, present only when `isCorrect: false` (5.3). This is a deliberate, narrowly-scoped exception to "the correct answer is never sent to the frontend" (5.1) — made only after the learner's own attempt on that question has already been graded incorrect, to power an opt-in "See answer" action rather than an automatic reveal (keeping the existing unlimited-retry mechanic meaningful). Accepted tradeoff: the field rides in the same response as every other incorrect attempt, so it is visible in the network payload regardless of whether the learner ever clicks "See answer" — this is UI-only gating, not a stronger access control, judged sufficient for an educational app rather than a proctored assessment.
 
 ### 5.1 Design notes
 
@@ -423,7 +425,12 @@ Note there is no `userId` field — it is **always derived from the authenticate
 ```json
 { "attempt": { "id": 501, "questionId": 41, "isCorrect": true, "xpAwarded": true, "attemptedAt": "2026-06-25T18:02:00Z" } }
 ```
+```json
+{ "attempt": { "id": 502, "questionId": 41, "isCorrect": false, "xpAwarded": false, "attemptedAt": "2026-06-25T18:03:00Z", "correctAnswer": { "selectedOptionIndex": 1 } } }
+```
 `xpAwarded` lets the frontend distinguish "correct, and you earned XP" from "correct, but you already had credit for this one" — both are `isCorrect: true`, but the UI should likely present them differently (e.g. no XP-gain animation on a repeat correct answer).
+
+`correctAnswer` is present only when `isCorrect: false`, shaped identically to the `answer` object the frontend submits for that question `type` (`{ selectedOptionIndex }` / `{ order }` / `{ value }`) — see the Frontend Milestone 6 amendment above.
 
 **Errors:** `400` malformed answer shape for the question's `type` · `404` `questionId`/`contextId` doesn't exist · `422` question exists but isn't attached to the given context
 
