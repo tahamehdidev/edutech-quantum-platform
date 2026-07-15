@@ -529,6 +529,16 @@ app.use(cors({
 
 Both are typically provided by the hosting platform (Render/Railway terminate TLS automatically) rather than application code — an infrastructure item to verify once deployed, not a code task.
 
+### 6.3 CSRF — deliberately no token mechanism
+
+**Classic cookie-riding CSRF has minimal surface here, so no CSRF-token mechanism is bolted on.** The reasoning, made explicit rather than assumed:
+
+- State-changing requests (`POST`/`PATCH`/`DELETE`) authenticate via a **bearer access token in the `Authorization` header**, not an ambient cookie. A malicious site's cross-origin form submission or `fetch` can trigger the browser into *sending* the refresh cookie automatically, but it cannot read that cookie's value (`httpOnly`) or otherwise construct a valid `Authorization: Bearer <token>` header — so the request never carries the one credential the API actually checks for anything other than `/auth/refresh` itself.
+- The refresh cookie itself is `sameSite: "strict"` (Section 2.3) — the strictest setting, meaning the browser withholds it entirely on any cross-site request, including top-level navigation. Combined with CORS's single trusted origin (Section 6.1), `/auth/refresh` isn't reachable with the cookie attached from anywhere but the real frontend origin either.
+- The one endpoint that *is* purely cookie-authenticated, `POST /auth/refresh`, only ever mints a new access token — it has no side effect an attacker would gain anything from forcing (no data changes, no privilege change), and `sameSite: "strict"` already blocks it cross-site regardless.
+
+A synchronizer-token or double-submit-cookie CSRF mechanism would add a second stateful concept for no marginal protection this design doesn't already provide — the two controls above (bearer-token auth for anything that matters, `SameSite=Strict` for the one cookie-only endpoint) are the whole defense, not a placeholder for one.
+
 ---
 
 ## 7. Cascading Delete Confirmation
