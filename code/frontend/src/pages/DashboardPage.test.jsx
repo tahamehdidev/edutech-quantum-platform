@@ -60,11 +60,13 @@ test("a learner sees a cross-course progress summary, not the course catalog's b
   expect(totalXp).toHaveClass("dashboard__headline-stat-value");
   expect(screen.getByText("across all your courses")).toBeInTheDocument();
   // The whole row is the link now (critique fix: a title-only link left the card's padding and
-  // XP badge outside the real touch target), so its accessible name includes the badge text too.
-  expect(screen.getByRole("link", { name: /Quantum Computing Hardware/ })).toHaveAttribute(
-    "href",
-    "/courses/8"
-  );
+  // XP badge outside the real touch target). Its accessible name is a deliberate aria-label
+  // (critique fix: without one, the anchor's name was every descendant text node concatenated
+  // with no separation, e.g. "Quantum Computing Hardware120 XP3-day streak"), matching Course
+  // Catalog's own "title -- status" pattern.
+  expect(
+    screen.getByRole("link", { name: "Quantum Computing Hardware — In progress, 120 XP, 3-day streak" })
+  ).toHaveAttribute("href", "/courses/8");
   expect(within(screen.getByText("Quantum Computing Hardware").closest("li")).getByText("120 XP")).toBeInTheDocument();
   expect(within(screen.getByText("Quantum Algorithms").closest("li")).getByText("40 XP")).toBeInTheDocument();
   // Only courses with a real Progress row appear -- QML (id 9, no progress) is absent.

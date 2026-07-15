@@ -81,6 +81,87 @@ test("GET /lessons/:lessonId for a nonexistent lesson returns 404", async () => 
   assert.equal(res.status, 404);
 });
 
+// Nav-flow audit: the Lesson Player needs course_id (no standalone GET /chapters/:id exists to
+// resolve it otherwise) and next_lesson_id (for "next lesson" navigation) directly on this
+// response -- three cases below cover same-chapter, cross-chapter, and end-of-course.
+test("GET /lessons/:lessonId includes course_id and next_lesson_id (next lesson in the same chapter)", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const courseId = courseRes.body.course.id;
+
+  const chapterRes = await request(app)
+    .post(`/courses/${courseId}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter 1" });
+  const chapterId = chapterRes.body.chapter.id;
+
+  const lesson1Res = await request(app)
+    .post(`/chapters/${chapterId}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson 1" });
+  const lesson2Res = await request(app)
+    .post(`/chapters/${chapterId}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson 2" });
+
+  const res = await request(app)
+    .get(`/lessons/${lesson1Res.body.lesson.id}`)
+    .set("Authorization", `Bearer ${accessToken}`);
+
+  assert.equal(res.status, 200);
+  assert.equal(res.body.lesson.course_id, courseId);
+  assert.equal(res.body.lesson.next_lesson_id, lesson2Res.body.lesson.id);
+});
+
+test("GET /lessons/:lessonId's next_lesson_id crosses into the next chapter's first lesson when this is the last lesson in its own chapter", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const courseId = courseRes.body.course.id;
+
+  const chapter1Res = await request(app)
+    .post(`/courses/${courseId}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter 1" });
+  const chapter2Res = await request(app)
+    .post(`/courses/${courseId}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter 2" });
+
+  const lastLessonOfChapter1Res = await request(app)
+    .post(`/chapters/${chapter1Res.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Last lesson of chapter 1" });
+  const firstLessonOfChapter2Res = await request(app)
+    .post(`/chapters/${chapter2Res.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "First lesson of chapter 2" });
+
+  const res = await request(app)
+    .get(`/lessons/${lastLessonOfChapter1Res.body.lesson.id}`)
+    .set("Authorization", `Bearer ${accessToken}`);
+
+  assert.equal(res.status, 200);
+  assert.equal(res.body.lesson.next_lesson_id, firstLessonOfChapter2Res.body.lesson.id);
+});
+
+test("GET /lessons/:lessonId's next_lesson_id is null for the last lesson of the course's last chapter", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const { lesson } = await buildCourseHierarchy(accessToken, { lessonTitle: "Only lesson" });
+
+  const res = await request(app)
+    .get(`/lessons/${lesson.id}`)
+    .set("Authorization", `Bearer ${accessToken}`);
+
+  assert.equal(res.status, 200);
+  assert.equal(res.body.lesson.next_lesson_id, null);
+});
+
 test("sequential chapter creates get distinct, incrementing order_index values", async () => {
   const { accessToken } = await createUserWithToken({ role: "instructor" });
   const courseRes = await request(app)

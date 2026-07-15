@@ -6,6 +6,9 @@ import { parseApiError } from "../utils/parseApiError.js";
 import { Card } from "../components/ui/Card.jsx";
 import { Input } from "../components/ui/Input.jsx";
 import { Button } from "../components/ui/Button.jsx";
+import { AuthShowcase } from "./AuthShowcase.jsx";
+import { AuthSocialButtons } from "./AuthSocialButtons.jsx";
+import { QubitMark } from "./LandingLogo.jsx";
 import "./AuthPage.css";
 
 export function SignupPage() {
@@ -70,52 +73,66 @@ export function SignupPage() {
 
   return (
     <main className="auth-page">
-      <Card className="auth-page__card">
-        <h1>Create your account</h1>
-        {error ? (
-          <p className="auth-page__banner auth-page__banner--error" role="alert">
-            {error}
+      <Card className="auth-page__frame">
+        <AuthShowcase />
+        <div className="auth-page__form-panel">
+          <QubitMark className="auth-page__form-mark" />
+          <h1>Create your account</h1>
+          {/* Critique fix: every CTA on the landing page routed here with zero reassurance at the
+              highest-stakes moment -- a bare Name/Email/Password form with no privacy note, no
+              "what happens next." One honest, factual line (not fabricated social proof/pricing
+              claims this project has no basis for) bridging the landing page's trust-building tone
+              into the form itself. */}
+          <p className="auth-page__reassurance">
+            Takes less than a minute — you&apos;ll land straight in the course catalog, ready to
+            start your first lesson.
           </p>
-        ) : null}
-        <form className="auth-page__form" onSubmit={handleSubmit}>
-          <Input
-            label="Name"
-            type="text"
-            autoComplete="name"
-            required
-            maxLength={100}
-            disabled={isSubmitting}
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-          <Input
-            label="Email"
-            type="email"
-            autoComplete="email"
-            required
-            disabled={isSubmitting}
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            error={emailError}
-          />
-          <Input
-            label="Password"
-            type="password"
-            autoComplete="new-password"
-            required
-            disabled={isSubmitting}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            error={passwordError}
-            hint="At least 8 characters"
-          />
-          <Button type="submit" isLoading={isSubmitting} className="auth-page__submit">
-            Create account
-          </Button>
-        </form>
-        <p className="auth-page__switch">
-          Already have an account? <Link to="/login">Log in</Link>
-        </p>
+          {error ? (
+            <p className="auth-page__banner auth-page__banner--error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <form className="auth-page__form" onSubmit={handleSubmit}>
+            <Input
+              label="Your name"
+              type="text"
+              autoComplete="name"
+              required
+              maxLength={100}
+              disabled={isSubmitting}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            <Input
+              label="Your email"
+              type="email"
+              autoComplete="email"
+              required
+              disabled={isSubmitting}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              error={emailError}
+            />
+            <Input
+              label="Create password"
+              type="password"
+              autoComplete="new-password"
+              required
+              disabled={isSubmitting}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              error={passwordError}
+              hint="At least 8 characters"
+            />
+            <Button type="submit" isLoading={isSubmitting} className="auth-page__submit">
+              Create account
+            </Button>
+          </form>
+          <AuthSocialButtons />
+          <p className="auth-page__switch">
+            Already have an account? <Link to="/login">Log in</Link>
+          </p>
+        </div>
       </Card>
     </main>
   );

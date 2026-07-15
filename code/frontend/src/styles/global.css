@@ -9,7 +9,7 @@
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -34,6 +34,7 @@ h4,
 h5,
 h6 {
   margin: 0;
+  font-family: var(--font-display);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
   letter-spacing: var(--tracking-tight);
@@ -88,4 +89,32 @@ textarea {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Scroll-triggered entrance, paired with the useInViewOnce hook. First needed by the landing
+   page's below-hero sections (Frontend Milestone 5's motion pass); page-agnostic on purpose so
+   later screens can reuse it without redeclaring the same rules.
+
+   The un-classed base rule is opacity: 1, always -- reduced-motion users, and anyone where the
+   IntersectionObserver never fires (no JS, an old browser, a headless render), see normal
+   content immediately. The hidden pre-reveal state only exists inside the no-preference media
+   query below, never as this class's bare default -- impeccable's own rule: never gate content
+   visibility behind a class-triggered transition. */
+.scroll-reveal {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal:not(.scroll-reveal--visible) {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .scroll-reveal--visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
 }

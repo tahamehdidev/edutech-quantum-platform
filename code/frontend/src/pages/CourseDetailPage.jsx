@@ -157,12 +157,18 @@ function ChapterAccordionItem({ chapter, index, lessons, isExpanded, onToggle })
           heading (h1) with nothing below it. Visual weight is unchanged: the button's own
           font-weight/size rules already override whatever this h2 would otherwise cascade down. */}
       <h2 className="course-detail__chapter-heading">
+        {/* Critique fix: with no aria-label, JSX's own whitespace-stripping between these three
+            <span>s left the accessible name as one run-on string with no word boundaries
+            ("...Physically3 lessons") -- a screen reader announced number/letter seams instead of
+            a scannable name. Explicit aria-label gives back "Chapter N: Title, X lessons",
+            matching the pattern already used for CourseCatalogPage's card links. */}
         <button
           type="button"
           className="course-detail__chapter-header"
           onClick={onToggle}
           aria-expanded={isExpanded}
           aria-controls={lessonListId}
+          aria-label={`Chapter ${index + 1}: ${chapter.title}, ${lessons.length} ${lessons.length === 1 ? "lesson" : "lessons"}`}
         >
           <ChevronRight
             size={18}

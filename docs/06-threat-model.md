@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Threat Model
+# Qubit — NUST — Threat Model
 
 **Status:** Finalized
 **Phase:** Threat Modeling (Step 6 of pre-implementation design)

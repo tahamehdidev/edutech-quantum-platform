@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Application Architecture
+# Qubit — NUST — Application Architecture
 
 **Status:** Finalized
 **Phase:** Application Architecture (Step 4 of pre-implementation design)

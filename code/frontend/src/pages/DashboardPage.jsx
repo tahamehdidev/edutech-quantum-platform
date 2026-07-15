@@ -114,20 +114,35 @@ function LearnerDashboard() {
             <span className="dashboard__headline-stat-label">across all your courses</span>
           </Card>
           <ul className="dashboard__list">
-            {entries.map((entry) => (
-              <li key={entry.course_id}>
-                <Link to={`/courses/${entry.course_id}`} className="dashboard__row-link">
-                  <Card className="dashboard__row">
-                    <span className="dashboard__row-title">{entry.courseTitle}</span>
-                    {entry.completed_at ? (
-                      <span className="dashboard__completed">Completed</span>
-                    ) : (
-                      <XpStreakBadge xp={entry.xp} streak={entry.current_streak} />
-                    )}
-                  </Card>
-                </Link>
-              </li>
-            ))}
+            {entries.map((entry) => {
+              // Same critique finding as Course Catalog's card-link: with no aria-label, the
+              // anchor's accessible name is every descendant text node concatenated with no
+              // separation (e.g. "Quantum Computing Hardware10 XP") -- this restores a scannable
+              // "title -- status" name, matching CourseCatalogPage.jsx's own fix.
+              const statusLabel = entry.completed_at
+                ? "Completed"
+                : `In progress, ${entry.xp} XP${
+                    entry.current_streak > 0 ? `, ${entry.current_streak}-day streak` : ""
+                  }`;
+              return (
+                <li key={entry.course_id}>
+                  <Link
+                    to={`/courses/${entry.course_id}`}
+                    className="dashboard__row-link"
+                    aria-label={`${entry.courseTitle} — ${statusLabel}`}
+                  >
+                    <Card className="dashboard__row">
+                      <span className="dashboard__row-title">{entry.courseTitle}</span>
+                      {entry.completed_at ? (
+                        <span className="dashboard__completed">Completed</span>
+                      ) : (
+                        <XpStreakBadge xp={entry.xp} streak={entry.current_streak} />
+                      )}
+                    </Card>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </>
       )}

@@ -1,0 +1,36 @@
+.auth-social__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+}
+
+.auth-social__divider::before,
+.auth-social__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-border);
+}
+
+.auth-social__row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* Real disabled buttons, not decorative divs -- see AuthSocialButtons.jsx for why. Button.css's
+   own :disabled rule (opacity: 0.5) already signals "present but inactive" without needing a
+   second, bespoke muted treatment here. */
+.auth-social__button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  color: var(--color-foreground);
+  cursor: not-allowed;
+}

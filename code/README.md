@@ -1,6 +1,6 @@
 # Code
 
-This is the implementation scaffold for the EduTech Quantum Learning Platform, structured according to `../docs/04-application-architecture.md`.
+This is the implementation scaffold for Qubit — NUST, structured according to `../docs/04-application-architecture.md`.
 
 **Status:** Scaffold only. No application code has been written yet — folders, lint config, CI, and dependency lists are in place, but `src/` files are empty placeholders (`.gitkeep`). Implementation begins after the remaining design docs (`05-tooling-setup.md` through `07-timeline.md`) are complete.
 

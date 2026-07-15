@@ -16,17 +16,27 @@ test("renders a loading Submit while submitting", () => {
   expect(button).toHaveAttribute("aria-busy", "true");
 });
 
-test.each([ATTEMPT_STATUS.CORRECT, ATTEMPT_STATUS.INCORRECT])(
-  "renders Try Again and calls onRetry for terminal status %s",
-  async (status) => {
-    const user = userEvent.setup();
-    const onRetry = vi.fn();
-    render(<AttemptActions status={status} onRetry={onRetry} />);
+test("renders Try Again and calls onRetry for terminal status incorrect", async () => {
+  const user = userEvent.setup();
+  const onRetry = vi.fn();
+  render(<AttemptActions status={ATTEMPT_STATUS.INCORRECT} onRetry={onRetry} />);
 
-    await user.click(screen.getByRole("button", { name: "Try Again" }));
-    expect(onRetry).toHaveBeenCalledTimes(1);
-  }
-);
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+  expect(onRetry).toHaveBeenCalledTimes(1);
+});
+
+// Critique fix: identical "Try Again" wording/styling on a correct answer read as competing with
+// the primary Next/Finish CTA at the flow's actual reward moment, implying something needed
+// fixing when it didn't -- this is optional extra practice, not a correction.
+test("renders 'Practice again' (not 'Try Again') and calls onRetry for terminal status correct", async () => {
+  const user = userEvent.setup();
+  const onRetry = vi.fn();
+  render(<AttemptActions status={ATTEMPT_STATUS.CORRECT} onRetry={onRetry} />);
+
+  expect(screen.queryByRole("button", { name: "Try Again" })).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Practice again" }));
+  expect(onRetry).toHaveBeenCalledTimes(1);
+});
 
 test("renders See answer alongside Try Again for an incorrect, not-yet-revealed attempt", async () => {
   const user = userEvent.setup();

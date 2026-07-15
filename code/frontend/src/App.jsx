@@ -10,6 +10,7 @@ import { CourseDetailPage } from "./pages/CourseDetailPage.jsx";
 import { LessonPlayerPage } from "./pages/LessonPlayerPage.jsx";
 import { PracticeSetPage } from "./pages/PracticeSetPage.jsx";
 import { DashboardPage } from "./pages/DashboardPage.jsx";
+import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 
 // Placeholder routes for every core screen (Frontend Milestone 0) -- real content, auth gating,
 // and data fetching land in later milestones. Route shape here is the thing being proven, not
@@ -31,6 +32,9 @@ export function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
         </Route>
       </Route>
+      {/* Nav-flow audit: no catch-all existed at all -- an unmatched URL rendered blank. Outside
+          both layouts since it applies regardless of auth state. */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

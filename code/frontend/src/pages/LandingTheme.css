@@ -1,0 +1,151 @@
+/* Landing-page-only design tokens -- a deliberate identity swap, not an extension of the rest of
+   the app's dark "precision scientific instrument" system (tokens.css). Scoped by naming
+   (--landing-*) rather than DOM nesting: LandingNavbar and the <main className="landing-page">
+   it sits beside are siblings, not parent/child, so a selector-scoped block wouldn't reach both.
+   Namespacing on :root costs nothing outside this page -- no other component references any
+   --landing-* custom property, so nothing else can be affected by these values existing.
+
+   Palette built from two anchors (Pumpkin #FE7F2D, Charcoal #233D4D) via OKLCH, WCAG-verified
+   against every pairing this page actually uses (see the shape brief for the full contrast
+   table). Two roles for Pumpkin, mirroring tokens.css's own --color-accent/--color-accent-strong
+   split: the raw anchor fails as text/icon on a light background (2.53:1, below even the 3:1
+   large-text floor), so --landing-pumpkin itself is used decoratively only (the hero glow, via
+   relative-color syntax in LandingHeroVisual.css); --landing-pumpkin-fill/-text below are the
+   real text/icon-safe shades used everywhere text or an icon actually needs the accent color. */
+:root {
+  /* ---------- Color ---------- */
+  --landing-bg: oklch(100% 0 0); /* #FFFFFF */
+  --landing-bg-alt: oklch(97.5% 0.008 236.8); /* #F2F8FC -- alternating section bg */
+  --landing-ink: oklch(34.6% 0.043 236.8); /* #233D4D -- literal Charcoal anchor, primary text */
+  --landing-ink-muted: oklch(50% 0.043 236.8); /* #4C6779 -- 5.96:1 on bg, 5.56:1 on bg-alt */
+  --landing-border: oklch(92% 0.012 236.8); /* #DDE6EC -- decorative hairline only */
+  --landing-border-strong: oklch(65% 0.043 236.8); /* #7794A6 -- 3.20:1 on bg, outline boundaries */
+
+  --landing-pumpkin: oklch(73.1% 0.178 48.7); /* #FE7F2D -- literal anchor, decorative use only
+    on light backgrounds (glow, illustration); also the text/icon color on --landing-dark-surface */
+  --landing-pumpkin-fill: oklch(54% 0.178 48.7); /* #BB4200 -- solid CTA fill, 5.40:1 w/ white text */
+  --landing-pumpkin-fill-hover: oklch(48% 0.178 48.7); /* #A72D00 -- 6.96:1 w/ white text */
+  --landing-pumpkin-text: oklch(50% 0.178 48.7); /* #AD3400 -- links/labels on light bg, 6.43:1 */
+
+  --landing-dark-surface: oklch(20% 0.035 236.8); /* #051824 -- the closing CTA band, the page's
+    one dark surface, deliberately darker than the literal Charcoal anchor so Pumpkin text clears
+    AA on it */
+
+  --landing-ring: var(--landing-ink); /* focus ring on light surfaces, 11.38:1 */
+
+  /* ---------- Typography ---------- */
+  /* Bricolage Grotesque + Public Sans -- picked after rejecting the reflex defaults (Outfit,
+     Space Grotesk, Inter all appear on impeccable's own reflex-reject list). JetBrains Mono is
+     untouched: this page keeps var(--font-mono) from tokens.css for the sphere's |0>/|1> labels
+     and the P(|0>)/P(|1>) readout, exactly as elsewhere in the app. */
+  --landing-font-display: "Bricolage Grotesque", var(--font-sans);
+  --landing-font-body: "Public Sans", var(--font-sans);
+
+  /* Fluid clamp() scale, this page's own deliberate exception to the rest of the app's fixed-rem
+     product scale (same pattern as tokens.css's existing --text-4xl "landing page hero only"
+     carve-out, now extended into a full scoped scale). Ratio between the two clamp() heading
+     steps is ~1.6-1.8, comfortably above the 1.25 floor; hero ceiling (4.5rem/72px) sits well
+     under the 6rem absolute ceiling. */
+  --landing-text-hero: clamp(2.75rem, 4vw + 1.5rem, 4.5rem);
+  --landing-text-h2: clamp(2rem, 2vw + 1.25rem, 2.75rem);
+  --landing-text-h3: 1.5rem;
+  --landing-text-lg: 1.25rem;
+  --landing-text-base: 1.0625rem;
+  --landing-text-sm: 0.9375rem;
+
+  --landing-tracking-display: -0.02em; /* comfortably above the -0.04em floor */
+  --landing-leading-tight: 1.1;
+  --landing-leading-body: 1.65;
+}
+
+/* Button.css is shared by every screen in the app (the app's own --color-accent-strong blue), so
+   it's never edited for this one page -- these are scoped overrides instead. Simplified from an
+   earlier version that repeated a 4-container selector list (navbar desktop/mobile, hero, final
+   CTA) across every property group -- a `landing-cta` class applied directly to each button/link
+   on this page (simplicity-principles pass) replaces that with one compound selector per rule,
+   same specificity (two classes) without needing !important. The final CTA sits on
+   --landing-dark-surface -- pumpkin fill reads fine there too (see the shape brief's contrast
+   table), so the primary rule below covers it with no extra case; the secondary variant simply
+   isn't used in that section. */
+.landing-cta.button--primary {
+  background-color: var(--landing-pumpkin-fill);
+  color: oklch(100% 0 0);
+}
+.landing-cta.button--primary:hover:not(:disabled) {
+  background-color: var(--landing-pumpkin-fill-hover);
+}
+.landing-cta.button--primary:active:not(:disabled) {
+  background-color: oklch(42% 0.178 48.7);
+}
+
+.landing-cta.button--secondary {
+  color: var(--landing-ink);
+  border-color: var(--landing-border-strong);
+}
+.landing-cta.button--secondary:hover:not(:disabled) {
+  background-color: var(--landing-bg-alt);
+}
+
+/* Glass pill CTA -- the shape/shadow/blur/color material shared between the navbar's
+   Login/Start-learning buttons and the hero's own Start-learning button. Sizing (min-height,
+   padding) is deliberately NOT here -- the navbar pills and the hero pill now have genuinely
+   different sizes (navbar: thinner; hero: larger), set independently in LandingNavbar.css and
+   LandingPage.css. Applied alongside .landing-cta and .button--primary/--secondary; the
+   color-variant rules below stack all three classes so they reliably beat .landing-cta's own
+   2-class color rules above regardless of which stylesheet's rule happens to load later. */
+.landing-glass-pill {
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Alpha kept high (0.95, not the 0.7-0.85 a "real" glass surface often uses) -- these pills sit on
+   solid, never-translucent backgrounds (the opaque navbar bar, the hero panel's own frosted but
+   still-light fill), so a lower alpha would still read as glassy but erodes white text contrast
+   fast (recomputed: 0.85 -> 4.20:1, already failing AA; 0.95 -> 5.00:1, real margin). Glassy
+   character comes from the border highlight + shadow + blur, not from pushing opacity as low as
+   it'll go. */
+.landing-cta.landing-glass-pill.button--primary {
+  background-color: oklch(from var(--landing-pumpkin-fill) l c h / 0.95);
+  border: 1px solid oklch(100% 0 0 / 0.35);
+}
+.landing-cta.landing-glass-pill.button--primary:hover:not(:disabled) {
+  background-color: oklch(from var(--landing-pumpkin-fill-hover) l c h / 0.95);
+}
+
+.landing-cta.landing-glass-pill.button--secondary {
+  background-color: oklch(from var(--landing-bg-alt) l c h / 0.65);
+  border: 1px solid oklch(from var(--landing-border-strong) l c h / 0.45);
+}
+
+/* --landing-ring was computed (11.38:1 on this page's light bg) but never actually reached a
+   :focus-visible rule -- global.css's own :focus-visible only sets --color-ring, the dark-mode
+   near-white foreground, which is ~1.05:1 on this page's white background (critique-confirmed
+   P0: every keyboard-focused control here had an effectively invisible outline). Overriding just
+   outline-color, scoped to the two real DOM roots this page renders into (LandingNavbar is a
+   sibling of .landing-page, not a descendant, so both need listing) -- a two-class descendant
+   selector beats global.css's bare :focus-visible without needing !important. */
+.landing-page :focus-visible,
+.landing-navbar :focus-visible {
+  outline-color: var(--landing-ring);
+}
+
+/* Shared between LandingNavbar and the footer (LandingLogo.jsx) so the mark and lockup spacing
+   stay identical in both places -- one definition, not two hand-kept-in-sync copies. */
+.landing-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.landing-wordmark__mark {
+  color: var(--landing-pumpkin-fill);
+  flex-shrink: 0;
+}
+
+.landing-wordmark__affiliation {
+  color: var(--landing-ink-muted);
+  font-weight: var(--weight-medium);
+}
+

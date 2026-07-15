@@ -161,6 +161,24 @@ test("chapter titles are real headings, so screen readers can jump between them"
   ).toBeInTheDocument();
 });
 
+// Critique fix: with no aria-label, JSX's own whitespace-stripping between the index/title/count
+// spans left the accessible name as one run-on string with no word boundaries
+// ("...Physically3 lessons") -- a screen reader announced number/letter seams instead of a
+// scannable name.
+test("each chapter header's accessible name is a scannable 'Chapter N: Title, X lessons', not run-on concatenated text", async () => {
+  courseService.getById.mockResolvedValue(COURSE);
+  mockLessonsForChapters();
+  renderDetail();
+  await screen.findByRole("heading", { name: "Quantum Machine Learning" });
+
+  expect(
+    screen.getByRole("button", { name: "Chapter 1: Why Quantum, Why Now, 2 lessons" })
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Chapter 2: The Quantum Bit, Visually, 1 lesson" })
+  ).toBeInTheDocument();
+});
+
 test("'Expand all' opens every chapter at once, then becomes 'Collapse all'", async () => {
   const user = userEvent.setup();
   courseService.getById.mockResolvedValue(COURSE);

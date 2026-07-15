@@ -13,10 +13,10 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   background-color: var(--color-muted);
-  /* Text stays neutral (6.10:1 on --color-muted) -- accent blue on this same background
-     measured only 4.25:1, failing 4.5:1 for this 14px/medium-weight text (too small/light to
-     qualify for the 3:1 large-text exception). Only the icon carries the category color below,
-     since icons need just 3:1 and both pass with a wide margin. */
+  /* Text stays neutral (--color-muted-foreground, 4.60:1 on --color-muted) rather than the
+     category accent -- a conservative choice, not a forced one: --color-accent itself would also
+     clear 4.5:1 here (4.96:1) under the current Pumpkin/Charcoal palette. Only the icon carries
+     the category color below, since icons need just 3:1 and both pass with a wide margin. */
   color: var(--color-muted-foreground);
 }
 

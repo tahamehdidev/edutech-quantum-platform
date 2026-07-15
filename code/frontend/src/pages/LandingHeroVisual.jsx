@@ -1,24 +1,11 @@
-import { useState, useEffect } from "react";
 import { BlochSphereScene } from "../components/widgets/BlochSphereScene.jsx";
-import { probabilityOf0 } from "../components/widgets/blochPhysics.js";
-import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import "./LandingHeroVisual.css";
 
-// A slow, calm idle drift -- not a spin. Long periods on purpose: this is standing in for a hero
-// photograph (docs' own "imagery" requirement for a brand-register page), and a fast-moving
-// centerpiece would read as flashy, contradicting the "precision instrument" personality.
-const ROTATION_PERIOD_MS = 26_000; // one full azimuthal orbit
-const BREATH_PERIOD_MS = 18_000; // theta drifts between two bounds and back
-const THETA_MIN = Math.PI / 3;
-const THETA_MAX = (2 * Math.PI) / 3;
-
-// The frame shown whenever the arrow isn't animating (prefers-reduced-motion, or WebGL isn't
-// available at all) -- a three-quarter angle, not a pole. A pole would look like the visual is
-// broken/empty rather than deliberately static.
-const STATIC_THETA = Math.PI / 2.4;
-const STATIC_PHI = Math.PI / 4;
-
-function isWebglAvailable() {
+// Feature-detected once by the parent (LandingPage) and passed down as a prop -- the parent also
+// needs to know this to decide whether to render the readout in the hero copy column at all (no
+// point showing "drag to see the numbers" state next to a static fallback illustration that can't
+// be dragged).
+export function isWebglAvailable() {
   try {
     const canvas = document.createElement("canvas");
     return Boolean(
@@ -36,93 +23,63 @@ function isWebglAvailable() {
 // its own component, not a mode of the real BlochSphere widget -- this is marketing atmosphere,
 // never tied to a Question/Screen's content, and mixing that concern into the lesson widget's
 // mode-dispatch system would conflate two different things.
-export function LandingHeroVisual() {
-  const prefersReducedMotion = useReducedMotion();
-  const [webglAvailable] = useState(isWebglAvailable);
-  const [angles, setAngles] = useState({ theta: STATIC_THETA, phi: STATIC_PHI });
-  // Once a visitor drags the sphere, the ambient drift stops for good rather than fighting the
-  // user's own placement on the next frame -- a curious first-touch discovery (this is the same
-  // arrow-on-a-sphere interaction the real lesson widget uses) takes priority over the idle-photo
-  // behavior once it's been used.
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  function handleDrag(newAngles) {
-    setAngles(newAngles);
-    setHasInteracted(true);
-  }
-
-  useEffect(() => {
-    // Reduced motion, no WebGL, or the visitor already took the wheel all mean "show a still
-    // frame and do nothing else" -- no rAF loop is ever (re-)started, not just a fast/instant
-    // version of one.
-    if (prefersReducedMotion || !webglAvailable || hasInteracted) return;
-
-    let cancelled = false;
-    let isPaused = document.hidden;
-    // A single wireframe sphere + one arrow is cheap enough that frame budget was never really
-    // the concern for "low-end devices" -- the actual cost of a perpetual rAF loop is battery/CPU
-    // for a tab nobody's looking at, which this avoids regardless of device class.
-    function handleVisibilityChange() {
-      isPaused = document.hidden;
-    }
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const start = performance.now();
-    function step(now) {
-      if (cancelled) return;
-      if (!isPaused) {
-        const elapsed = now - start;
-        const breathT = (Math.sin((elapsed / BREATH_PERIOD_MS) * 2 * Math.PI) + 1) / 2;
-        setAngles({
-          theta: THETA_MIN + breathT * (THETA_MAX - THETA_MIN),
-          phi: ((elapsed / ROTATION_PERIOD_MS) * 2 * Math.PI) % (2 * Math.PI),
-        });
-      }
-      requestAnimationFrame(step);
-    }
-    const frameId = requestAnimationFrame(step);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(frameId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [prefersReducedMotion, webglAvailable, hasInteracted]);
-
+//
+// A controlled, presentational component: LandingPage owns theta/phi, the ambient-idle-drift
+// loop, and the drag/interaction state, since the P(|0>)/P(|1>) readout those numbers drive now
+// lives in the hero copy column (under the tagline), not beside the sphere -- one shared owner
+// for state two different parts of the hero need to read.
+export function LandingHeroVisual({ webglAvailable, theta, phi, onDrag, onDragEnd, onKeyDown }) {
   if (!webglAvailable) {
     return <StaticSphereIllustration className="landing-hero-visual__fallback" />;
   }
 
-  // Real numbers from the same physics module the lesson widget uses, not a decorative fake --
-  // once someone drags the arrow they're reading the actual quantum-state probabilities for
-  // wherever they left it. probabilityOf0 rounds cleanly; probabilityOf1 is derived as the
-  // complement so the two always sum to exactly 100% (independent rounding could read 99/101).
-  const probabilityOfZero = Math.round(probabilityOf0(angles.theta) * 100);
-  const probabilityOfOne = 100 - probabilityOfZero;
-
   return (
     <div className="landing-hero-visual">
-      {/* aria-hidden: dragging the arrow conveys no information a screen-reader user would be
-          missing (it's a discoverable easter egg, not a functional control -- the real Bloch
-          sphere widget with full keyboard/labelled controls lives in the lesson player). */}
-      <div className="landing-hero-visual__scene" aria-hidden="true">
-        <BlochSphereScene
-          theta={angles.theta}
-          phi={angles.phi}
-          arrowColor="#438bff"
-          draggable
-          onDrag={handleDrag}
-        />
-      </div>
-      <p
-        className={
-          "landing-hero-visual__readout" +
-          (hasInteracted ? " landing-hero-visual__readout--visible" : "")
-        }
-        aria-hidden="true"
+      {/* Critique fix: previously aria-hidden + mouse/touch-only, so a keyboard-only user (sighted
+          or not) got none of the page's single biggest differentiator. Now focusable with a real
+          label and arrow-key support (onKeyDown, wired from LandingPage's own handleHeroDrag/
+          handleHeroDragEnd -- the same functions a mouse drag calls, not a parallel code path).
+          Still not a form control with a meaningful "value" to expose via a live region -- that
+          would be over-building a decorative easter egg into something heavier than the actual
+          lesson-player widget's own equivalent mode currently has. */}
+      {/* Soft ambient glow behind the canvas (::before on this wrapper, see CSS) -- a CSS-only
+          radial blur, not a WebGL bloom pass, so it costs nothing extra to render. */}
+      <div
+        className="landing-hero-visual__scene"
+        tabIndex={0}
+        role="group"
+        aria-label="Interactive qubit state sphere. Drag, or focus and use the arrow keys, to rotate it."
+        onKeyDown={onKeyDown}
       >
-        P(|0⟩) ≈ {probabilityOfZero}% · P(|1⟩) ≈ {probabilityOfOne}%
-      </p>
+        <BlochSphereScene
+          theta={theta}
+          phi={phi}
+          arrowColor="#BB4200"
+          wireframeColor="#7794A6"
+          draggable
+          onDrag={onDrag}
+          onDragEnd={onDragEnd}
+        />
+        {/* Pole labels -- the real lesson widget (BlochSphere.jsx) has always had these; the
+            landing hero never did, since it started as pure decoration. Individually aria-hidden
+            now (the parent wrapper above no longer is, since it's a real focusable control) --
+            the group's own aria-label already says what this is, so these would just be two
+            redundant stray text nodes in the accessible tree otherwise. Still give sighted
+            visitors the same "this is a real coordinate system" cue the actual teaching widget
+            gives learners. */}
+        <span
+          className="landing-hero-visual__pole-label landing-hero-visual__pole-label--north"
+          aria-hidden="true"
+        >
+          |0⟩
+        </span>
+        <span
+          className="landing-hero-visual__pole-label landing-hero-visual__pole-label--south"
+          aria-hidden="true"
+        >
+          |1⟩
+        </span>
+      </div>
     </div>
   );
 }
@@ -139,16 +96,16 @@ function StaticSphereIllustration({ className }) {
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="100" cy="100" r="80" fill="none" stroke="#61728f" strokeWidth="1" />
-      <ellipse cx="100" cy="100" rx="80" ry="24" fill="none" stroke="#61728f" strokeWidth="1" />
-      <ellipse cx="100" cy="100" rx="24" ry="80" fill="none" stroke="#61728f" strokeWidth="1" />
-      <line x1="100" y1="180" x2="100" y2="20" stroke="#61728f" strokeWidth="1" />
+      <circle cx="100" cy="100" r="80" fill="none" stroke="#7794A6" strokeWidth="1" />
+      <ellipse cx="100" cy="100" rx="80" ry="24" fill="none" stroke="#7794A6" strokeWidth="1" />
+      <ellipse cx="100" cy="100" rx="24" ry="80" fill="none" stroke="#7794A6" strokeWidth="1" />
+      <line x1="100" y1="180" x2="100" y2="20" stroke="#7794A6" strokeWidth="1" />
       <line
         x1="100"
         y1="100"
         x2="152"
         y2="52"
-        stroke="#438bff"
+        stroke="#BB4200"
         strokeWidth="2.5"
         markerEnd="url(#landing-hero-arrowhead)"
       />
@@ -161,7 +118,7 @@ function StaticSphereIllustration({ className }) {
           refY="4"
           orient="auto"
         >
-          <path d="M0,0 L8,4 L0,8 Z" fill="#438bff" />
+          <path d="M0,0 L8,4 L0,8 Z" fill="#BB4200" />
         </marker>
       </defs>
     </svg>

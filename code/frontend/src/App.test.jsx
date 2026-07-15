@@ -1,6 +1,6 @@
 import { test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { App } from "./App.jsx";
 
 // LandingPage now renders a real hero (Frontend Milestone 5), including LandingHeroVisual's
@@ -21,4 +21,19 @@ test("renders the landing page at the root route", () => {
   expect(
     screen.getByRole("heading", { level: 1, name: "See the qubit before you compute with it." })
   ).toBeInTheDocument();
+});
+
+// Nav-flow audit: an unmatched URL previously rendered blank, with no route catching it at all.
+test("an unmatched URL renders the not-found page instead of a blank screen", () => {
+  render(
+    <MemoryRouter initialEntries={["/this-route-does-not-exist"]}>
+      <App />
+    </MemoryRouter>
+  );
+  expect(screen.getByRole("heading", { name: "Page not found" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Go to the homepage" })).toHaveAttribute("href", "/");
+  expect(screen.getByRole("link", { name: "Go to your courses" })).toHaveAttribute(
+    "href",
+    "/courses"
+  );
 });

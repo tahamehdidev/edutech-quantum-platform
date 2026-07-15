@@ -49,6 +49,31 @@ test("free_placement: renders the scene as draggable, and dragging updates the r
   expect(screen.getByRole("status")).toHaveTextContent("P(|0⟩) = 50%");
 });
 
+// Dual-agent critique finding (P0): free_placement is this widget's actual graded/in-lesson
+// interaction, and had zero keyboard path at all -- the purely decorative landing-page echo of
+// this same component already had arrow-key rotation, added there for exactly this reason.
+test("free_placement: the canvas wrapper is a focusable, labelled control that rotates via arrow keys", async () => {
+  const user = userEvent.setup();
+  render(<BlochSphere params={freePlacementParams} />);
+
+  const wrapper = screen.getByRole("group", {
+    name: "Interactive qubit state sphere. Drag, or focus and use the arrow keys, to rotate it.",
+  });
+  expect(wrapper).toHaveAttribute("tabIndex", "0");
+
+  wrapper.focus();
+  expect(screen.getByRole("status")).toHaveTextContent("P(|0⟩) = 100%");
+  await user.keyboard("{ArrowDown}");
+  // 10 degrees off the north pole is no longer P(|0>)=100% -- confirms the keypress actually
+  // moved the state, not just that the handler didn't crash.
+  expect(screen.getByRole("status")).not.toHaveTextContent("P(|0⟩) = 100%");
+});
+
+test("gate_application mode does not make the canvas wrapper focusable (only free_placement needs a keyboard path)", () => {
+  render(<BlochSphere params={gateApplicationParams} />);
+  expect(screen.queryByRole("group")).not.toBeInTheDocument();
+});
+
 test("gate_application: renders a button per non-Rx gate, plus an Rx slider+button, plus Reset", () => {
   render(<BlochSphere params={gateApplicationParams} />);
 

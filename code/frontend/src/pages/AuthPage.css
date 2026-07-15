@@ -1,7 +1,7 @@
-/* Shared shell for Login/Signup -- both screens are the same single-panel task (centered card,
-   no page chrome), built in the same pass; splitting this into a shared file avoids the exact
-   copy-paste-then-drift risk simplicity-principles warns about for two concrete, simultaneous
-   instances of identical structure. */
+/* Shared shell for Login/Signup -- both screens are the same split-panel task (a decorative
+   showcase beside the actual form, no other page chrome), built in the same pass; splitting this
+   into a shared file avoids the exact copy-paste-then-drift risk simplicity-principles warns
+   about for two concrete, simultaneous instances of identical structure. */
 .auth-page {
   min-height: 100dvh;
   display: flex;
@@ -10,16 +10,52 @@
   padding: var(--space-6) var(--space-4);
 }
 
-.auth-page__card {
+/* The outer frame is the one Card in this layout -- overflow: hidden so its own rounded corners
+   clip both the showcase panel and the form panel's edges, rather than each panel needing its own
+   matching radius. Row below tablet width (showcase panel hides itself there), column above it. */
+.auth-page__frame {
   width: 100%;
-  max-width: 420px;
+  max-width: 880px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
 }
 
-.auth-page__card h1 {
+@media (min-width: 768px) {
+  .auth-page__frame {
+    flex-direction: row;
+    min-height: 560px;
+  }
+}
+
+.auth-page__form-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-6);
+}
+
+.auth-page__form-panel h1 {
   font-size: var(--text-2xl);
+}
+
+/* Small brand mark above the heading -- matches a reference layout the user supplied directly. */
+.auth-page__form-mark {
+  color: var(--color-accent);
+  width: 28px;
+  height: 28px;
+}
+
+/* Signup-only reassurance line (critique fix) -- muted, small, matches .auth-page__switch's own
+   register so it reads as a quiet aside, not a second competing headline. Spacing comes from
+   .auth-page__form-panel's own gap, same as every other child in that panel. */
+.auth-page__reassurance {
+  font-size: var(--text-sm);
+  color: var(--color-muted-foreground);
 }
 
 .auth-page__form {
@@ -51,6 +87,22 @@
 
 .auth-page__submit {
   margin-top: var(--space-2);
+}
+
+/* Matches a reference layout the user supplied directly, which used a black primary button here
+   instead of the site-wide Pumpkin accent -- scoped override (Button.css itself is untouched, so
+   every other primary button in the app keeps the brand accent), same "two-class beats the base
+   rule without !important" pattern LandingTheme.css's own .landing-cta override already uses.
+   Charcoal (--color-foreground), not literal black, so it still traces back to one of the app's
+   own two anchors rather than an unrelated new color -- white text on it verified 11.38:1. */
+.auth-page__submit.button--primary {
+  background-color: var(--color-foreground);
+}
+.auth-page__submit.button--primary:hover:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-foreground), white 12%);
+}
+.auth-page__submit.button--primary:active:not(:disabled) {
+  background-color: color-mix(in oklch, var(--color-foreground), black 12%);
 }
 
 .auth-page__switch {

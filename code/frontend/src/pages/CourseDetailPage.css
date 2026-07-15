@@ -7,7 +7,14 @@
   padding: var(--space-8) var(--space-5);
 }
 
+/* Dual-agent critique finding (P3): measured 23px tall, an unpadded text link with no min-height
+   -- below the 44px touch-target floor, and (unlike the deferred lesson-link finding) this sits
+   at the very top of the viewport, where a mobile thumb lands first. Same min-height pattern
+   AuthenticatedLayout.css's own nav links already use. */
 .course-detail__back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   align-self: flex-start;
   font-size: var(--text-sm);
   color: var(--color-muted-foreground);
@@ -34,11 +41,24 @@
   font-size: var(--text-lg);
 }
 
+/* Dual-agent critique finding (P2): this control exists specifically so a user who opened
+   several chapters at once has a way back to a scannable view -- but with no sticky positioning,
+   it scrolled out of reach exactly once they were deep enough into the lesson list to need it,
+   partially defeating its own purpose. Sticky to the viewport top (nothing else in this layout is
+   fixed/sticky above it -- AuthenticatedLayout's own nav is normal-flow, confirmed). A solid
+   background (not the `background: none` this had as a plain inline text link) keeps it legible
+   once chapter content is scrolling underneath it. */
 .course-detail__toggle-all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   align-self: flex-end;
-  background: none;
+  position: sticky;
+  top: var(--space-3);
+  z-index: var(--z-sticky);
+  background-color: var(--color-background);
   border: none;
-  padding: 0;
+  padding: 0 var(--space-2);
   color: var(--color-accent);
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
@@ -75,15 +95,25 @@
 
 .course-detail__chapter-index {
   flex-shrink: 0;
+  /* Same first-line alignment nudge as the chevron above, sized for this element's own smaller
+     font -- see the header rule's comment. */
+  margin-top: 0.3em;
   font-size: var(--text-xs);
   font-weight: var(--weight-regular);
   color: var(--color-muted-foreground);
 }
 
+/* Dual-agent critique finding (P1): align-items: center only reads correctly while the title
+   fits on one line. Confirmed live at 375px: a long chapter title (e.g. "Fighting Back: Error
+   Correction and What's Next (Capstone)") wraps to 3 lines, and centering against the WHOLE
+   wrapped block put the chevron/index/count floating mid-block against the title's third line
+   instead of its first -- reads as a broken layout, not a design choice. flex-start plus a small
+   top nudge on the chevron/index (below) keeps them aligned to the title's own first line
+   regardless of how many lines it wraps to. */
 .course-detail__chapter-header {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
   background: none;
@@ -101,8 +131,30 @@
   background-color: var(--color-muted);
 }
 
+/* Delight pass: hover/focus already had a background change, but nothing distinguished the
+   moment of the click itself from just resting the pointer over the row. Darkening further on
+   :active matches Button.css's own established press convention (color-mix(..., black 10%) on
+   every button variant in the app) rather than introducing a new mechanism like scale/transform. */
+.course-detail__chapter-header:active {
+  background-color: color-mix(in oklch, var(--color-muted), black 6%);
+}
+
+/* Dual-agent critique finding (P0): a collapsed chapter's header is flush on all four sides with
+   its parent .course-detail__chapter, which has overflow: hidden (clipping the accordion's
+   expand/collapse animation) -- the global :focus-visible rule's default +2px outward
+   outline-offset was being clipped away entirely, leaving zero visible focus indicator on the
+   primary control of this whole screen. Same bug class, same fix, as the landing hero sphere's
+   own clipped focus ring: draw the ring inward instead. */
+.course-detail__chapter-header:focus-visible {
+  outline-offset: -2px;
+}
+
 .course-detail__chapter-chevron {
   flex-shrink: 0;
+  /* Nudges the icon down from the flex row's own top edge to align with the title's first-line
+     cap-height, now that align-items: flex-start (not center) is what keeps this row correct when
+     the title wraps to multiple lines -- see the header rule's own comment. */
+  margin-top: 0.2em;
   color: var(--color-muted-foreground);
   transition: transform var(--duration-base) var(--ease-out);
 }

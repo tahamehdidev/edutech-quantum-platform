@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Security Architecture
+# Qubit — NUST — Security Architecture
 
 **Status:** Finalized
 **Phase:** Security Architecture (Step 3 of pre-implementation design)

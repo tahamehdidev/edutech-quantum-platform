@@ -32,7 +32,10 @@
   gap: var(--space-1);
   padding: 0.125rem var(--space-2);
   border-radius: var(--radius-full);
-  background-color: var(--color-warning);
+  /* --color-warning-strong, not --color-warning -- this is a solid FILL with text on top (needs
+     --color-on-warning to hit 4.5:1), while --color-warning itself is tuned as an icon-safe
+     shade against --color-muted (see tokens.css's file-header comment on the warning split). */
+  background-color: var(--color-warning-strong);
   color: var(--color-on-warning);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);

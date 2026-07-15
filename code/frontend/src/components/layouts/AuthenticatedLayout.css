@@ -1,3 +1,58 @@
+/* Plain functional bar -- nav-flow audit fix, not a visual redesign. Reuses existing tokens only
+   (color-card/border/foreground etc from tokens.css), same restraint as the rest of this
+   "precision instrument" system. */
+.authenticated-layout__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  background-color: var(--color-card);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* min-height (not just padding), matching Button.css's own convention -- robust to font-metric
+   drift. Critique finding: these previously had zero vertical padding beyond the text's own
+   line-height, measuring ~23px tall (confirmed live at both 1280px and 375px) -- well under the
+   44px touch-target floor, on the one nav bar every authenticated screen in the app shares. */
+.authenticated-layout__nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-foreground);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.authenticated-layout__nav-link:hover {
+  color: var(--color-accent);
+}
+
+/* Critique finding: nav gave zero indication of current location -- color only changed on
+   :hover and reverted the instant the mouse left, with no persistent state and nothing for a
+   screen reader. NavLink's own aria-current="page" (set automatically, not duplicated here)
+   covers non-visual users; this covers sighted ones. */
+.authenticated-layout__nav-link--active {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}
+
+.authenticated-layout__logout {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0;
+  background: none;
+  border: none;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.authenticated-layout__logout:hover {
+  color: var(--color-foreground);
+}
+
 .authenticated-layout__welcome-toast {
   position: fixed;
   top: var(--space-4);

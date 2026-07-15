@@ -1,89 +1,128 @@
-/* Design tokens — EduTech Quantum Platform (Frontend Milestone 2)
+/* Design tokens — Qubit — NUST (Frontend Milestone 2, site-wide identity migration pass)
  *
- * Direction: dark-mode-only, "precision scientific instrument" (PRODUCT.md/DESIGN.md) —
- * restrained color strategy, one calm accent, semantic colors reserved strictly for their
- * meaning. OKLCH throughout (perceptually uniform lightness steps); every hex equivalent is
- * noted in a comment for quick reference during dev, but oklch() is the source of truth.
+ * Direction: light-mode, Pumpkin/Charcoal ("Scribblit-style") identity -- migrated from the
+ * original dark "precision scientific instrument" palette to the same pumpkin/charcoal system
+ * built for the landing page (LandingTheme.css), now adopted as the ONE identity for the entire
+ * app, not just the marketing page. Two anchors: Pumpkin #FE7F2D, Charcoal #233D4D, both via
+ * OKLCH (perceptually uniform lightness steps); every hex equivalent is noted in a comment for
+ * quick reference during dev, but oklch() is the source of truth.
  *
- * Every text/background pair below was verified against WCAG AA (4.5:1 normal text, 3:1 large
- * text/UI components) before this file was finalized -- see the two split roles below
- * (--color-accent vs --color-accent-strong, --color-destructive vs --color-destructive-text)
- * and --color-on-success/--color-on-warning, all of which exist specifically because the
- * "obvious" first choice (one blue for everything, white text on every semantic fill) failed
- * that check.
+ * Every text/background/fill pairing actually used anywhere in the app (not just what the
+ * landing page needed) was re-verified against WCAG AA (4.5:1 normal text, 3:1 large text/UI
+ * components) against BOTH light surfaces (--color-background and --color-card) before this
+ * file was finalized. Several values deliberately diverge from LandingTheme.css's own literal
+ * numbers where the app's actual usage differs from the landing page's:
+ *   - --color-border-strong is darker here (L=62% vs the landing page's 65%) -- the landing
+ *     page only ever checks this against its own pure-white bg, but the app's --color-background
+ *     is a tinted off-white where 65% measured 2.98:1, a hair under the 3:1 floor.
+ *   - --color-accent-strong is darker here (L=52% vs the landing page's 54%) -- Button.css's
+ *     shared hover state derives from `color-mix(in oklch, var(--color-accent-strong), white
+ *     10%)`, and at 54% that hover mix measured 4.46:1 with white text, just under 4.5:1. The
+ *     landing page never hit this because its own CTA overrides hover with a dedicated,
+ *     separately-verified value instead of relying on the shared color-mix.
+ *   - --color-muted is a genuinely new token (the landing page has no "subtle fill" concept) --
+ *     needed enough chroma/lightness separation to read as distinct from --color-border while
+ *     still giving --color-muted-foreground text real margin (4.60:1) when it appears on a
+ *     muted fill (disabled inputs, skeleton lines).
+ *   - --color-caution moved hue (45 -> 250, a cool blue) -- the old dark palette placed caution
+ *     between destructive (25.3) and warning (70.1), which worked because that palette's accent
+ *     was blue. Now the brand accent itself sits at pumpkin's hue (48.7), directly inside the old
+ *     caution/warning zone -- a warm caution tone here would read as "brand" or "reward", not
+ *     "you got this wrong, try again". A distinct cool tone keeps all four semantic meanings
+ *     (destructive/accent/warning/success/caution) visually unambiguous from each other.
+ *   - --color-warning split into two roles (--color-warning / --color-warning-strong), mirroring
+ *     the existing --color-accent/--color-accent-strong pattern -- --color-warning is consumed
+ *     as an ICON color sitting on --color-muted (XpStreakBadge, needs 3:1), while the XP-awarded
+ *     pill (AttemptFeedback) needs a lighter FILL with dark text on top (needs the on-warning
+ *     text to hit 4.5:1) -- no single lightness satisfied both (icon-on-muted wants dark, ~L55%;
+ *     fill-with-dark-text-on-top wants light, ~L75%), the exact same text-safe-vs-fill-safe
+ *     tension --color-accent/--color-accent-strong already existed to solve.
  */
 
 :root {
   /* ---------- Color: surfaces & text ---------- */
-  --color-background: oklch(15.2% 0.011 285.1); /* #0B0B10 */
-  --color-foreground: oklch(98.4% 0.003 247.9); /* #F8FAFC */
-  --color-card: oklch(23.7% 0.009 285.7); /* #1E1E23 -- first elevation step above background */
-  --color-overlay: oklch(31% 0.009 285.7); /* #303035 -- modals/popovers, second elevation step */
-  --color-muted: oklch(25.8% 0.009 285.7); /* #232328 -- subtle fills, disabled backgrounds */
-  --color-muted-foreground: oklch(71.1% 0.035 256.8); /* #94A3B8 -- secondary/de-emphasized text */
+  --color-background: oklch(97.5% 0.008 236.8); /* #F2F8FC -- tinted off-white page background */
+  --color-foreground: oklch(34.6% 0.043 236.8); /* #233D4D -- literal Charcoal anchor, primary text */
+  --color-card: oklch(100% 0 0); /* #FFFFFF -- elevated surface (cards, panels) */
+  /* Light-mode elevation inverts dark-mode's approach: --color-card is already the brightest
+     possible surface (pure white), so a modal/popover can't step "up" in lightness the way the
+     old dark scheme did (bg -> card -> overlay, each a bit lighter). --color-overlay is
+     therefore the SAME white as --color-card -- elevation is carried by --shadow-lg plus the
+     backdrop scrim (Modal.css's own rgb(0 0 0 / 0.6)) instead of a third lightness tier. */
+  --color-overlay: oklch(100% 0 0); /* #FFFFFF -- modals/popovers; see comment above */
+  --color-muted: oklch(91% 0.028 236.8); /* #D1E5F2 -- subtle fills, disabled backgrounds */
+  --color-muted-foreground: oklch(50% 0.043 236.8); /* #4C6779 -- secondary/de-emphasized text */
 
-  /* Two border roles, not one -- the decorative divider color measured ~1.3:1 against the
-     background, nowhere near the 3:1 a form input's own outline needs to meet as a UI
-     component boundary. Use --color-border for hairline dividers with no functional meaning;
-     use --color-border-strong for anything a user must perceive as an interactive boundary
-     (input outlines, select controls). */
-  --color-border: oklch(27.9% 0.037 260); /* #1E293B -- decorative dividers only */
-  --color-border-strong: oklch(55% 0.05 260); /* #61728F -- input/control outlines, 3:1+ verified */
+  /* Two border roles, not one -- the decorative divider color measures a fraction of the 3:1 a
+     form input's own outline needs to meet as a UI component boundary. Use --color-border for
+     hairline dividers with no functional meaning; use --color-border-strong for anything a user
+     must perceive as an interactive boundary (input outlines, select controls). */
+  --color-border: oklch(92% 0.012 236.8); /* #DDE6EC -- decorative dividers only */
+  --color-border-strong: oklch(62% 0.043 236.8); /* #6E8B9D -- input/control outlines, 3:1+
+    verified on BOTH --color-background (3.36:1) and --color-card (3.59:1) */
 
-  /* Accent: two roles, not one. The original palette's #3B82F6 passed as link/icon text on
-     --color-background (5.34:1) but only 4.513:1 on --color-card -- technically AA, but a
-     0.013 margin is too fragile for a value global.css applies to every <a> by default, which
-     will render on cards constantly. Lightened to L=65% (same hue/chroma) for real margin on
-     both surfaces (5.96:1 / 5.04:1). Still too light to hold white text as a solid fill
-     (--color-accent-strong is the fill-safe shade for that). */
-  --color-accent: oklch(65% 0.188 259.8); /* #438BFF -- links, icons, borders, focus rings */
-  --color-accent-strong: oklch(54.6% 0.215 262.9); /* #2563EB -- solid button/fill backgrounds */
+  /* Accent: two roles, not one, same split as before. --color-accent (the "pumpkin-text" shade)
+     is text/icon/border-safe (6.00:1 on background, 6.43:1 on card). --color-accent-strong is
+     the solid-fill-safe shade -- darker than the landing page's own --landing-pumpkin-fill (52%
+     vs 54%) specifically so Button.css's shared color-mix-derived hover state still clears AA
+     (see file-header comment). */
+  --color-accent: oklch(50% 0.178 48.7); /* #AD3400 -- links, icons, borders, progress fill */
+  --color-accent-strong: oklch(52% 0.178 48.7); /* #B43B00 -- solid button/fill backgrounds */
   --color-on-accent: oklch(100% 0 0); /* #FFFFFF -- text/icons on --color-accent-strong fills */
-  --color-ring: var(--color-foreground); /* focus ring -- 18.8:1 / 15.9:1 against bg/card */
+  --color-ring: var(--color-foreground); /* focus ring -- charcoal on light surfaces, 10.6:1+ */
 
   /* ---------- Color: semantic (answer states, XP/streak) ---------- */
   /* Reserved strictly for their meaning (correct/incorrect/caution) -- never reused as a
      decorative accent, and never the only signal (pair with an icon or label, per WCAG
      color-not-only). */
-  --color-destructive: oklch(63.7% 0.208 25.3); /* #EF4444 -- icons, borders, fills (non-text) */
-  --color-destructive-text: oklch(71.1% 0.166 22.2); /* #F87171 -- destructive-colored TEXT only;
-    #EF4444 itself missed AA by 0.09 on --color-card (4.41:1 vs 4.5:1 required) */
-  --color-destructive-strong: oklch(50% 0.208 25.3); /* #BD0018 -- solid destructive-button fills
-    (paired with --color-on-accent/white); raw --color-destructive under white text is only
-    3.76:1, failing 4.5:1 -- same "text-safe vs fill-safe" split as the accent pair above */
-  --color-success: oklch(72.3% 0.192 149.6); /* #22C55E -- correct-answer text, icons, fills */
-  --color-warning: oklch(76.9% 0.165 70.1); /* #F59E0B -- XP/streak indicators */
+  --color-destructive: oklch(60% 0.19 25.3); /* #DB4241 -- icons, borders, fills (non-text, 3:1) */
+  --color-destructive-text: oklch(48% 0.19 25.3); /* #B00A1C -- destructive-colored TEXT only;
+    the lighter --color-destructive above is a UI-component (3:1) shade, too light for the 4.5:1
+    a "Practice set not found."-style error banner's own text needs */
+  --color-destructive-strong: oklch(42% 0.19 25.3); /* #9B0005 -- solid destructive-button fills
+    (paired with --color-on-accent/white, 8.76:1) -- darker again than --color-destructive-text
+    so the shared Button.css hover/active color-mix states also clear AA (7.22:1 / 10.42:1) */
+  --color-success: oklch(42% 0.15 152); /* #00621C -- correct-answer text, icons, borders */
+  /* Two roles, mirroring --color-accent/--color-accent-strong -- see file-header comment for why
+     one lightness can't serve both the icon-on-muted use (XpStreakBadge) and the fill-with-dark-
+     text use (AttemptFeedback's XP pill). */
+  --color-warning: oklch(55% 0.15 85); /* #996700 -- streak icon, sits on --color-muted (3.77:1) */
+  --color-warning-strong: oklch(75% 0.15 85); /* #D9A514 -- XP-awarded pill fill, paired with
+    --color-on-warning text (5.06:1) */
 
   /* A wrong-but-retriable answer is not a system error -- reusing --color-destructive here would
-     conflate "you can try again" with "the request failed" (they used to share one class in
-     AttemptFeedback, a Milestone 4 default never actually reviewed against Milestone 6's own
-     vocabulary). Reusing --color-warning was considered and rejected: that token is already
-     reserved for XP/streak, and an incorrect-answer border using the same color as an XP badge
-     would read as the same meaning on screen. Hue 45 sits between --color-destructive's 25.3 and
-     --color-warning's 70.1 -- a distinct "caution" tone, not a blend of either's meaning. Single
-     value covers both fill/icon (3:1) and text (4.5:1) use without needing a text-safe split like
-     --color-destructive required -- verified 5.84:1 on --color-card / 6.91:1 on --color-background. */
-  --color-caution: oklch(70% 0.17 45); /* #F27636 -- incorrect-answer state only */
+     conflate "you can try again" with "the request failed" (see AttemptFeedback.css). Rather than
+     inventing a new hue from scratch, this is tuned directly off the Charcoal anchor's own hue
+     (236.8 -- the same hue --color-foreground/--color-muted-foreground/--color-border* already
+     use), just with far more chroma (0.16 vs --color-muted-foreground's 0.043) so it reads as a
+     distinct semantic state rather than ordinary secondary text. Staying on-anchor keeps every
+     color in the app traceable to the two brand anchors (Pumpkin/Charcoal) plus the two
+     universally-expected error/success conventions, rather than a third arbitrary hue. Also well
+     clear of --color-destructive (25.3), --color-accent (48.7), and --color-warning (85) -- the
+     old hue-45 "between destructive and warning" placement no longer works now that the brand
+     accent itself lives at hue 48.7 (see file-header comment). Single value covers text (4.5:1)
+     and border/icon (3:1) alike: 7.31:1 on --color-background, 7.82:1 on --color-card, 6.04:1 on
+     --color-muted. */
+  --color-caution: oklch(42% 0.16 236.8); /* #005397 -- incorrect-answer state only */
 
-  /* White text on a solid caution fill measured 2.84:1, failing even the 3:1 large-text floor --
-     same text-safe-vs-fill-safe reasoning as --color-on-success/--color-on-warning below. */
-  --color-on-caution: var(--color-background);
-
-  /* White text on a solid success/warning fill measured 2.28:1 / 2.15:1 -- both fail even the
-     3:1 large-text floor. Dark text (reusing --color-background) is what actually passes
-     (8.62:1 / 9.14:1), so these are NOT --color-foreground/white despite matching the
-     --color-on-accent pattern above. */
-  --color-on-success: var(--color-background);
-  --color-on-warning: var(--color-background);
+  /* Dark text (reusing --color-foreground) is what actually passes against the light
+     --color-warning-strong fill (5.06:1) -- white text measured well under even the 3:1
+     large-text floor. --color-on-caution/--color-on-success were dead tokens in the old palette
+     (never referenced by any component -- caution/success are only ever consumed as text/border/
+     icon, never as a fill needing a paired "on" color) and are dropped here rather than carried
+     forward unused. */
+  --color-on-warning: var(--color-foreground);
 
   /* ---------- Typography ---------- */
-  /* "Developer Mono" pairing, narrowed to product-register convention: one family (Plex Sans)
-     carries all general UI -- nav, buttons, page headings, labels, body prose. JetBrains Mono
-     is reserved for content that is actually monospaced by nature: equations, gate/qubit
-     notation, code-like values, and the Bloch sphere widget's technical parameter labels. It is
-     not a second headings font. */
-  --font-sans:
-    "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  /* Migrated to match the landing page's own pairing (site-wide identity migration) -- Bricolage
+     Grotesque for display/headings, Public Sans for body/UI text, replacing the original IBM Plex
+     Sans single-family system. --font-display is new here (the pre-migration system used one
+     family for everything); global.css's h1-h6 rule now reaches for it. JetBrains Mono is
+     untouched -- same as the landing page's own treatment, it stays reserved for content that is
+     actually monospaced by nature: equations, gate/qubit notation, code-like values, and the
+     Bloch sphere widget's technical parameter labels, never a second headings font. */
+  --font-display: "Bricolage Grotesque", var(--font-sans);
+  --font-sans: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
 
   /* Fixed rem scale, ~1.11-1.25 ratio between steps (product register: fixed, not fluid clamp()
@@ -113,7 +152,8 @@
 
   --tracking-tight: -0.01em; /* large headings only; never below WCAG/impeccable's -0.04em floor */
   --tracking-normal: 0em;
-  --tracking-wide: 0.015em; /* body prose on dark background */
+  --tracking-wide: 0.015em; /* body prose -- kept from the dark-mode system; a small positive
+    tracking still reads comfortably on light backgrounds and nothing depended on removing it */
   --tracking-wider: 0.06em; /* all-caps labels, if ever used -- sparingly, per PRODUCT.md's
     anti-reflex against tiny tracked-uppercase eyebrows as default scaffolding */
 
@@ -140,12 +180,15 @@
   --radius-full: 9999px; /* pills -- XP/streak badge only */
 
   /* ---------- Elevation ---------- */
-  /* Dark-mode depth comes primarily from surface lightness (background -> card -> overlay),
-     not shadow -- shadows below are a secondary, subtle assist for floating content
-     (dropdowns, modals) separating from busy content behind them, not the main depth cue. */
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.4);
-  --shadow-lg: 0 8px 32px rgb(0 0 0 / 0.5); /* modals */
+  /* Light-mode depth inverts the old dark-mode logic -- there, shadows were a secondary assist
+     because surface lightness (background -> card -> overlay) carried most of the depth signal.
+     Here, --color-card/--color-overlay are both already the brightest possible surface (white),
+     so shadows are now the PRIMARY depth cue, not a secondary one. Opacities dropped substantially
+     from the old dark-mode values (0.3/0.4/0.5): a black shadow at that strength reads as heavy/
+     muddy on a light surface -- these are retuned to typical light-UI elevation strengths. */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.10);
+  --shadow-lg: 0 8px 32px rgb(0 0 0 / 0.16); /* modals */
 
   /* ---------- Motion ---------- */
   /* Calm and functional only -- state feedback (hover/focus/loading/reveal), never decorative

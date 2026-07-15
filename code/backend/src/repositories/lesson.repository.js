@@ -9,9 +9,54 @@ async function findAllForChapter(chapterId) {
   return result.rows;
 }
 
+// Joins chapter for course_id -- there is no standalone GET /chapters/:id, and the Lesson Player
+// needs its own course_id for "back to course" navigation with no other way to resolve it.
+// Also computes next_lesson_id: the next lesson in this same chapter, or -- if this is the
+// chapter's last lesson -- the first lesson of the next chapter in the same course, or null if
+// this is the last lesson of the course's last chapter. Kept as two simple sequential queries
+// rather than one nested-subquery SELECT; lesson counts are small (documented seed max: ~25 per
+// course), so there's no real cost to this being straightforward instead of clever.
 async function findById(id) {
-  const result = await pool.query("SELECT * FROM lesson WHERE id = $1", [id]);
-  return result.rows[0] ?? null;
+  const result = await pool.query(
+    `SELECT lesson.*, chapter.course_id AS course_id, chapter.order_index AS chapter_order_index
+     FROM lesson
+     JOIN chapter ON chapter.id = lesson.chapter_id
+     WHERE lesson.id = $1`,
+    [id]
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+
+  const { chapter_order_index: chapterOrderIndex, ...lesson } = row;
+  lesson.next_lesson_id = await findNextLessonId({
+    chapterId: lesson.chapter_id,
+    orderIndex: lesson.order_index,
+    courseId: lesson.course_id,
+    chapterOrderIndex,
+  });
+  return lesson;
+}
+
+async function findNextLessonId({ chapterId, orderIndex, courseId, chapterOrderIndex }) {
+  const sameChapterResult = await pool.query(
+    `SELECT id FROM lesson
+     WHERE chapter_id = $1 AND order_index > $2
+     ORDER BY order_index ASC
+     LIMIT 1`,
+    [chapterId, orderIndex]
+  );
+  if (sameChapterResult.rows[0]) return sameChapterResult.rows[0].id;
+
+  const nextChapterResult = await pool.query(
+    `SELECT lesson.id
+     FROM lesson
+     JOIN chapter ON chapter.id = lesson.chapter_id
+     WHERE chapter.course_id = $1 AND chapter.order_index > $2
+     ORDER BY chapter.order_index ASC, lesson.order_index ASC
+     LIMIT 1`,
+    [courseId, chapterOrderIndex]
+  );
+  return nextChapterResult.rows[0]?.id ?? null;
 }
 
 async function create({ chapterId, title }) {

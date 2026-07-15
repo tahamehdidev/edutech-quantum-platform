@@ -159,6 +159,36 @@ test("each card links to its own course detail page", async () => {
   );
 });
 
+// Critique fix: with no aria-label, the anchor's accessible name was every descendant text node
+// concatenated with no separation -- title, full narrative, and status running together as one
+// undifferentiated block for a screen-reader user navigating by link.
+test("each card's accessible name is a scannable 'title -- status', not the whole card's concatenated text", async () => {
+  courseService.list.mockResolvedValue({ courses: [COURSES[0]], pagination: {} });
+  progressService.listForUser.mockResolvedValue({
+    progress: [{ course_id: 8, xp: 40, current_streak: 1, completed_at: null }],
+    pagination: {},
+  });
+  renderCatalog();
+
+  expect(
+    await screen.findByRole("link", { name: "Quantum Computing Hardware — In progress, 40 XP" })
+  ).toBeInTheDocument();
+});
+
+// Critique fix: courses and progress used to be fetched via a single Promise.all, so a
+// non-critical progress-service failure blanked the entire catalog with a full-page error --
+// denying the primary task (browse and pick a course) over a secondary enhancement (the XP
+// status slot).
+test("a progress-fetch failure still renders the catalog, degrading every card to 'Not started'", async () => {
+  courseService.list.mockResolvedValue({ courses: COURSES, pagination: {} });
+  progressService.listForUser.mockRejectedValue(new Error("progress service down"));
+  renderCatalog();
+
+  expect(await screen.findByRole("heading", { name: "Quantum Algorithms" })).toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getAllByText("Not started")).toHaveLength(3);
+});
+
 test("a fetch failure shows the error banner with a retry action that re-fetches", async () => {
   const user = userEvent.setup();
   courseService.list.mockRejectedValueOnce(new Error("network down"));

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, PartyPopper } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { ChevronLeft, ChevronRight, CircleCheckBig } from "lucide-react";
 import { practiceSetService } from "../services/practiceSet.service.js";
 import { attemptService } from "../services/attempt.service.js";
 import { parseApiError } from "../utils/parseApiError.js";
@@ -11,7 +11,6 @@ import "./PracticeSetPage.css";
 
 export function PracticeSetPage() {
   const { practiceSetId } = useParams();
-  const navigate = useNavigate();
   const [practiceSet, setPracticeSet] = useState(null);
   // currentIndex ranges 0..questions.length inclusive -- questions.length itself is the
   // "practice complete" state (see LessonPlayerPage, where this replaced a separate isComplete
@@ -80,7 +79,9 @@ export function PracticeSetPage() {
     // the widget's own existing "Try Again" path.
     if (result.isCorrect) {
       markQuestionPassed(question.id);
-    } else {
+      // Only count retries incurred on the way to first passing a question -- a wrong answer on
+      // a voluntary post-pass "Practice again" attempt isn't the struggle this summary reports on.
+    } else if (!passedQuestionIds.has(question.id)) {
       setRetriedQuestionIds((current) => new Set(current).add(question.id));
     }
     return result;
@@ -88,12 +89,15 @@ export function PracticeSetPage() {
 
   if (error) {
     if (error.code === "NOT_FOUND") {
+      // No practiceSet data ever loaded here (the fetch itself 404'd), so there's no lesson_id
+      // to link back to -- the catalog is the safest known-good destination. Was navigate(-1)
+      // (nav-flow audit: fragile on a direct/shared/refreshed URL with no useful history).
       return (
         <main className="practice-set">
           <p className="practice-set__not-found">{error.message}</p>
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Go back
-          </Button>
+          <Link to="/courses" className="button button--secondary">
+            Back to courses
+          </Link>
         </main>
       );
     }
@@ -114,6 +118,7 @@ export function PracticeSetPage() {
           <div className="practice-set__skeleton-line practice-set__skeleton-line--title" />
           <div className="practice-set__skeleton-line practice-set__skeleton-line--bar" />
           <div className="practice-set__skeleton-line" />
+          <div className="practice-set__skeleton-line practice-set__skeleton-line--short" />
         </div>
       </main>
     );
@@ -122,10 +127,10 @@ export function PracticeSetPage() {
   if (questions.length === 0) {
     return (
       <main className="practice-set">
-        <button type="button" className="practice-set__exit" onClick={() => navigate(-1)}>
+        <Link to={`/lessons/${practiceSet.lesson_id}`} className="practice-set__exit">
           <ChevronLeft size={16} aria-hidden="true" />
           Exit practice
-        </button>
+        </Link>
         <h1>{practiceSet.title}</h1>
         <p className="practice-set__not-found">This practice set has no questions yet.</p>
       </main>
@@ -134,10 +139,13 @@ export function PracticeSetPage() {
 
   return (
     <main className="practice-set">
-      <button type="button" className="practice-set__exit" onClick={() => navigate(-1)}>
+      {/* Was navigate(-1) (nav-flow audit: history-based, fragile on a direct/shared/refreshed
+          URL) -- a real link to the practice set's own lesson, always reachable regardless of
+          how the visitor arrived here. */}
+      <Link to={`/lessons/${practiceSet.lesson_id}`} className="practice-set__exit">
         <ChevronLeft size={16} aria-hidden="true" />
         Exit practice
-      </button>
+      </Link>
       <h1>{practiceSet.title}</h1>
       <ProgressBar value={currentIndex + 1} max={questions.length} label="Practice progress" />
       {!isComplete ? (
@@ -161,8 +169,10 @@ export function PracticeSetPage() {
       ))}
       {isComplete ? (
         <div className="practice-set__complete" role="status">
-          <PartyPopper size={32} aria-hidden="true" />
-          <p>Practice complete!</p>
+          {/* Same reasoning as Lesson Player's completion moment: a check-circle signals genuine
+              completion without PartyPopper's gamified-microlearning connotation. */}
+          <CircleCheckBig size={32} aria-hidden="true" />
+          <p className="practice-set__complete-heading">Practice complete!</p>
           <p className="practice-set__complete-summary">
             {retriedQuestionIds.size === 0
               ? "No mistakes — nice work!"

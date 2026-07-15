@@ -35,11 +35,16 @@ export function AttemptActions({
     );
   }
 
+  // Only ATTEMPT_STATUS.CORRECT reaches here in practice -- INCORRECT is already handled above,
+  // and isAttemptTerminal covers exactly those two values. Distinct copy from the incorrect
+  // branch's "Try Again" (critique finding): identical wording/styling on a correct answer read as
+  // competing with the primary Next/Finish CTA at the flow's actual reward moment, implying
+  // something needed fixing when it didn't -- this is optional extra practice, not a correction.
   if (isAttemptTerminal(status)) {
     return (
       <div className="attempt-actions">
         <Button type="button" variant="secondary" onClick={onRetry}>
-          Try Again
+          Practice again
         </Button>
       </div>
     );

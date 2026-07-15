@@ -22,6 +22,16 @@
   line-height: var(--leading-relaxed);
 }
 
+/* The inline link's own line-box (~21px) fails the 44px touch-target floor every other
+   interactive element on this screen meets -- inline-block + padding/negative-margin offset
+   (same technique as .lesson-player__exit/.practice-set__exit) grows the hit area without
+   disturbing the surrounding sentence's line spacing (critique finding). */
+.dashboard__empty a {
+  display: inline-block;
+  padding-block: var(--space-2);
+  margin-block: calc(var(--space-2) * -1);
+}
+
 .dashboard__headline-stat {
   display: flex;
   align-items: baseline;

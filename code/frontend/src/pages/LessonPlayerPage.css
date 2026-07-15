@@ -8,6 +8,8 @@
   min-height: 60vh;
 }
 
+/* Now a real <Link> (nav-flow audit fix, was a <button onClick={navigate(-1)}>) -- text-decoration
+   reset is the one property this shared rule needed that a plain <button> never required. */
 .lesson-player__exit {
   align-self: flex-start;
   display: flex;
@@ -21,6 +23,7 @@
   color: var(--color-muted-foreground);
   font-size: var(--text-sm);
   font: inherit;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -74,6 +77,27 @@
   font-size: var(--text-xl);
   font-weight: var(--weight-medium);
   color: var(--color-foreground);
+}
+
+/* Delight pass (deferred from an earlier critique): the heading previously fell back to this
+   neutral rule above, so only the icon actually read as a success moment -- a real peak-end-rule
+   opportunity left on the table. --color-success on --color-background is 7.09:1, comfortably
+   clearing AA. Verified live this needs the parent-class-qualified selector below, not a bare
+   single class -- ".lesson-player__complete p" above has higher specificity (one class + one
+   type) than a bare ".lesson-player__complete-heading" (one class), so the neutral rule was
+   silently winning despite the new rule appearing later in the file. */
+.lesson-player__complete .lesson-player__complete-heading {
+  color: var(--color-success);
+}
+
+/* Up to three CTAs now (Practice this lesson / Next lesson / Back to course), not always just
+   one -- nav-flow audit fix (finishing a lesson with no practice set previously had zero forward
+   navigation at all). Plain wrap, no new visual design. */
+.lesson-player__complete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
 }
 
 @keyframes lesson-player-complete-in {

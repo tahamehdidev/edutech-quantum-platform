@@ -151,17 +151,66 @@ export function BlochSphere({ params }) {
     setAngles({ theta: value * Math.PI, phi: 0 });
   }
 
+  // Dual-agent critique finding (P0): free_placement mode -- this widget's actual graded/in-lesson
+  // interaction, "See the qubit before you compute with it" -- had zero keyboard path (no
+  // tabIndex/role/keydown on the scene at all), while the purely decorative landing-page echo of
+  // this same BlochSphereScene already had arrow-key rotation, added there for exactly this reason.
+  // Same step size and axis mapping as that fix (LandingHeroVisual.jsx's handleHeroKeyDown), so the
+  // two controls feel identical to a keyboard user regardless of which page they're on. No separate
+  // "drag end" step needed here (unlike the landing page's own ambient idle-drift animation) --
+  // this widget only ever animates on an explicit action (gate/reset/measure), so a keypress can
+  // just set angles directly.
+  const FREE_PLACEMENT_KEYBOARD_STEP = Math.PI / 18; // 10 degrees per press
+  function handleFreePlacementKeyDown(event) {
+    if (mode !== "free_placement" || isAnimating) return;
+    let next;
+    switch (event.key) {
+      case "ArrowUp":
+        next = { theta: Math.max(0, angles.theta - FREE_PLACEMENT_KEYBOARD_STEP), phi: angles.phi };
+        break;
+      case "ArrowDown":
+        next = {
+          theta: Math.min(Math.PI, angles.theta + FREE_PLACEMENT_KEYBOARD_STEP),
+          phi: angles.phi,
+        };
+        break;
+      case "ArrowLeft":
+        next = {
+          theta: angles.theta,
+          phi: (angles.phi - FREE_PLACEMENT_KEYBOARD_STEP + 2 * Math.PI) % (2 * Math.PI),
+        };
+        break;
+      case "ArrowRight":
+        next = { theta: angles.theta, phi: (angles.phi + FREE_PLACEMENT_KEYBOARD_STEP) % (2 * Math.PI) };
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    setAngles(next);
+  }
+
   const coefficients = formatCoefficients(angles.theta, angles.phi);
   const p0Percent = Math.round(probabilityOf0(angles.theta) * 100);
   const p1Percent = 100 - p0Percent;
 
   return (
     <div className="bloch-sphere">
-      <div className="bloch-sphere__canvas-wrapper">
+      <div
+        className="bloch-sphere__canvas-wrapper"
+        tabIndex={mode === "free_placement" ? 0 : undefined}
+        role={mode === "free_placement" ? "group" : undefined}
+        aria-label={
+          mode === "free_placement"
+            ? "Interactive qubit state sphere. Drag, or focus and use the arrow keys, to rotate it."
+            : undefined
+        }
+        onKeyDown={mode === "free_placement" ? handleFreePlacementKeyDown : undefined}
+      >
         <BlochSphereScene
           theta={angles.theta}
           phi={angles.phi}
-          arrowColor="#438bff"
+          arrowColor="#AD3400" /* --color-accent (site-wide identity migration) */
           draggable={mode === "free_placement" && !isAnimating}
           onDrag={setAngles}
         />

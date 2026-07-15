@@ -1,11 +1,67 @@
+/* 760px cap -- the hero's dominant visual anchor; min(58vw, ...) in LandingPage.css's flex item
+   is what actually lets it grow that large on wide viewports instead of this max-width being the
+   binding constraint. The extra margin-left nudging it right of center (from an earlier "shift
+   the sphere right" pass) was removed -- stacked on top of the panel's own flex gap, it was
+   doubling the visual distance between the copy column and the sphere, working against the more
+   recent "bring them closer together" request. */
 .landing-hero-visual {
+  position: relative;
+  /* Scopes the ::before glow's z-index: -1 to painting behind this element's own children --
+     position: relative alone doesn't establish a stacking context. */
+  isolation: isolate;
   width: 100%;
-  max-width: 420px;
+  max-width: 760px;
+  /* The glow's own inset: -15% bleeds well past this box on every side -- without clipping it here,
+     that bleed extends past the viewport itself (confirmed live: 33px of horizontal overflow at
+     1280px, recurring at any width since the bleed is percentage-based). The gradient is already
+     mostly transparent by 70% of its own (larger, inset) radius, so clipping at this box's actual
+     edge still reads as a soft fade, not a hard cutoff. */
+  overflow: hidden;
+}
+
+/* Ambient glow -- a plain CSS radial blur behind the canvas, not a WebGL bloom pass. Pumpkin-hued
+   at low alpha (raw --landing-pumpkin fails as text/icon contrast on light bg, per the palette's
+   own WCAG results, but a soft atmospheric blur behind the scene isn't text or a UI component --
+   it's the one place the brand's full-saturation accent gets to spread out on the light page).
+   Relative-color syntax (oklch(from ...)) reads the alpha-less --landing-pumpkin token directly
+   instead of duplicating its L/C/H as a second hardcoded literal. */
+.landing-hero-visual::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  z-index: -1;
+  /* closest-side, not the circle keyword's implicit farthest-corner default -- farthest-corner
+     stretches the 0-70% stop range further along the diagonals than along the straight edges, so
+     the fade hadn't finished by the time overflow: hidden clipped it at the container's own square
+     edge, leaving visible color in the corners and a hard cut along each flat side (a square, not
+     a fade). closest-side makes the percentage-to-distance mapping uniform in every direction, so
+     the gradient reaches fully transparent well inside the clip boundary on every side.
+     Three stops (was a flat 0%->70%), and the transparent stop pushed out to 72% (was 70%) -- the
+     request was "spread out more but seamlessly": the fade still completes at 0.65*0.72=46.8% of
+     the parent's own half-width, a safe margin inside the 50% clip boundary (the 48px blur softens
+     the rest), but the mid stop keeps a visible, gently-tapering haze across most of that radius
+     instead of the previous steep, small, bright core -- reads as bigger and warmer without ever
+     hitting a hard edge. */
+  background: radial-gradient(
+    circle closest-side,
+    oklch(from var(--landing-pumpkin) l c h / 0.28) 0%,
+    oklch(from var(--landing-pumpkin) l c h / 0.12) 40%,
+    transparent 72%
+  );
+  filter: blur(48px);
+  pointer-events: none;
 }
 
 .landing-hero-visual__scene {
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
+  /* The invite-pulse and focus ring below both paint via box-shadow/outline, which follow this
+     box's own shape -- on a plain square (no radius), that rendered as a literal orange square
+     around the round sphere on load. Circular so both read as a halo around the sphere instead of
+     a box; doesn't clip the canvas itself (no overflow: hidden here), so the sphere/labels render
+     exactly as before. */
+  border-radius: 50%;
   cursor: grab;
 }
 
@@ -13,33 +69,45 @@
   cursor: grabbing;
 }
 
-/* The live P(|0>)/P(|1>) readout: real numbers from the same physics module the lesson widget
-   uses, revealed only once a visitor drags the arrow -- an unannounced reward for curiosity, not
-   a label that's always there. font-mono is deliberate here (unlike the course-question prose
-   fix elsewhere): this is actual quantum notation, exactly what tokens.css reserves the mono
-   family for. Uses --duration-slow directly (not a hardcoded ms value) so it inherits
-   tokens.css's global prefers-reduced-motion override -- an instant appearance, not a fade,
-   under reduced motion, with zero extra media query needed here. */
-.landing-hero-visual__readout {
-  margin: var(--space-3) 0 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-accent);
-  text-align: center;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    opacity var(--duration-slow) var(--ease-out),
-    transform var(--duration-slow) var(--ease-out);
+/* Dual-agent critique finding (P0): this box is pixel-identical to its parent
+   .landing-hero-visual, which has overflow: hidden (clipping the glow's own bleed, above) --
+   the global :focus-visible rule's default +2px outward outline-offset was being clipped away
+   entirely, leaving a keyboard user with zero visible confirmation they'd tabbed onto the page's
+   single biggest differentiator. Negative offset draws the ring inward instead, staying inside
+   the clipped bounds. */
+.landing-hero-visual__scene:focus-visible {
+  outline-offset: -3px;
 }
 
-.landing-hero-visual__readout--visible {
-  opacity: 1;
-  transform: translateY(0);
+/* Matches BlochSphere.css's own pole-label treatment (the real lesson widget) -- second instance
+   of this exact pattern, not worth a shared extraction yet at just two call sites. */
+.landing-hero-visual__pole-label {
+  position: absolute;
+  color: var(--landing-ink-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  pointer-events: none;
 }
+
+.landing-hero-visual__pole-label--north {
+  top: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.landing-hero-visual__pole-label--south {
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* The P(|0>)/P(|1>) + theta/phi readout used to live here, overlaid on/below the sphere -- now
+   rendered by LandingPage.jsx in the hero copy column instead (under the tagline), since that's
+   where the numbers are meant to read now, not beside the sphere. See LandingPage.css's own
+   .landing-page__hero-readout rules. */
 
 .landing-hero-visual__fallback {
   width: 100%;
-  max-width: 420px;
+  max-width: 760px;
   aspect-ratio: 1;
 }

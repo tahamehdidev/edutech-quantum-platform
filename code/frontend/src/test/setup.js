@@ -44,3 +44,20 @@ if (typeof window !== "undefined" && !window.matchMedia) {
     };
   };
 }
+
+// jsdom does not implement IntersectionObserver at all -- same category of gap as matchMedia
+// above, first needed by useInViewOnce.js (Frontend Milestone 5's landing-page scroll-reveal).
+// A no-op stub: it never actually fires, matching this project's convention of accepting real
+// browser-only behavior as untestable-in-jsdom rather than faking real intersection geometry.
+// Tests exercising useInViewOnce capture the callback passed to `observe` themselves (see
+// useInViewOnce.test.js) and invoke it directly to simulate an intersection.
+if (typeof window !== "undefined" && !window.IntersectionObserver) {
+  window.IntersectionObserver = class IntersectionObserver {
+    constructor(callback) {
+      this.callback = callback;
+    }
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}

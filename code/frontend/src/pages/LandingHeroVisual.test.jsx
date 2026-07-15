@@ -1,90 +1,80 @@
-import { test, expect, vi, afterEach } from "vitest";
+import { test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LandingHeroVisual } from "./LandingHeroVisual.jsx";
 
+// A controlled, presentational component now (Milestone: the P(|0>)/P(|1>) readout moved to the
+// hero copy column in LandingPage.jsx, which also now owns theta/phi/drag state) -- these tests
+// only cover rendering and prop passthrough. The interaction behavior itself (drag updates
+// angles, ambient animation resumes after release, readout reveal-on-interact) is covered in
+// LandingPage.test.jsx, the new state owner.
 vi.mock("../components/widgets/BlochSphereScene.jsx", () => ({
-  BlochSphereScene: ({ theta, phi, draggable, onDrag }) => (
+  BlochSphereScene: ({ theta, phi, draggable, onDrag, onDragEnd }) => (
     <div
       data-testid="hero-scene"
       data-draggable={draggable}
       data-theta={theta}
       data-phi={phi}
-      onClick={() => onDrag({ theta: 1, phi: 2 })}
+      onMouseDown={() => onDrag({ theta: 1, phi: 2 })}
+      onClick={() => {
+        onDrag({ theta: 1, phi: 2 });
+        onDragEnd();
+      }}
     />
   ),
 }));
 
-const originalMatchMedia = window.matchMedia;
-const originalGetContext = HTMLCanvasElement.prototype.getContext;
-const originalWebGLRenderingContext = window.WebGLRenderingContext;
-
-function mockReducedMotion(matches) {
-  window.matchMedia = () => ({
-    matches,
-    addEventListener: () => {},
-    removeEventListener: () => {},
-  });
-}
-
-function mockWebglAvailable(available) {
-  window.WebGLRenderingContext = available ? function WebGLRenderingContext() {} : undefined;
-  HTMLCanvasElement.prototype.getContext = available ? () => ({}) : () => null;
-}
-
-afterEach(() => {
-  window.matchMedia = originalMatchMedia;
-  HTMLCanvasElement.prototype.getContext = originalGetContext;
-  window.WebGLRenderingContext = originalWebGLRenderingContext;
-});
-
-test("renders the live 3D scene, draggable, when WebGL is available", () => {
-  mockReducedMotion(false);
-  mockWebglAvailable(true);
-  render(<LandingHeroVisual />);
+test("renders the live 3D scene, draggable, and passes theta/phi through when webglAvailable is true", () => {
+  render(<LandingHeroVisual webglAvailable theta={0.5} phi={1.2} onDrag={() => {}} onDragEnd={() => {}} />);
 
   const scene = screen.getByTestId("hero-scene");
   expect(scene).toBeInTheDocument();
   expect(scene).toHaveAttribute("data-draggable", "true");
+  expect(scene).toHaveAttribute("data-theta", "0.5");
+  expect(scene).toHaveAttribute("data-phi", "1.2");
 });
 
-test("still renders the live scene under prefers-reduced-motion (frozen, not swapped out)", () => {
-  mockReducedMotion(true);
-  mockWebglAvailable(true);
-  render(<LandingHeroVisual />);
+test("renders the pole labels", () => {
+  render(<LandingHeroVisual webglAvailable theta={0.5} phi={1.2} onDrag={() => {}} onDragEnd={() => {}} />);
 
-  expect(screen.getByTestId("hero-scene")).toBeInTheDocument();
+  expect(screen.getByText("|0⟩")).toBeInTheDocument();
+  expect(screen.getByText("|1⟩")).toBeInTheDocument();
 });
 
-test("dragging the sphere jumps to the dragged angle and freezes there", () => {
-  mockReducedMotion(false);
-  mockWebglAvailable(true);
-  render(<LandingHeroVisual />);
-
-  const scene = screen.getByTestId("hero-scene");
-  fireEvent.click(scene);
-
-  expect(scene).toHaveAttribute("data-theta", "1");
-  expect(scene).toHaveAttribute("data-phi", "2");
-});
-
-test("reveals the real P(|0>)/P(|1>) readout only after the visitor drags the sphere", () => {
-  mockReducedMotion(false);
-  mockWebglAvailable(true);
-  const { container } = render(<LandingHeroVisual />);
-
-  const readout = container.querySelector(".landing-hero-visual__readout");
-  expect(readout).not.toHaveClass("landing-hero-visual__readout--visible");
+test("calls onDrag and onDragEnd when the scene reports a drag", () => {
+  const onDrag = vi.fn();
+  const onDragEnd = vi.fn();
+  render(<LandingHeroVisual webglAvailable theta={0.5} phi={1.2} onDrag={onDrag} onDragEnd={onDragEnd} />);
 
   fireEvent.click(screen.getByTestId("hero-scene"));
 
-  expect(readout).toHaveClass("landing-hero-visual__readout--visible");
-  expect(readout).toHaveTextContent("P(|0⟩) ≈ 77% · P(|1⟩) ≈ 23%");
+  expect(onDrag).toHaveBeenCalledWith({ theta: 1, phi: 2 });
+  expect(onDragEnd).toHaveBeenCalled();
 });
 
-test("falls back to the static SVG illustration when WebGL isn't available at all", () => {
-  mockReducedMotion(false);
-  mockWebglAvailable(false);
-  const { container } = render(<LandingHeroVisual />);
+test("the scene is a focusable, labelled control that forwards key presses (critique fix: was aria-hidden and mouse/touch-only)", () => {
+  const onKeyDown = vi.fn();
+  render(
+    <LandingHeroVisual
+      webglAvailable
+      theta={0.5}
+      phi={1.2}
+      onDrag={() => {}}
+      onDragEnd={() => {}}
+      onKeyDown={onKeyDown}
+    />
+  );
+
+  const group = screen.getByRole("group", { name: /rotate it/ });
+  expect(group).toHaveAttribute("tabIndex", "0");
+
+  fireEvent.keyDown(group, { key: "ArrowRight" });
+  expect(onKeyDown).toHaveBeenCalledTimes(1);
+});
+
+test("falls back to the static SVG illustration when webglAvailable is false, without touching the scene", () => {
+  const { container } = render(
+    <LandingHeroVisual webglAvailable={false} theta={0.5} phi={1.2} onDrag={() => {}} onDragEnd={() => {}} />
+  );
 
   expect(screen.queryByTestId("hero-scene")).not.toBeInTheDocument();
   expect(container.querySelector("svg.landing-hero-visual__fallback")).toBeInTheDocument();

@@ -8,6 +8,8 @@
   min-height: 60vh;
 }
 
+/* Now a real <Link> (nav-flow audit fix, was a <button onClick={navigate(-1)}>) -- text-decoration
+   reset is the one property this shared rule needed that a plain <button> never required. */
 .practice-set__exit {
   align-self: flex-start;
   display: flex;
@@ -21,6 +23,7 @@
   color: var(--color-muted-foreground);
   font-size: var(--text-sm);
   font: inherit;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -76,6 +79,13 @@
   color: var(--color-muted-foreground);
 }
 
+/* Parity fix with Lesson Player's completion moment (LessonPlayerPage.css lines 89-91): without
+   this, only the icon read as a success signal here, same specificity gap (one class + one type
+   beats a bare class) applies, so this needs the parent-qualified selector too. */
+.practice-set__complete .practice-set__complete-heading {
+  color: var(--color-success);
+}
+
 @keyframes practice-set-complete-in {
   from {
     opacity: 0;
@@ -126,6 +136,10 @@
 .practice-set__skeleton-line--bar {
   height: var(--space-2);
   width: 100%;
+}
+
+.practice-set__skeleton-line--short {
+  width: 70%;
 }
 
 @keyframes practice-set-pulse {

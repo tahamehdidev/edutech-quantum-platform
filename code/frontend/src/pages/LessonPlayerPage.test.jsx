@@ -6,7 +6,7 @@ import { lessonService } from "../services/lesson.service.js";
 import { screenService } from "../services/screen.service.js";
 import { practiceSetService } from "../services/practiceSet.service.js";
 import { attemptService } from "../services/attempt.service.js";
-import { LessonPlayerPage } from "./LessonPlayerPage.jsx";
+import { LessonPlayerPage, renderWithKetNotation } from "./LessonPlayerPage.jsx";
 
 vi.mock("../services/lesson.service.js", () => ({
   lessonService: { getById: vi.fn() },
@@ -21,7 +21,14 @@ vi.mock("../services/attempt.service.js", () => ({
   attemptService: { submit: vi.fn() },
 }));
 
-const LESSON = { id: 7, chapter_id: 2, title: "Qubits 101", order_index: 1 };
+const LESSON = {
+  id: 7,
+  chapter_id: 2,
+  course_id: 3,
+  title: "Qubits 101",
+  order_index: 1,
+  next_lesson_id: null,
+};
 
 const MCQ_QUESTION = {
   id: 55,
@@ -62,6 +69,25 @@ test("fetches the lesson and its screens in parallel, then shows the first scree
   expect(practiceSetService.listForLesson).toHaveBeenCalledWith("7");
   expect(screen.getByText("A qubit has two states.")).toBeInTheDocument();
   expect(screen.getByText("Screen 1 of 3")).toBeInTheDocument();
+});
+
+// Dual-agent critique finding (P1): identical bra-ket notation rendered in two different fonts
+// depending on which screen type it landed on -- the Bloch sphere's own readout already used
+// font-mono, explanation-screen prose didn't.
+test("renderWithKetNotation wraps bra-ket runs in font-mono spans, leaving surrounding prose untouched", () => {
+  const nodes = renderWithKetNotation("written |0⟩ and |1⟩, superposition |ψ⟩ = a|0⟩ + b|1⟩.");
+  const monoTexts = nodes.filter((n) => typeof n !== "string").map((n) => n.props.children);
+  const plainTexts = nodes.filter((n) => typeof n === "string");
+
+  expect(monoTexts).toEqual(["|0⟩", "|1⟩", "|ψ⟩", "|0⟩", "|1⟩"]);
+  expect(plainTexts.join("")).toBe("written  and , superposition  = a + b.");
+  nodes
+    .filter((n) => typeof n !== "string")
+    .forEach((n) => expect(n.props.className).toBe("font-mono"));
+});
+
+test("renderWithKetNotation returns plain text untouched when there's no notation to wrap", () => {
+  expect(renderWithKetNotation("No notation here.")).toEqual(["No notation here."]);
 });
 
 test("an explanation screen has Next enabled immediately and advances on click", async () => {
@@ -159,6 +185,13 @@ test("Finish lesson on the last screen shows the completion state, and Back retu
 
   expect(screen.getByText("Lesson complete!")).toBeInTheDocument();
   expect(screen.queryByRole("link", { name: "Practice this lesson" })).not.toBeInTheDocument();
+  // Nav-flow audit: finishing a lesson with no practice set and no next lesson previously had
+  // zero forward navigation at all -- "Back to course" is now always present.
+  expect(screen.getByRole("link", { name: "Back to course" })).toHaveAttribute(
+    "href",
+    "/courses/3"
+  );
+  expect(screen.queryByRole("link", { name: "Next lesson" })).not.toBeInTheDocument();
 
   await user.click(screen.getByRole("button", { name: "Back" }));
   expect(screen.getByText("That's the basics.")).toBeInTheDocument();
@@ -191,9 +224,13 @@ test("a lesson with a practice set shows a 'Practice this lesson' link once comp
     "href",
     "/practice-sets/300"
   );
+  expect(screen.getByRole("link", { name: "Back to course" })).toHaveAttribute(
+    "href",
+    "/courses/3"
+  );
 });
 
-test("a nonexistent lesson shows a 'not found' message with a way back, no retry button", async () => {
+test("a nonexistent lesson shows a 'not found' message with a real link back, no retry button", async () => {
   lessonService.getById.mockRejectedValue({
     response: { data: { error: { code: "NOT_FOUND", message: "Lesson not found." } } },
   });
@@ -201,6 +238,38 @@ test("a nonexistent lesson shows a 'not found' message with a way back, no retry
 
   expect(await screen.findByText("Lesson not found.")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  // Nav-flow audit: was a navigate(-1) button (fragile on a direct/shared/refreshed URL with no
+  // useful history) -- no lesson data ever loaded here, so /courses is the safest destination.
+  expect(screen.getByRole("link", { name: "Back to courses" })).toHaveAttribute(
+    "href",
+    "/courses"
+  );
+});
+
+test("Exit lesson is a real link to the lesson's own course, not history-based", async () => {
+  renderPlayer();
+  await screen.findByText("A qubit has two states.");
+
+  expect(screen.getByRole("link", { name: /Exit lesson/ })).toHaveAttribute("href", "/courses/3");
+});
+
+test("a lesson with a next lesson in sequence shows a 'Next lesson' link once complete", async () => {
+  const user = userEvent.setup();
+  attemptService.submit.mockResolvedValue({ isCorrect: true, xpAwarded: true });
+  lessonService.getById.mockResolvedValue({ ...LESSON, next_lesson_id: 8 });
+  renderPlayer();
+  await screen.findByText("A qubit has two states.");
+  await user.click(screen.getByRole("button", { name: /Next/ }));
+  await user.click(screen.getByLabelText("Ground state"));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await screen.findByText(/Correct!/);
+  await user.click(screen.getByRole("button", { name: "Next" }));
+  await user.click(screen.getByRole("button", { name: "Finish lesson" }));
+
+  expect(screen.getByRole("link", { name: "Next lesson" })).toHaveAttribute(
+    "href",
+    "/lessons/8"
+  );
 });
 
 test("a generic fetch failure shows the error banner with a retry action that re-fetches", async () => {

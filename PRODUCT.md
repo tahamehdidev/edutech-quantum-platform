@@ -14,13 +14,14 @@ Teaches Quantum Machine Learning, Quantum Algorithms, and Quantum Computing Hard
 
 ## Brand Personality
 
-Rigorous, calm, precise. A serious technical education tool with a light, non-distracting gamification layer — gamification is never the identity, the physics content is.
+Rigorous, calm, precise. A serious technical education tool with a light, non-distracting gamification layer — gamification is never the identity, the physics content is. Originally expressed as a dark "precision scientific instrument" palette; migrated site-wide to a light Pumpkin/Charcoal identity (Pumpkin #FE7F2D, Charcoal #233D4D) built for the landing page and then adopted everywhere — same personality, new visual expression. See `DESIGN.md` for the full token table.
 
 ## Anti-references
 
 - Duolingo-style cartoon-mascot cuteness (undercuts credibility for genuinely technical content).
 - Generic gray/blue SaaS dashboard blandness (reads as a template, not a purpose-built teaching tool).
 - Neon-cyberpunk/sci-fi cliché (a "hacker HUD" aesthetic misrepresents quantum computing as costume sci-fi rather than real, teachable physics).
+- Warm-neutral "AI default" cream/sand paper tones (the 2026 reflex look) — the palette's warmth comes from the Pumpkin accent against a cool Charcoal/tinted-blue neutral system, not from a beige/cream body background.
 
 ## Design Principles
 

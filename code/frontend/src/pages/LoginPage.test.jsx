@@ -42,7 +42,7 @@ beforeEach(() => {
   authService.refresh.mockRejectedValue(new Error("no session"));
 });
 
-test("submitting valid credentials logs in and redirects to /courses by default", async () => {
+test("submitting valid credentials as a learner logs in and redirects to /dashboard by default", async () => {
   const user = userEvent.setup();
   authService.login.mockResolvedValue({
     user: { id: "u1", name: "Ada", role: "learner" },
@@ -50,15 +50,30 @@ test("submitting valid credentials logs in and redirects to /courses by default"
   });
   renderLoginPage();
 
-  await user.type(screen.getByLabelText("Email"), "ada@example.com");
-  await user.type(screen.getByLabelText("Password"), "correct-password");
+  await user.type(screen.getByLabelText("Your email"), "ada@example.com");
+  await user.type(screen.getByLabelText("Your password"), "correct-password");
   await user.click(screen.getByRole("button", { name: "Log in" }));
 
-  await waitFor(() => expect(screen.getByText("Course catalog")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
   expect(authService.login).toHaveBeenCalledWith({
     email: "ada@example.com",
     password: "correct-password",
   });
+});
+
+test("submitting valid credentials as an instructor logs in and redirects to /courses by default", async () => {
+  const user = userEvent.setup();
+  authService.login.mockResolvedValue({
+    user: { id: "u2", name: "Dr. Feynman", role: "instructor" },
+    accessToken: "token",
+  });
+  renderLoginPage();
+
+  await user.type(screen.getByLabelText("Your email"), "feynman@example.com");
+  await user.type(screen.getByLabelText("Your password"), "correct-password");
+  await user.click(screen.getByRole("button", { name: "Log in" }));
+
+  await waitFor(() => expect(screen.getByText("Course catalog")).toBeInTheDocument());
 });
 
 test("redirects back to the page ProtectedRoute bounced the visitor from", async () => {
@@ -81,8 +96,8 @@ test("redirects back to the page ProtectedRoute bounced the visitor from", async
     </MemoryRouter>
   );
 
-  await user.type(screen.getByLabelText("Email"), "ada@example.com");
-  await user.type(screen.getByLabelText("Password"), "correct-password");
+  await user.type(screen.getByLabelText("Your email"), "ada@example.com");
+  await user.type(screen.getByLabelText("Your password"), "correct-password");
   await user.click(screen.getByRole("button", { name: "Log in" }));
 
   await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
@@ -96,8 +111,8 @@ test("wrong password and a nonexistent email render the exact same message", asy
   authService.login.mockRejectedValue(invalidCredentialsError);
   renderLoginPage();
 
-  await user.type(screen.getByLabelText("Email"), "nobody@example.com");
-  await user.type(screen.getByLabelText("Password"), "whatever");
+  await user.type(screen.getByLabelText("Your email"), "nobody@example.com");
+  await user.type(screen.getByLabelText("Your password"), "whatever");
   await user.click(screen.getByRole("button", { name: "Log in" }));
 
   const banner = await screen.findByRole("alert");
@@ -129,14 +144,14 @@ test("disables the form and shows a loading submit button while the request is i
   );
   renderLoginPage();
 
-  await user.type(screen.getByLabelText("Email"), "ada@example.com");
-  await user.type(screen.getByLabelText("Password"), "correct-password");
+  await user.type(screen.getByLabelText("Your email"), "ada@example.com");
+  await user.type(screen.getByLabelText("Your password"), "correct-password");
   await user.click(screen.getByRole("button", { name: "Log in" }));
 
-  expect(screen.getByLabelText("Email")).toBeDisabled();
-  expect(screen.getByLabelText("Password")).toBeDisabled();
+  expect(screen.getByLabelText("Your email")).toBeDisabled();
+  expect(screen.getByLabelText("Your password")).toBeDisabled();
   expect(screen.getByRole("button", { name: "Log in" })).toHaveAttribute("aria-busy", "true");
 
   resolveLogin({ user: { id: "u1", name: "Ada", role: "learner" }, accessToken: "token" });
-  await waitFor(() => expect(screen.getByText("Course catalog")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("Dashboard")).toBeInTheDocument());
 });

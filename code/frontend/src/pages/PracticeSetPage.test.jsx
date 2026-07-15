@@ -170,7 +170,7 @@ test("the completion summary reports how many questions needed a retry", async (
   expect(screen.getByText("You got there — 1 of 2 took a retry.")).toBeInTheDocument();
 });
 
-test("a nonexistent practice set shows a 'not found' message with a way back, no retry button", async () => {
+test("a nonexistent practice set shows a 'not found' message with a real link back, no retry button", async () => {
   practiceSetService.getById.mockRejectedValue({
     response: { data: { error: { code: "NOT_FOUND", message: "Practice set not found." } } },
   });
@@ -178,6 +178,22 @@ test("a nonexistent practice set shows a 'not found' message with a way back, no
 
   expect(await screen.findByText("Practice set not found.")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Try again" })).not.toBeInTheDocument();
+  // Nav-flow audit: was a navigate(-1) button (fragile on a direct/shared/refreshed URL with no
+  // useful history) -- no practiceSet data ever loaded here, so /courses is the safest destination.
+  expect(screen.getByRole("link", { name: "Back to courses" })).toHaveAttribute(
+    "href",
+    "/courses"
+  );
+});
+
+test("Exit practice is a real link to the practice set's own lesson, not history-based", async () => {
+  renderPracticeSet();
+  await screen.findByText("Question 1 of 2");
+
+  expect(screen.getByRole("link", { name: /Exit practice/ })).toHaveAttribute(
+    "href",
+    "/lessons/7"
+  );
 });
 
 test("a generic fetch failure shows the error banner with a retry action that re-fetches", async () => {

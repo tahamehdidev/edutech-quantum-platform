@@ -1,104 +1,303 @@
+/* Light-mode identity swap (LandingTheme.css) -- sections manage their own max-width/padding so
+   each can independently opt into a full-bleed alternating background band (courses/method/final
+   CTA) without a wrapper div per section. The page itself only owns the base surface, the
+   navbar-clearance padding, and the body font. */
 .landing-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-12);
+  background-color: var(--landing-bg);
+  color: var(--landing-ink);
+  font-family: var(--landing-font-body);
+  padding-top: var(--landing-navbar-height);
+  /* The hero glow's ::before (LandingHeroVisual.css) bleeds past its own box on purpose (inset:
+     -15%, an atmospheric blur, not a hard edge) -- critique-confirmed this produced real
+     horizontal page overflow (33px at 1280px width), since nothing clipped it. Contained here,
+     at the page level, rather than clipping the glow's own wrapper -- clipping .landing-hero-visual
+     itself would cut the soft blur off at a visible hard edge, defeating the point of the glow. */
+  overflow-x: hidden;
+}
+
+/* Critique finding: 6 tab stops of navbar chrome with no way to bypass them. Standard
+   skip-link pattern -- off-screen until focused, then jumps into view above everything else so a
+   keyboard user can actually see and activate it. z-index: var(--z-toast) is higher than the
+   navbar's own var(--z-sticky), so it isn't hidden behind the fixed bar once focused. */
+.landing-page__skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--space-4);
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--landing-ink);
+  color: var(--landing-bg);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: top var(--duration-base) var(--ease-out);
+}
+
+.landing-page__skip-link:focus-visible {
+  top: var(--space-4);
+}
+
+.landing-page h1,
+.landing-page h2,
+.landing-page h3 {
+  font-family: var(--landing-font-display);
+  letter-spacing: var(--landing-tracking-display);
+  line-height: var(--landing-leading-tight);
+  text-wrap: balance;
+}
+
+.landing-page p {
+  line-height: var(--landing-leading-body);
+}
+
+/* Shared full-bleed band mechanics: breaks a section out of any implicit centering so its
+   background can span the viewport, while a single inner wrapper (.landing-page__section-inner)
+   centers its content at the same 1200px measure every other section uses.
+
+   Alignment fix, replacing a per-child `> *` version of this rule: applying max-width + auto
+   margins to EVERY direct child (rather than one wrapper) meant any child that ALSO declared its
+   own narrower max-width -- headings capped at ~20-22ch, paragraphs at 65ch -- got centered as
+   that narrow box within the full 1200px column, instead of the max-width just capping its line
+   length. That silently defeated Final CTA's own `align-items: flex-start`: its heading and
+   button were rendering dead-center instead of left-aligned, and Courses/Method's headings sat
+   noticeably right of their own body copy below them. A single centered wrapper per section (the
+   same pattern .landing-page__compare already uses on itself) means every child inside is just a
+   normal left-aligned block, however narrow its own max-width -- there's no longer a second layer
+   of centering for a child's own measure-cap to collide with. */
+.landing-page__courses,
+.landing-page__method,
+.landing-page__compare,
+.landing-page__final-cta {
+  width: 100%;
+  padding: var(--space-12) var(--space-5);
+}
+
+.landing-page__section-inner {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-5);
+}
+
+.landing-page__final-cta-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+/* Request: the hero's warm glow should carry through the rest of the page, not stop dead the
+   moment the hero ends. A soft, top-anchored radial veil layered on top of each section's own
+   background (not a separate positioned element -- no new stacking/z-index to manage) ties the
+   whole page to the hero's pumpkin accent instead of leaving it isolated to one component. Alpha
+   kept low (0.05) so it reads as ambient light, not a colored band -- verified this doesn't
+   measurably move any of this page's already-checked text contrast ratios (blending 5% of the
+   pumpkin hue into --landing-bg-alt/--landing-bg shifts luminance well under 1%). The final CTA
+   section is deliberately left out -- it's already the page's one full-saturation dark-surface
+   accent moment; layering this on top of that would compete with it, not extend it. */
+.landing-page__courses,
+.landing-page__method,
+.landing-page__compare {
+  background-image: radial-gradient(
+    ellipse 900px 480px at 50% 0%,
+    oklch(from var(--landing-pumpkin) l c h / 0.05) 0%,
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+}
+
+.landing-page__courses {
+  background-color: var(--landing-bg-alt);
+}
+
+.landing-page__method {
+  background-color: var(--landing-bg-alt);
 }
 
 /* ---------- Hero ---------- */
 
-/* flex-wrap: wrap (not wrap-reverse) so the copy -- the first flex item in DOM order -- stays
-   above the decorative visual once they stack on tablet/mobile, instead of the visual jumping
-   above the heading/CTAs (confirmed live at 768px and 375px: wrap-reverse renders wrapped lines
-   in reverse order, putting the second item's line first). */
+/* Exactly fills the first viewport (minus the fixed navbar) -- on landing, nothing below the
+   hero (the pale Courses band) should be visible until a visitor actually scrolls, and the hero
+   itself must never need a scroll to see the rest of IT either. `height` (not `min-height`) plus
+   overflow: hidden makes that a hard constraint, not just a floor content could grow past --
+   paired with the tightened internal spacing below so content genuinely fits rather than relying
+   on the clip as a crutch. calc(100dvh - ...) rather than a vh-only value so mobile browser
+   chrome (address bar show/hide) doesn't leave a sliver of the next section peeking in either. */
+/* Restored to its original size (request: bring the boxed panel back "at the same size it was
+   before") -- max-width: 1800px + margin: 0 auto constrains the section itself again, which is
+   what determines the glass panel's own width below (it's width: 100% of this). */
 .landing-page__hero {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100dvh - var(--landing-navbar-height));
+  overflow: hidden;
+}
+
+/* Below 767px, the hero panel's copy column and sphere wrap-stack instead of sitting
+   side-by-side (the panel's own flex-wrap), which needs far more vertical room than fits in
+   `height: calc(100dvh - navbar)` on typical phone viewports (measured live: the panel needed
+   ~885px at 375x812, only 734px was available). With a hard height + overflow: hidden, the
+   centered-and-overflowing content was clipped at the TOP -- independent of, and worse than, the
+   separate navbar-height mismatch bug -- silently cutting off the first line of the hero h1.
+   Below this breakpoint the hero simply takes the height its content needs and the page scrolls
+   normally, trading the "hero always fits one viewport" polish for "the heading is never
+   clipped" -- correctness over charm, per PRODUCT.md. */
+@media (max-width: 767px) {
+  .landing-page__hero {
+    height: auto;
+    min-height: calc(100dvh - var(--landing-navbar-height));
+    overflow: visible;
+  }
+}
+
+/* The bordered, glassy panel around the copy + sphere, restored at its original size (request:
+   bring the box+shadow back "at the same size it was before" -- width: 100% of the now-restored
+   1800px-capped .landing-page__hero above, same as originally). Translucent fill (not opaque) +
+   blur + a light border + a shadow is the standard "glass card" material; the border is
+   deliberately closer to white than to --landing-border so it reads as a highlight/edge-light,
+   not just another hairline divider.
+
+   Shadow retuned (request: it should blend seamlessly on the left/right, not show a hard edge) --
+   .landing-page__hero (the parent) has its own overflow: hidden for an unrelated reason (a hard
+   viewport-height constraint, see that rule's own comment), but it ALSO clips anything painted
+   outside its own box, including this shadow. The panel sits inset exactly var(--space-4) (16px)
+   from the hero's edge, so that's all the room the shadow has to fade to nothing before hero's
+   own clip truncates it -- the previous 60px blur / -12px spread reaches roughly 48px outward,
+   getting hard-cut at 16px instead of finishing its own fade (the same overflow-clipping bug
+   shape already found and fixed elsewhere on this page for the focus ring and the ambient glow).
+   Retuned to reach ~10px (blur 24 minus spread 14), safely inside that 16px allowance with a
+   buffer for the blur's own tail, so it fully fades on its own before hero's clip ever applies. */
+.landing-page__hero-panel {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-10);
-  padding-top: var(--space-8);
+  justify-content: center;
+  /* Still trimmed (was --space-4, 16px) -- an earlier, still-standing request to bring the copy
+     column and the sphere closer together. */
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-lg);
+  background-color: oklch(from var(--landing-bg-alt) l c h / 0.55);
+  border: 1px solid oklch(100% 0 0 / 0.6);
+  box-shadow:
+    0 16px 24px -14px oklch(from var(--landing-ink) l c h / 0.22),
+    0 2px 8px oklch(from var(--landing-ink) l c h / 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
+/* Gap trimmed (was --space-5, 24px) -- h1, tagline, readout, and button now read as one grouped
+   block instead of four evenly-spaced-apart lines. */
 .landing-page__hero-copy {
-  flex: 1 1 420px;
+  flex: 1 1 340px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
-}
-
-.landing-page__hero-copy h1 {
-  font-size: var(--text-4xl);
-  max-width: 18ch;
-}
-
-.landing-page__hero-subhead {
-  max-width: 48ch;
-  font-size: var(--text-lg);
-  color: var(--color-muted-foreground);
-}
-
-.landing-page__hero-actions {
-  display: flex;
-  flex-wrap: wrap;
   gap: var(--space-3);
 }
 
-/* Link elements styled as buttons (Button.jsx renders a real <button>, wrong semantics for a
-   pure navigation action) -- reuses Button.css's classes directly rather than duplicating them. */
-.landing-page__hero-actions .button {
+/* Eased back down a step (was clamp(3rem, 5vw + 1.5rem, 5.5rem)) -- still bigger than the
+   original 4.5rem ceiling, but the tagline below needed more visual room of its own than that
+   left it. */
+.landing-page__hero-copy h1 {
+  font-size: clamp(2.75rem, 4.5vw + 1.25rem, 4.75rem);
+  max-width: 12ch;
+}
+
+/* Replaces the old subhead + CTA pair -- a short, specific line tied directly to the sphere
+   beside it (drag it, watch these exact numbers respond), not a generic feature summary. Sized up
+   a step from --landing-text-lg now that the smaller h1 above leaves it more room to carry its
+   own visual weight instead of reading as a footnote. */
+.landing-page__hero-tagline {
+  max-width: 38ch;
+  font-size: 1.375rem;
+  color: var(--landing-ink-muted);
+}
+
+/* Bridges the hero's own notation against the Method section's "picture first" promise (critique
+   finding) -- small and muted, a reassurance aside, not a second tagline competing for the same
+   visual weight. */
+.landing-page__hero-readout-caption {
+  max-width: 38ch;
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
+}
+
+/* The live P(|0>)/P(|1>) + theta/phi readout -- moved here from beside the sphere, so it now
+   reads as part of the pitch (right under the tagline) rather than an overlay on the visual.
+   font-mono is deliberate: this is actual quantum notation, exactly what the type system reserves
+   the mono family for regardless of which page it appears on. Always visible (request: "keep
+   showing the interactive values at all times") -- shows the idle/static angles from first paint,
+   not gated behind a first-drag reveal anymore. */
+.landing-page__hero-readout {
+  pointer-events: none;
+}
+
+.landing-page__hero-readout-line {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--landing-pumpkin-text);
+}
+
+.landing-page__hero-readout-line + .landing-page__hero-readout-line {
+  margin-top: var(--space-1);
+}
+
+/* Independently sized from the navbar's own (thinner) pills -- this is the hero's primary
+   action, so it keeps real presence (wider padding than LandingTheme.css's shared
+   .landing-glass-pill default), but trimmed vertically (was min-height: 52px) to match the
+   tighter rhythm of the rest of the column above it. */
+.landing-page__hero-cta {
+  align-self: flex-start;
   text-decoration: none;
+  min-height: 42px;
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--landing-text-lg);
 }
 
-/* A small lift on hover/press, scoped to this page's CTAs only (not Button.css itself, which
-   stays restrained for the rest of the app's product-register screens) -- redeclares the full
-   transition list Button.css already sets since `transition` isn't additive across selectors of
-   equal property, just adds `transform` to it. */
-.landing-page__hero-actions .button,
-.landing-page__final-cta .button {
-  transition:
-    background-color var(--duration-base) var(--ease-out),
-    color var(--duration-base) var(--ease-out),
-    opacity var(--duration-base) var(--ease-out),
-    transform var(--duration-base) var(--ease-out);
+.landing-page__hero-cta-note {
+  margin: 0;
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
 }
 
-.landing-page__hero-actions .button:hover:not(:disabled),
-.landing-page__final-cta .button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
-.landing-page__hero-actions .button:active:not(:disabled),
-.landing-page__final-cta .button:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* LandingHeroVisual's own container sizes itself (aspect-ratio: 1, max-width: 420px) -- this just
-   keeps it from stretching the flex item taller than the copy beside it on wide viewports. */
+/* Basis raised (was 480px) -- request: "bring the sphere a little more to the left." With the
+   visual's own right edge pinned against the panel's inner right edge (nothing sits after it in
+   the row) and both children sharing flex-grow equally, giving the visual a bigger basis is what
+   actually shifts it left -- a WIDER box anchored on its right edge necessarily extends further
+   left, unlike shrinking it (which only pulls its left edge back in, toward the right, the
+   opposite of what was asked). Stays under LandingHeroVisual.css's own 760px cap. */
 .landing-page__hero > .landing-hero-visual,
-.landing-page__hero > .landing-hero-visual__fallback {
-  flex: 0 1 380px;
+.landing-page__hero > .landing-hero-visual__fallback,
+.landing-page__hero-panel > .landing-hero-visual,
+.landing-page__hero-panel > .landing-hero-visual__fallback {
+  flex: 1 1 640px;
 }
 
 /* ---------- Courses ---------- */
 
-.landing-page__courses {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
+.landing-page__courses .landing-page__section-inner > * + * {
+  margin-top: var(--space-6);
 }
 
 .landing-page__courses h2 {
-  font-size: var(--text-3xl);
-  max-width: 24ch;
+  font-size: var(--landing-text-h2);
+  max-width: 20ch;
 }
 
-/* Fixed 3 columns above 1023px, single column at/below it -- auto-fit's minmax(280px, 1fr)
-   used to leave a 2-then-1 orphan layout at tablet widths (768px: two columns fit, the third
-   card wraps alone with empty space beside it, confirmed live). Three known, equally-weighted
-   items don't need a generic reflowing grid; the long question text also reads better at full
-   column width than squeezed into a cramped third of a 768px row. */
+.landing-page__courses-lede {
+  max-width: 60ch;
+  font-size: var(--landing-text-lg);
+  color: var(--landing-ink-muted);
+  margin: 0;
+}
+
+/* Fixed 3 columns above 1023px, single column at/below it -- three known, equally-weighted items
+   don't need a generic reflowing grid, and the long question text reads better at full column
+   width than squeezed into a cramped third of a tablet-width row. */
 .landing-page__course-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -111,15 +310,14 @@
   }
 }
 
-/* Transparent border reserved from the start (not added only on hover) so the hover state's
-   border-color change never shifts layout by the border's own width. No color-mix here --
-   background-color transitions combined with color-mix(...transparent...) have twice produced
-   the wrong opaque color live in this project (DragDrop, TopologyDiagram); border-color and
-   box-shadow with solid token colors don't share that failure mode. */
-.landing-page__course-card {
+/* Card.jsx's default surface is the app's dark --color-card -- overridden here, on this page
+   only, to sit on the light landing palette instead. Transparent border reserved from the start
+   (not added only on hover) so the hover state's border-color change never shifts layout. */
+.card.landing-page__course-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  background-color: var(--landing-bg);
   border: 1px solid transparent;
   transition:
     transform var(--duration-base) var(--ease-out),
@@ -129,12 +327,20 @@
 
 .landing-page__course-card:hover {
   transform: translateY(-2px);
-  border-color: var(--color-border-strong);
+  border-color: var(--landing-border-strong);
   box-shadow: var(--shadow-md);
 }
 
 .landing-page__course-card-icon {
-  color: var(--color-accent);
+  color: var(--landing-pumpkin-text);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+/* A small, discoverable detail on hover, not an entrance animation -- --duration-base already
+   collapses to 0ms under prefers-reduced-motion (tokens.css), so this degrades to an instant
+   state change rather than needing its own media query. */
+.landing-page__course-card:hover .landing-page__course-card-icon {
+  transform: rotate(-4deg) scale(1.08);
 }
 
 /* The course name reads as a label above the real pitch (the core question), not the other way
@@ -149,65 +355,338 @@
 .landing-page__course-card h3 {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: var(--color-muted-foreground);
+  color: var(--landing-ink-muted);
+  letter-spacing: normal;
 }
 
-/* Plain body font, not font-mono -- tokens.css reserves JetBrains Mono for content that's
-   actually monospaced by nature (equations, gate notation); these are full prose sentences, so
-   mono was a scaffold-reflex choice, not a deliberate one. Sized up to --text-lg (vs. the
-   default --text-base) since this paragraph, not the course name, is the card's real content. */
 .landing-page__course-question {
   margin: 0;
-  font-size: var(--text-lg);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-text-lg);
   font-weight: var(--weight-medium);
-  line-height: var(--leading-relaxed);
-  color: var(--color-foreground);
+  line-height: var(--landing-leading-body);
+  color: var(--landing-ink);
+}
+
+/* Real numbers (code/backend/seeds/seed_README.md's actual row counts), not a filler stat --
+   pushed to the bottom via margin-top: auto so cards with a shorter core question don't leave it
+   floating mid-card. */
+.landing-page__course-stats {
+  margin: auto 0 0;
+  padding-top: var(--space-2);
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
+}
+
+/* Each card gets its own entrance, staggered by the inline transition-delay set per index in
+   LandingPage.jsx -- legitimate here (three distinct, equally-weighted items revealing together
+   as a related set), not the uniform-reflex pattern to avoid. Reduced-motion-safe the same way
+   global.css's own .scroll-reveal is: the hidden pre-reveal state only exists inside the
+   no-preference query, never as this rule's bare default. */
+@media (prefers-reduced-motion: no-preference) {
+  .landing-page__course-card {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-slow) var(--ease-out),
+      border-color var(--duration-base) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .scroll-reveal--visible .landing-page__course-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Hover's own translateY(-2px) would otherwise be silently overridden by the entrance rule
+     above once a card has already settled at translateY(0) -- restated here so hover still lifts
+     after the reveal has finished. */
+  .scroll-reveal--visible .landing-page__course-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- Start Anywhere (the reference's "comparison" slot -- no pricing table exists to
+   fake here, so this replaces it with genuinely true content: the three courses really don't
+   require each other, per docs/07's own cross-course design notes) ---------- */
+
+/* Alignment fix: this section used to be its own centered box (max-width: 1200px; margin: 0 auto
+   directly on the section), a different construction from its full-bleed siblings above/below --
+   that left its content sitting 24px further right than Courses/Method/Final CTA's identical
+   heading, and meant its ambient background veil (shared rule above) painted only within that
+   1200px box instead of spanning the full viewport width like the other three. Same full-bleed +
+   inner-wrapper pattern as its siblings now, so the veil reaches edge-to-edge and every section's
+   content lines up on the same left edge when scrolling down the page. */
+.landing-page__compare-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.landing-page__compare h2 {
+  font-size: var(--landing-text-h2);
+  max-width: 20ch;
+}
+
+.landing-page__compare-lede {
+  max-width: 60ch;
+  font-size: var(--landing-text-lg);
+  color: var(--landing-ink-muted);
+  margin: 0;
+}
+
+.landing-page__compare-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-page__compare-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-6);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--landing-border);
+}
+
+.landing-page__compare-row:first-child {
+  border-top: 1px solid var(--landing-border);
+}
+
+/* Same staggered-entrance pattern as the course cards above (index-based transition-delay set in
+   LandingPage.jsx) -- three rows revealing as a related set, not a uniform reflex applied
+   page-wide. */
+@media (prefers-reduced-motion: no-preference) {
+  .landing-page__compare-row {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity var(--duration-slow) var(--ease-out),
+      transform var(--duration-slow) var(--ease-out);
+  }
+
+  .scroll-reveal--visible .landing-page__compare-row {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-page__compare-name {
+  font-family: var(--landing-font-display);
+  font-size: var(--landing-text-h3);
+  font-weight: var(--weight-semibold);
+}
+
+.landing-page__compare-note {
+  font-size: var(--landing-text-base);
+  color: var(--landing-ink-muted);
+  max-width: 42ch;
+}
+
+/* No margin-top needed -- .landing-page__compare's own `gap: var(--space-6)` already spaces
+   every direct child consistently, this CTA included. */
+.landing-page__compare-cta {
+  align-self: flex-start;
+  text-decoration: none;
 }
 
 /* ---------- Method ---------- */
 
-.landing-page__method {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  max-width: 65ch;
+.landing-page__method .landing-page__section-inner > * + * {
+  margin-top: var(--space-4);
 }
 
 .landing-page__method h2 {
-  font-size: var(--text-3xl);
+  font-size: var(--landing-text-h2);
+  max-width: 22ch;
 }
 
 .landing-page__method p {
-  color: var(--color-muted-foreground);
+  max-width: 65ch;
+  color: var(--landing-ink-muted);
+  font-family: var(--landing-font-body);
+  font-size: var(--landing-text-base);
+}
+
+/* Three concrete, truthful capabilities -- not a generic feature-list template. A single leading
+   accent dot per item (currentColor via ::marker, not a side-stripe border -- that pattern is
+   banned) gives the list a light visual anchor without competing with the two paragraphs above. */
+.landing-page__method-list {
+  max-width: 65ch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-page__method-list li {
+  position: relative;
+  padding-left: var(--space-5);
+  color: var(--landing-ink-muted);
+  font-size: var(--landing-text-base);
+}
+
+.landing-page__method-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--landing-pumpkin-text);
 }
 
 /* ---------- Final CTA ---------- */
 
+/* The page's one dark surface -- Pumpkin runs at full saturation here (see LandingTheme.css's
+   own reasoning: raw Pumpkin fails as text/icon contrast on light backgrounds, but clears AA
+   comfortably against this darker charcoal). */
 .landing-page__final-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-5);
-  padding: var(--space-10) 0 var(--space-12);
-  border-top: 1px solid var(--color-border);
+  background-color: var(--landing-dark-surface);
+  color: oklch(100% 0 0);
 }
 
 .landing-page__final-cta h2 {
-  font-size: var(--text-3xl);
-  max-width: 24ch;
+  font-size: var(--landing-text-h2);
+  max-width: 22ch;
+  color: oklch(100% 0 0);
 }
 
 .landing-page__final-cta .button {
   text-decoration: none;
+  font-family: var(--landing-font-body);
+}
+
+/* Three short, truthful reassurances at the page's final conversion moment -- distinct copy from
+   the hero's own "Free to start -- no card required" (deliberately not repeated verbatim at every
+   CTA), reinforcing what's real about this product rather than invented stats/testimonials. Plain
+   text, not pills/badges with borders -- a quieter treatment that doesn't compete with the button
+   above it as the one real action on this dark surface. */
+.landing-page__final-cta-badges {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  font-size: var(--landing-text-sm);
+  color: oklch(100% 0 0 / 0.75);
+}
+
+/* Shared hover-lift for the two remaining plain (non-glass-pill) CTA locations on this page. */
+.landing-page__hero-cta,
+.landing-page__final-cta .button {
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.landing-page__hero-cta:hover:not(:disabled),
+.landing-page__final-cta .button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.landing-page__hero-cta:active:not(:disabled),
+.landing-page__final-cta .button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ---------- Footer ---------- */
+
+.landing-page__footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-5) var(--space-6);
+  border-top: 1px solid var(--landing-border);
+}
+
+.landing-page__footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  padding-bottom: var(--space-8);
+}
+
+/* Real width, not just flex:1 -- the brand column carries a full sentence, so it needs more room
+   than a two-or-three-link column to avoid an awkward near-empty wrap. */
+.landing-page__footer-brand {
+  flex: 2 1 280px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-page__footer-wordmark {
+  font-family: var(--landing-font-display);
+  font-weight: var(--weight-semibold);
+  color: var(--landing-ink);
+}
+
+.landing-page__footer-note {
+  margin: 0;
+  max-width: 42ch;
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
+}
+
+/* Every link real -- an in-page section anchor or an actual route (/login, /signup), nothing
+   invented (no fake "About"/"Careers"/"Blog" columns this app doesn't have pages for). */
+.landing-page__footer-column {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-page__footer-column h3 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--landing-text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--landing-ink);
+}
+
+.landing-page__footer-column a {
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
+  text-decoration: none;
+}
+
+.landing-page__footer-column a:hover,
+.landing-page__footer-column a:focus-visible {
+  color: var(--landing-ink);
+  text-decoration: underline;
+}
+
+.landing-page__footer-bottom {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--landing-border);
+  font-size: var(--landing-text-sm);
+  color: var(--landing-ink-muted);
 }
 
 @media (max-width: 767px) {
-  .landing-page {
-    padding: var(--space-6) var(--space-4);
-    gap: var(--space-10);
+  .landing-page__courses,
+  .landing-page__method,
+  .landing-page__compare,
+  .landing-page__final-cta {
+    padding: var(--space-8) var(--space-4);
   }
 
   .landing-page__hero {
-    padding-top: var(--space-4);
+    padding: var(--space-6) var(--space-4) var(--space-8);
+  }
+
+  .landing-page__footer {
+    padding: var(--space-5) var(--space-4) var(--space-6);
   }
 }

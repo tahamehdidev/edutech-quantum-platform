@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — API Contract
+# Qubit — NUST — API Contract
 
 **Status:** Finalized
 **Phase:** API Contract Design (Step 2 of pre-implementation design)
@@ -250,7 +250,7 @@ Standard profile read/update for the logged-in user. `role` is never editable th
 | `DELETE` | `/chapters/:id?confirm=true` | Delete a chapter (cascades to lessons/screens) | `admin`, `instructor` (ownership check) |
 | `GET` | `/chapters/:id/lessons` | List lessons | Any logged-in user |
 | `POST` | `/chapters/:id/lessons` | Add a lesson (server sets `order_index`) | `admin`, `instructor` (ownership check on parent course) |
-| `GET` | `/lessons/:id` | Get a single lesson (added for the Lesson Player, Frontend Milestone 5 -- there was no way to fetch a lesson's own title standalone without walking back through its parent chapter's list) | Any logged-in user |
+| `GET` | `/lessons/:id` | Get a single lesson (added for the Lesson Player, Frontend Milestone 5 -- there was no way to fetch a lesson's own title standalone without walking back through its parent chapter's list). Response also includes `course_id` (there is no standalone `GET /chapters/:id` to resolve this otherwise) and `next_lesson_id` (the next lesson in reading order -- same chapter, else the next chapter's first lesson, else `null` if this is the course's last lesson) — added for the Lesson Player's "back to course"/"next lesson" navigation (nav-flow audit). | Any logged-in user |
 | `PATCH` | `/lessons/:id` | Update a lesson | `admin`, `instructor` (ownership check) |
 | `PATCH` | `/chapters/:id/lessons/reorder` | Reorder lessons | `admin`, `instructor` (ownership check) |
 | `DELETE` | `/lessons/:id?confirm=true` | Delete a lesson (cascades to screens) | `admin`, `instructor` (ownership check) |

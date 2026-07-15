@@ -1,0 +1,232 @@
+/* Total clearance needed from the viewport top to below the bar -- measured live against the
+   actual rendered bar (66.6px), not recalculated by hand, since the pills' own height/padding
+   have changed a few times and a hand-computed value drifted out of sync with reality (this is
+   exactly the kind of bug that creates: the hero's own top/bottom gaps read as mismatched purely
+   because this constant was 84px while the real bar was only ~67px tall). Declared on :root (not
+   scoped to .landing-navbar) so LandingPage.css can read the same value for its own top-clearance
+   padding -- one number, not two hand-kept-in-sync magic constants. */
+:root {
+  --landing-navbar-height: 68px;
+}
+
+/* Solid, not glass -- the bar itself needs no legibility mechanism against scrolled content
+   underneath it. The CTAs inside it are a separate, deliberate glass treatment (see LandingTheme
+   .css's .landing-glass-pill); the bar's own background stays opaque so that treatment always
+   renders against a stable surface. */
+.landing-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky);
+  background-color: var(--landing-bg);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-base) var(--ease-out);
+  /* One size for every text element in the bar -- wordmark, links, and CTA labels alike. Bumped
+     from --text-sm to --text-base along with the bar's own taller padding below. */
+  font-size: var(--text-base);
+}
+
+/* Border only appears once scrolled -- at the very top of the page the bar sits flush against
+   the hero's own bg with nothing to separate from yet; past that point content is moving
+   underneath it and the hairline gives it a real edge. */
+.landing-navbar--scrolled {
+  border-bottom-color: var(--landing-border);
+}
+
+/* Three explicit columns -- wordmark | links | right-side actions -- so the links genuinely
+   center in the full bar width regardless of how wide the wordmark or the actions end up being,
+   rather than just being pushed to sit after the wordmark (the old flex + margin-left:auto
+   layout, which centers only in the leftover space, not the bar). */
+.landing-navbar__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-5);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+}
+
+.landing-navbar__wordmark {
+  justify-self: start;
+  color: var(--landing-ink);
+  font-family: var(--landing-font-display);
+  font-weight: var(--weight-semibold);
+  font-size: inherit;
+  text-decoration: none;
+  flex-shrink: 0;
+  /* Nothing previously stopped "Qubit — NUST" from wrapping to two lines once its grid column
+     got squeezed (mobile, links/actions hidden) -- growing the bar's real rendered height past
+     --landing-navbar-height's 68px constant and clipping the hero h1's first line underneath the
+     fixed bar (confirmed live: 85.78px real height at 375px vs. the 68px every other measurement
+     assumes). The grid's own `1fr auto 1fr` columns aren't `minmax(0, 1fr)`, so this column grows
+     to fit nowrap content rather than the content overflowing -- confirmed live, no new
+     horizontal scroll at 375px. */
+  white-space: nowrap;
+}
+
+.landing-navbar__links {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.landing-navbar__link {
+  color: var(--landing-ink-muted);
+  font-family: var(--landing-font-body);
+  font-size: inherit;
+  text-decoration: none;
+  transition: color var(--duration-base) var(--ease-out);
+}
+
+.landing-navbar__link:hover {
+  color: var(--landing-ink);
+}
+
+.landing-navbar__right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.landing-navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.landing-navbar__cta {
+  text-decoration: none;
+  font-family: var(--landing-font-body);
+}
+
+/* Pill shape, shadow, and the glassy fill itself live in LandingTheme.css's shared
+   .landing-glass-pill (+ .landing-cta.landing-glass-pill.button--primary/--secondary) --
+   identical material reused by the hero's own Start-learning CTA. Sizing is navbar-specific
+   (thinner than the hero's pill): font-size reset (Button.css's own .button rule sets --text-base
+   explicitly, which would otherwise be the one odd size out among this bar's uniform text) and
+   min-height trimmed to 34px. Each pill sizes to fit its own label via Button.css's own
+   padding -- no min-width equalization; "Log in" and "Start learning" are allowed to be two
+   different widths. */
+.landing-navbar__actions .button {
+  font-size: inherit;
+  min-height: 34px;
+  padding-top: var(--space-1);
+  padding-bottom: var(--space-1);
+}
+
+.landing-navbar__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--landing-ink);
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.landing-navbar__menu-toggle:hover {
+  background-color: var(--landing-bg-alt);
+}
+
+.landing-navbar__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* The 68px desktop constant above was only ever measured against the desktop bar's text/link
+     row. On mobile the menu-toggle button's own fixed 44x44 size (taller than a text row) plus
+     the bar's unchanged 16px top/bottom padding makes the real bar ~77px, not 68px -- confirmed
+     live (77px measured, vs. the mobile hero content assuming 68px of clearance). That gap was
+     independently clipping the hero h1's first line underneath the fixed bar. Overriding the
+     custom property here (not a second, hand-kept-in-sync constant) means LandingPage.css's own
+     `padding-top: var(--landing-navbar-height)` picks up the correct value automatically at this
+     breakpoint with no further changes needed there. */
+  :root {
+    --landing-navbar-height: 78px;
+  }
+
+  .landing-navbar__links,
+  .landing-navbar__actions {
+    display: none;
+  }
+
+  .landing-navbar__menu-toggle {
+    display: inline-flex;
+  }
+
+  /* A real full-screen overlay: the previous dark-mode build learned this the hard way (a
+     dropdown-height panel let the fixed header's own box grow, leaving hero content exposed
+     underneath with no scrim). Positioned below the bar itself, filling the rest of the viewport
+     with an opaque surface. */
+  .landing-navbar__mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    position: fixed;
+    top: var(--landing-navbar-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-5);
+    background-color: var(--landing-bg);
+    border-top: 1px solid var(--landing-border);
+    overflow-y: auto;
+  }
+
+  /* Plays once on mount (React conditionally mounts this element, it isn't a class toggle on an
+     already-visible node), so there's no "never fires" risk the way an IntersectionObserver-gated
+     reveal has. Scoped to no-preference only -- the element's own un-animated base state is
+     already the fully-visible end state, so reduced motion just skips straight to it. */
+  @media (prefers-reduced-motion: no-preference) {
+    .landing-navbar__mobile-menu {
+      animation: landing-navbar-mobile-menu-in var(--duration-base) var(--ease-out);
+    }
+  }
+
+  @keyframes landing-navbar-mobile-menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .landing-navbar__mobile-link {
+    display: flex;
+    align-items: center;
+    /* min-height (not just padding) -- measured live at 42px before this fix, 2px under the 44px
+       touch-target floor. An explicit min-height is robust to font-metric drift the way
+       padding-derived height isn't (Button.css's own convention for the same reason). */
+    min-height: 44px;
+    color: var(--landing-ink);
+    font-family: var(--landing-font-body);
+    font-size: var(--text-base);
+    text-decoration: none;
+  }
+
+  /* Deliberately NOT the pill/thinner/glass treatment above -- the mobile menu is a real touch
+     context (a full-screen overlay, not a compact desktop bar), so its CTAs keep Button.css's
+     full 44px accessible height rather than following the desktop bar's thinner aesthetic. */
+  .landing-navbar__mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+
+  .landing-navbar__mobile-actions .landing-navbar__cta {
+    width: 100%;
+  }
+}

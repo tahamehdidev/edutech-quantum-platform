@@ -1,0 +1,73 @@
+/* Reworked to match a reference layout the user supplied directly: a light warm-gradient panel
+   (not the dark charcoal surface this used before), logo top-left, lede + heading bottom-left, no
+   illustration between them. Gradient stays within this app's own Pumpkin hue (48.7) rather than
+   the reference's literal colors -- both stops verified for contrast against --color-foreground
+   (dark charcoal) text: 9.48:1 at the lightest corner, 5.11:1 at the most saturated, both clearing
+   4.5:1 with real margin. */
+.auth-showcase {
+  display: none;
+  position: relative;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-6);
+  background: linear-gradient(
+    135deg,
+    oklch(94% 0.03 48.7) 0%,
+    oklch(76% 0.11 48.7) 100%
+  );
+  color: var(--color-foreground);
+  overflow: hidden;
+}
+
+/* Hidden below tablet width -- the showcase panel is purely decorative (aria-hidden), so there's
+   no content loss, only the form itself (the actual task) on small screens, matching every other
+   screen's mobile-first content-priority convention. */
+@media (min-width: 768px) {
+  .auth-showcase {
+    display: flex;
+    width: 42%;
+    min-width: 320px;
+  }
+}
+
+.auth-showcase__wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+}
+
+.auth-showcase__mark {
+  color: var(--color-foreground);
+  flex-shrink: 0;
+}
+
+.auth-showcase__affiliation {
+  color: var(--color-foreground);
+  opacity: 0.7;
+  font-weight: var(--weight-medium);
+}
+
+.auth-showcase__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 34ch;
+}
+
+.auth-showcase__lede {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  opacity: 0.75;
+}
+
+.auth-showcase__heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}

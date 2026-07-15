@@ -37,19 +37,31 @@ export function CourseCatalogPage() {
     let cancelled = false;
     setError(null);
 
+    // Courses and progress are fetched independently, not via Promise.all -- courses is the
+    // actual task (browse and pick one), progress is a secondary enhancement (the XP/streak
+    // status slot). A dual-agent critique found the coupled version failed the whole screen,
+    // full-page error and all, over a non-critical progress-service hiccup that had nothing to
+    // do with the learner's ability to browse and pick a course. A failed progress fetch now
+    // just leaves every card reading "Not started" instead of blanking the catalog entirely.
     async function load() {
       try {
-        const [coursesResult, progressResult] = await Promise.all([
-          courseService.list(),
-          progressService.listForUser({ userId: "me" }),
-        ]);
+        const coursesResult = await courseService.list();
         if (cancelled) return;
         setCourses(coursesResult.courses);
+      } catch (err) {
+        if (!cancelled) setError(parseApiError(err).message);
+        return;
+      }
+
+      try {
+        const progressResult = await progressService.listForUser({ userId: "me" });
+        if (cancelled) return;
         setProgressByCourseId(
           Object.fromEntries(progressResult.progress.map((entry) => [entry.course_id, entry]))
         );
-      } catch (err) {
-        if (!cancelled) setError(parseApiError(err).message);
+      } catch {
+        // Silently degrade -- the catalog itself already rendered above; every card just reads
+        // "Not started" rather than reflecting real progress until the next successful load.
       }
     }
     load();
@@ -102,9 +114,23 @@ function CourseCard({ course, progress }) {
   // before reading it. A subtle accent border does, without touching the status-representation
   // redesign itself (deferred separately): full border-color change, not a side-stripe (banned).
   const isInProgress = Boolean(progress) && !isCompleted;
+  // Dual-agent critique finding: with no aria-label, the anchor's accessible name was every
+  // descendant text node concatenated with no separation -- title, full narrative, and status
+  // running together as one undifferentiated block for a screen-reader user navigating by link.
+  // This gives back a scannable "title -- status" name instead, matching what a sighted user
+  // actually parses at a glance.
+  const statusLabel = isCompleted
+    ? "Completed"
+    : progress
+      ? `In progress, ${progress.xp} XP`
+      : "Not started";
 
   return (
-    <Link to={`/courses/${course.id}`} className="course-catalog__card-link">
+    <Link
+      to={`/courses/${course.id}`}
+      className="course-catalog__card-link"
+      aria-label={`${course.title} — ${statusLabel}`}
+    >
       <Card
         className={
           "course-catalog__card" + (isInProgress ? " course-catalog__card--in-progress" : "")

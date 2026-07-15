@@ -1,4 +1,4 @@
-# EduTech Quantum Learning Platform
+# Qubit — NUST
 
 An interactive learning platform for three quantum computing courses — Hardware, Algorithms, and Machine Learning — built for the NUST Quantum Computing Lab.
 

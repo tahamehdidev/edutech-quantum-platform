@@ -5,14 +5,39 @@
   gap: var(--space-3);
 }
 
+/* Dual-agent critique finding (P1): fixed 320x320px with zero @media rules anywhere in this
+   widget's stylesheet -- the lesson player's own content column leaves ~327px at 375px and less
+   on narrower real devices, with no slack for anything else on the line. min(320px, 100%) +
+   aspect-ratio keeps the same 320px ceiling on anything wide enough for it while shrinking to fit
+   on narrower viewports, matching the pattern LandingHeroVisual.css already uses for this same
+   component's decorative echo. */
 .bloch-sphere__canvas-wrapper {
   position: relative;
-  width: 320px;
-  height: 320px;
+  width: min(320px, 100%);
+  aspect-ratio: 1;
   background-color: var(--color-card);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+/* Dual-agent critique finding (P0): free_placement mode is now keyboard-focusable directly on
+   this wrapper, which has overflow: hidden and is flush with its own border-box on every side --
+   the exact same clipped-focus-ring shape already found and fixed twice elsewhere in this app
+   (the landing hero sphere, the course-detail chapter accordion). Fixed proactively here rather
+   than waiting for a third critique round to catch it: draw the ring inward. cursor: grab only
+   when actually draggable -- previously stayed the default arrow cursor even while interactive,
+   giving no affordance that the sphere could be dragged at all. */
+.bloch-sphere__canvas-wrapper:focus-visible {
+  outline-offset: -2px;
+}
+
+.bloch-sphere__canvas-wrapper[tabindex="0"] {
+  cursor: grab;
+}
+
+.bloch-sphere__canvas-wrapper[tabindex="0"]:active {
+  cursor: grabbing;
 }
 
 .bloch-sphere__pole-label {

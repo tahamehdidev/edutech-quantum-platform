@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Data Model
+# Qubit — NUST — Data Model
 
 **Status:** Finalized
 **Phase:** Data Architecture (Step 1 of pre-implementation design)

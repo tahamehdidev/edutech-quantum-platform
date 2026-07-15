@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Seed Data
+# Qubit — NUST — Seed Data
 
 **Status:** Finalized — Step 4 of content design
 **Generated:** June 2026

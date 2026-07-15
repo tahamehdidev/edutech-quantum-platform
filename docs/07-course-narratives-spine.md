@@ -1,4 +1,4 @@
-# EduTech Quantum Platform — Course Narratives (Spine)
+# Qubit — NUST — Course Narratives (Spine)
 
 **Status:** Finalized — Step 1 of content design (chapter-level spine)
 **Phase:** Task 2a — Narrative & Storyline Design

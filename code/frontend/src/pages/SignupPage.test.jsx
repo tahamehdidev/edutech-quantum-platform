@@ -50,15 +50,26 @@ function renderSignupPage() {
 }
 
 async function fillAndSubmit(user, { name = "Ada Lovelace", email = "ada@example.com", password = "password123" } = {}) {
-  await user.type(screen.getByLabelText("Name"), name);
-  await user.type(screen.getByLabelText("Email"), email);
-  await user.type(screen.getByLabelText("Password"), password);
+  await user.type(screen.getByLabelText("Your name"), name);
+  await user.type(screen.getByLabelText("Your email"), email);
+  await user.type(screen.getByLabelText("Create password"), password);
   await user.click(screen.getByRole("button", { name: "Create account" }));
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
   authService.refresh.mockRejectedValue(new Error("no session"));
+});
+
+test("shows a reassurance line about what happens after signup", () => {
+  // Critique fix: every landing-page CTA routed here with zero reassurance at the highest-stakes
+  // moment -- a bare Name/Email/Password form with no privacy note, no "what happens next."
+  renderSignupPage();
+  expect(
+    screen.getByText(
+      "Takes less than a minute — you'll land straight in the course catalog, ready to start your first lesson."
+    )
+  ).toBeInTheDocument();
 });
 
 test("a successful signup logs the new learner in and redirects to /courses", async () => {
@@ -101,7 +112,7 @@ test("a duplicate email highlights the email field specifically, using the backe
 
   const error = await screen.findByRole("alert");
   expect(error).toHaveTextContent("An account with this email already exists.");
-  expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByLabelText("Your email")).toHaveAttribute("aria-invalid", "true");
   expect(authService.login).not.toHaveBeenCalled();
 });
 
@@ -118,7 +129,7 @@ test("a too-short password is caught client-side, never reaches the network, and
 
   const error = await screen.findByRole("alert");
   expect(error).toHaveTextContent("Password must be at least 8 characters.");
-  expect(screen.getByLabelText("Password")).toHaveAttribute("aria-invalid", "true");
+  expect(screen.getByLabelText("Create password")).toHaveAttribute("aria-invalid", "true");
   expect(screen.queryByText("At least 8 characters")).not.toBeInTheDocument();
   expect(authService.signup).not.toHaveBeenCalled();
 });
@@ -132,7 +143,7 @@ test("a non-field signup error (e.g. network) shows the page-level banner, not a
 
   const error = await screen.findByRole("alert");
   expect(error).toHaveTextContent("Could not reach the server. Check your connection.");
-  expect(screen.getByLabelText("Email")).not.toHaveAttribute("aria-invalid");
+  expect(screen.getByLabelText("Your email")).not.toHaveAttribute("aria-invalid");
 });
 
 test("if signup succeeds but the follow-up login fails, sends the learner to log in instead of showing an error", async () => {
@@ -158,9 +169,9 @@ test("disables the form while submitting", async () => {
 
   await fillAndSubmit(user);
 
-  expect(screen.getByLabelText("Name")).toBeDisabled();
-  expect(screen.getByLabelText("Email")).toBeDisabled();
-  expect(screen.getByLabelText("Password")).toBeDisabled();
+  expect(screen.getByLabelText("Your name")).toBeDisabled();
+  expect(screen.getByLabelText("Your email")).toBeDisabled();
+  expect(screen.getByLabelText("Create password")).toBeDisabled();
   expect(screen.getByRole("button", { name: "Create account" })).toHaveAttribute("aria-busy", "true");
 
   resolveSignup({ id: "u1", email: "ada@example.com", name: "Ada Lovelace", role: "learner" });
