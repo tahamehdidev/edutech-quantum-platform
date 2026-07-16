@@ -1,4 +1,5 @@
 import { AppError } from "../errors/index.js";
+import { reportError } from "../utils/sentry.js";
 
 // 04-application-architecture.md §6.3 -- registered last in app.js, with no exceptions. The
 // `instanceof AppError` branch is the actual safety property: anything not deliberately thrown
@@ -17,6 +18,7 @@ export function errorHandler(err, _req, res, _next) {
   }
 
   console.error("Unhandled error:", err);
+  reportError(err);
   return res.status(500).json({
     error: { code: "INTERNAL_ERROR", message: "Something went wrong. Please try again." },
   });

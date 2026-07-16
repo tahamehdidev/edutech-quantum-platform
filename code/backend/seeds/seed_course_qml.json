@@ -251,12 +251,11 @@
                     "content": {
                       "options": [
                         "exponential scaling of required information with particle count.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "linear scaling of required information with particle count, which classical computers still can't keep up with.",
+                        "quantum particles cannot be represented using classical binary data at all, under any circumstances.",
+                        "classical computers lack the raw clock speed needed, not a fundamental scaling problem."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -270,12 +269,11 @@
                     "content": {
                       "options": [
                         "using quantum circuits as a different kind of trainable model, not simply a faster classical one.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "using quantum computers purely to speed up existing classical neural network training, unchanged.",
+                        "replacing all classical data with quantum data before any machine learning can begin.",
+                        "using quantum random number generators to replace classical model initialization."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -289,12 +287,11 @@
                     "content": {
                       "options": [
                         "the device doing the computation, not the data itself.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the data itself, which must originate from a quantum-mechanical measurement.",
+                        "neither the data nor the device — the term refers only to the training algorithm used.",
+                        "both the data and the device, by definition of the quadrant's name."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -306,8 +303,8 @@
                     "prompt": "If 10 interacting particles need roughly 1,000 numbers to describe classically, order-of-magnitude how many would 20 particles need?",
                     "type": "numeric",
                     "content": {
-                      "correctValue": 1000000.0,
-                      "tolerance": 100000.0
+                      "correctValue": 1000000,
+                      "tolerance": 100000
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -710,12 +707,11 @@
                     "content": {
                       "options": [
                         "\\|0⟩.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "|1⟩.",
+                        "an equal superposition of |0⟩ and |1⟩.",
+                        "a fully decohered, unmeasurable state."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -729,12 +725,11 @@
                     "content": {
                       "options": [
                         "close to 50/50.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "close to 100% |0⟩, 0% |1⟩.",
+                        "close to 0% |0⟩, 100% |1⟩.",
+                        "the probability can't be determined without measuring twice."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -748,12 +743,11 @@
                     "content": {
                       "options": [
                         "Hadamard (H).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "Pauli-X (X).",
+                        "Pauli-Z (Z).",
+                        "CNOT."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -767,12 +761,11 @@
                     "content": {
                       "options": [
                         "it collapses to a definite outcome.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it splits into two independent qubits, one for each possible outcome.",
+                        "it is unaffected, remaining in superposition until a second measurement occurs.",
+                        "it reverses back to its original state before any gates were applied."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -786,12 +779,11 @@
                     "content": {
                       "options": [
                         "they can sit at different points on the equator (or more generally the sphere), encoding more information than probability alone captures.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "they can't — identical measurement probabilities always mean identical physical states.",
+                        "only because of measurement error; in a perfect experiment they would be indistinguishable.",
+                        "because one of the two states must be entangled with a second qubit."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -805,12 +797,11 @@
                     "content": {
                       "options": [
                         "an unknown quantum state can't be copied, so collapse-on-measurement can't be worked around by duplicating the state first.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a qubit can't be entangled with more than one other qubit at a time.",
+                        "a quantum circuit can't contain more than one copy of the same gate.",
+                        "an unknown quantum state can be copied at most once, then never again."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1132,12 +1123,11 @@
                     "content": {
                       "options": [
                         "amplitude encoding.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "angle encoding.",
+                        "basis encoding.",
+                        "all three encodings use exactly the same number of qubits."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1151,12 +1141,11 @@
                     "content": {
                       "options": [
                         "angle encoding.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "amplitude encoding.",
+                        "basis encoding.",
+                        "none of the three encodings use rotations."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1170,12 +1159,11 @@
                     "content": {
                       "options": [
                         "preparing exact amplitude values is gate-expensive and error-prone.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it requires far more qubits than any other encoding method.",
+                        "it cannot represent negative or complex values at all.",
+                        "it only works for datasets with exactly a power-of-two number of features."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1189,12 +1177,11 @@
                     "content": {
                       "options": [
                         "directly storing a binary number, bit for bit.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "compressing a file to reduce its storage size.",
+                        "encrypting a message using a shared secret key.",
+                        "rounding a floating-point number to the nearest integer."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1213,7 +1200,11 @@
                   "Amplitude encoding: log₂N qubits",
                   "Angle encoding: roughly one qubit per feature"
                 ],
-                "correctOrder": [1, 2, 0]
+                "correctOrder": [
+                  1,
+                  2,
+                  0
+                ]
               },
               "created_by_id": "00000000-0000-0000-0000-000000000001"
             }
@@ -1459,12 +1450,11 @@
                     "content": {
                       "options": [
                         "it contains gates with tunable angles, not fixed ones.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it contains only measurement operations, with no gates at all.",
+                        "it must contain at least one two-qubit gate for every qubit in the circuit.",
+                        "every gate's angle is fixed in advance and never changes during training."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1478,12 +1468,11 @@
                     "content": {
                       "options": [
                         "an ansatz.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a kernel.",
+                        "an oracle.",
+                        "a syndrome."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1497,12 +1486,11 @@
                     "content": {
                       "options": [
                         "measuring an intermediate state would collapse it, destroying the needed information.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "quantum circuits have no concept of a loss function to backpropagate.",
+                        "backpropagation requires more qubits than any near-term hardware provides.",
+                        "quantum gates are not differentiable functions, unlike classical neural network layers."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1516,12 +1504,11 @@
                     "content": {
                       "options": [
                         "two (shifted by +π/2 and −π/2).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "one, evaluated at the parameter's current value.",
+                        "four, one for each possible measurement outcome.",
+                        "as many as there are qubits in the circuit."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1535,12 +1522,11 @@
                     "content": {
                       "options": [
                         "the formula is exact, but a practical gradient estimate still carries shot-sampling noise and hardware noise.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the formula is only approximate, but real-hardware gradients computed from it are noise-free.",
+                        "the formula is exact, and gradients computed from it on real hardware are also perfectly noise-free.",
+                        "the formula is only approximate, and real-hardware gradients inherit that same approximation error plus noise."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1554,12 +1540,11 @@
                     "content": {
                       "options": [
                         "roughly 2P.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "roughly P², growing quadratically.",
+                        "roughly log₂(P), growing logarithmically.",
+                        "it stays constant regardless of P."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1827,12 +1812,11 @@
                     "content": {
                       "options": [
                         "it makes the final prediction/classification, using the quantum-computed similarity scores as input.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it computes the similarity scores, which the quantum computer then classifies.",
+                        "it has no role at all; the entire pipeline runs on the quantum computer.",
+                        "it trains the quantum circuit's parameters via backpropagation."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1846,12 +1830,11 @@
                     "content": {
                       "options": [
                         "encode → parameterized circuit → measure → compare to target and update parameters.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "measure → encode → compare to target → parameterized circuit.",
+                        "encode → measure → parameterized circuit → update parameters before comparing to target.",
+                        "parameterized circuit → encode → update parameters → measure."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1865,12 +1848,11 @@
                     "content": {
                       "options": [
                         "the underlying problem is itself exponentially hard classically because it's quantum-mechanical in nature.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "molecules are the only data type that can be encoded using basis encoding.",
+                        "molecular datasets are always small enough to fit on near-term hardware.",
+                        "classical computers can already simulate molecules perfectly, so the comparison is simpler."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1884,12 +1866,11 @@
                     "content": {
                       "options": [
                         "an open research question, dataset-dependent.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a settled fact — quantum kernels are proven to outperform classical kernels on every dataset.",
+                        "a settled fact — classical kernels are proven to always outperform quantum kernels.",
+                        "not a meaningful question, since quantum and classical kernels are mathematically identical."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2083,12 +2064,11 @@
                     "content": {
                       "options": [
                         "is the advantage proven (not just demonstrated)? does it hold on real hardware? was the classical baseline genuinely strong?",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "how many qubits were used? how long did the experiment take? who funded the research?",
+                        "was the result published? was it peer-reviewed? was it reported in the news?",
+                        "did it use superconducting qubits? did it use error correction? was quantum volume measured?"
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2102,12 +2082,11 @@
                     "content": {
                       "options": [
                         "a region of vanishing gradient in a quantum circuit's training landscape, making it hard to train, especially at scale.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a hardware defect causing a qubit to permanently lose coherence.",
+                        "a region where a circuit's gradient becomes infinitely large, causing training to diverge.",
+                        "the point at which a classical simulation of a quantum circuit becomes impossible."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2121,12 +2100,11 @@
                     "content": {
                       "options": [
                         "a circuit easy to train may also be one a classical computer could simulate efficiently, potentially undermining the case for using it.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "barren plateaus only occur in circuits that are impossible to simulate classically.",
+                        "classical simulability has no known relationship to a circuit's trainability.",
+                        "a circuit hard to train classically is always also hard to train on quantum hardware."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2140,12 +2118,11 @@
                     "content": {
                       "options": [
                         "mitigation reduces noise's effect and is used today; correction structurally prevents errors via redundant qubits and isn't yet available at large scale.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "mitigation and correction are two names for the same underlying technique.",
+                        "correction is used today; mitigation is a future technique requiring redundant qubits.",
+                        "mitigation requires redundant qubits; correction is a purely statistical, software-only technique."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2159,12 +2136,11 @@
                     "content": {
                       "options": [
                         "open — strong in specific niches (e.g. molecular simulation), unresolved in general.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "settled — QML has been proven to outperform classical ML across the board.",
+                        "settled — classical ML has been proven to always outperform QML.",
+                        "the question doesn't apply, since QML and classical ML solve entirely disjoint sets of problems."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }

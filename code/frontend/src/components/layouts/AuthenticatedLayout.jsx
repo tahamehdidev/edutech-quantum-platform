@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation, useNavigate, NavLink } from "react-router-dom";
+import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
+import { RouteTransition } from "./RouteTransition.jsx";
 import "./AuthenticatedLayout.css";
 
 // Real navigation, not the placeholder it used to be (nav-flow audit) -- every authenticated
@@ -66,7 +67,7 @@ export function AuthenticatedLayout() {
           Account created — welcome, {welcomeName}.
         </p>
       ) : null}
-      <Outlet />
+      <RouteTransition />
     </div>
   );
 }

@@ -211,6 +211,16 @@ test("'Expand all' opens every chapter at once, then becomes 'Collapse all'", as
   expect(screen.queryByRole("button", { name: "Expand all" })).toBeInTheDocument();
 });
 
+test("a course with zero chapters shows a distinct empty state, not an empty chapter list", async () => {
+  courseService.getById.mockResolvedValue({ ...COURSE, chapters: [] });
+  renderDetail();
+
+  expect(
+    await screen.findByText("This course doesn’t have any chapters yet — check back soon.")
+  ).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Expand all" })).not.toBeInTheDocument();
+});
+
 test("a nonexistent course shows a 'not found' message with a link back to the catalog, no retry button", async () => {
   courseService.getById.mockRejectedValue({
     response: { data: { error: { code: "NOT_FOUND", message: "Course not found." } } },

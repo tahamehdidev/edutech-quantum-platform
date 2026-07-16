@@ -1,6 +1,9 @@
 import { app } from "./app.js";
 import { env } from "./config/env.js";
 import { initDummyHash } from "./utils/hash.js";
+import { initSentry } from "./utils/sentry.js";
+
+initSentry();
 
 // Must succeed before the server starts accepting connections (03-security-architecture.md
 // §1.2) -- if computing the dummy hash fails, the server must fail to start entirely rather than

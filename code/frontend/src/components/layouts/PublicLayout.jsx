@@ -1,9 +1,9 @@
-import { Outlet } from "react-router-dom";
+import { RouteTransition } from "./RouteTransition.jsx";
 
 export function PublicLayout() {
   return (
     <div>
-      <Outlet />
+      <RouteTransition />
     </div>
   );
 }

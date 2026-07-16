@@ -119,27 +119,35 @@ export function CourseDetailPage() {
         <>
           <h1>{course.title}</h1>
           {course.narrative ? <p className="course-detail__narrative">{course.narrative}</p> : null}
-          {course.chapters.length > 1 ? (
-            <button
-              type="button"
-              className="course-detail__toggle-all"
-              onClick={toggleAllChapters}
-            >
-              {allExpanded ? "Collapse all" : "Expand all"}
-            </button>
-          ) : null}
-          <ul className="course-detail__chapters">
-            {course.chapters.map((chapter, index) => (
-              <ChapterAccordionItem
-                key={chapter.id}
-                chapter={chapter}
-                index={index}
-                lessons={lessonsByChapterId[chapter.id] ?? []}
-                isExpanded={expandedChapterIds.has(chapter.id)}
-                onToggle={() => toggleChapter(chapter.id)}
-              />
-            ))}
-          </ul>
+          {course.chapters.length === 0 ? (
+            <p className="course-detail__empty">
+              This course doesn&rsquo;t have any chapters yet — check back soon.
+            </p>
+          ) : (
+            <>
+              {course.chapters.length > 1 ? (
+                <button
+                  type="button"
+                  className="course-detail__toggle-all"
+                  onClick={toggleAllChapters}
+                >
+                  {allExpanded ? "Collapse all" : "Expand all"}
+                </button>
+              ) : null}
+              <ul className="course-detail__chapters">
+                {course.chapters.map((chapter, index) => (
+                  <ChapterAccordionItem
+                    key={chapter.id}
+                    chapter={chapter}
+                    index={index}
+                    lessons={lessonsByChapterId[chapter.id] ?? []}
+                    isExpanded={expandedChapterIds.has(chapter.id)}
+                    onToggle={() => toggleChapter(chapter.id)}
+                  />
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
     </main>

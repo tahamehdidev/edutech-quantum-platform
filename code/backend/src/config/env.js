@@ -21,4 +21,7 @@ export const env = {
   DATABASE_URL: required(isTest ? "TEST_DATABASE_URL" : "DATABASE_URL"),
   JWT_ACCESS_SECRET: required("JWT_ACCESS_SECRET"),
   FRONTEND_URL: required("FRONTEND_URL"),
+  // Optional (Phase 5 Polish) -- unset in dev/test/CI, so Sentry stays a genuine no-op until a
+  // real project's DSN is supplied. Not `required()`: this must never block the app from starting.
+  SENTRY_DSN: process.env.SENTRY_DSN ?? null,
 };

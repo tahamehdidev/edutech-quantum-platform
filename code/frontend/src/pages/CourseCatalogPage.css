@@ -16,6 +16,12 @@
   font-size: var(--text-sm);
 }
 
+.course-catalog__empty {
+  color: var(--color-muted-foreground);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
 .course-catalog__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

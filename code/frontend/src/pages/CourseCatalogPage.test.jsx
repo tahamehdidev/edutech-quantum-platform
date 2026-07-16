@@ -189,6 +189,17 @@ test("a progress-fetch failure still renders the catalog, degrading every card t
   expect(screen.getAllByText("Not started")).toHaveLength(3);
 });
 
+test("zero courses shows a distinct empty state, not an empty grid", async () => {
+  courseService.list.mockResolvedValue({ courses: [], pagination: {} });
+  progressService.listForUser.mockResolvedValue({ progress: [], pagination: {} });
+  const { container } = renderCatalog();
+
+  expect(
+    await screen.findByText("No courses are available yet — check back soon.")
+  ).toBeInTheDocument();
+  expect(container.querySelector(".course-catalog__grid")).not.toBeInTheDocument();
+});
+
 test("a fetch failure shows the error banner with a retry action that re-fetches", async () => {
   const user = userEvent.setup();
   courseService.list.mockRejectedValueOnce(new Error("network down"));

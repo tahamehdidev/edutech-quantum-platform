@@ -185,12 +185,11 @@
                     "content": {
                       "options": [
                         "superconducting circuits, trapped ions, photonic qubits, neutral atom arrays.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "superconducting circuits, quantum dots, nuclear spins, topological qubits.",
+                        "trapped ions, photonic qubits, silicon spin qubits, diamond NV centers.",
+                        "superconducting circuits, trapped ions, classical transistors, optical fibers."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -204,12 +203,11 @@
                     "content": {
                       "options": [
                         "trapped ions.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "superconducting circuits.",
+                        "photonic qubits.",
+                        "neutral atom arrays."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -223,12 +221,11 @@
                     "content": {
                       "options": [
                         "photonic qubits.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "superconducting circuits.",
+                        "trapped ions.",
+                        "neutral atom arrays."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -242,12 +239,11 @@
                     "content": {
                       "options": [
                         "neutral atom arrays.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "trapped ions.",
+                        "photonic qubits.",
+                        "superconducting circuits."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -261,12 +257,11 @@
                     "content": {
                       "options": [
                         "they can be fabricated using techniques adapted from existing chip-manufacturing processes.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "they operate at room temperature, unlike every other platform.",
+                        "they have the longest coherence times of any known platform.",
+                        "they require no microwave control electronics at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -280,12 +275,11 @@
                     "content": {
                       "options": [
                         "coordinating growing numbers of individually-aimed laser control beams.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the need for a dilution refrigerator cooled below 20 millikelvin.",
+                        "the fixed, unchangeable physical spacing between superconducting qubits.",
+                        "the difficulty of fabricating Josephson junctions at scale."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -559,12 +553,11 @@
                     "content": {
                       "options": [
                         "Cooper pairs.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "Bloch pairs.",
+                        "Josephson pairs.",
+                        "quasiparticle pairs."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -578,12 +571,11 @@
                     "content": {
                       "options": [
                         "two superconducting regions separated by a thin insulating barrier thin enough for quantum tunneling.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "two superconducting regions separated by a vacuum gap wide enough to block all current.",
+                        "two normal-metal regions separated by a thick superconducting barrier.",
+                        "two superconducting regions connected directly by a copper wire."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -597,12 +589,11 @@
                     "content": {
                       "options": [
                         "it dramatically reduces sensitivity to charge noise.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it increases the qubit's operating frequency into the optical range.",
+                        "it eliminates the need for cooling below the superconducting critical temperature.",
+                        "it removes the need for a Josephson junction entirely."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -616,12 +607,11 @@
                     "content": {
                       "options": [
                         "more closely spaced energy levels, requiring careful pulse shaping to avoid leaking into unwanted states.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a substantial increase in sensitivity to magnetic flux noise instead.",
+                        "a reduction in coherence time to well under a microsecond.",
+                        "the qubit can no longer be controlled using microwave pulses."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -635,12 +625,11 @@
                     "content": {
                       "options": [
                         "superconductivity itself requires it below a critical temperature, and thermal energy would otherwise randomly disturb the qubit's state.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "to slow down the speed of light inside the chip, and to prevent the qubit from physically vibrating.",
+                        "to increase the qubit's operating frequency, and to make the Josephson junction superconducting for the first time.",
+                        "to eliminate quasiparticles entirely, and to allow the use of standard copper wiring."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -654,12 +643,11 @@
                     "content": {
                       "options": [
                         "an unwanted excitation from a broken Cooper pair that can disturb a qubit's state; suppressing it is part of why chips are cooled well below the bare superconducting critical temperature.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a virtual photon exchanged between two coupled qubits; it must be suppressed to allow two-qubit gates.",
+                        "the classical bit stored alongside a qubit for error correction; it requires no special cooling.",
+                        "an artifact of imperfect measurement equipment, unrelated to the physical qubit itself."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -673,12 +661,11 @@
                     "content": {
                       "options": [
                         "microwave frequencies, roughly 3-8 GHz.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "optical frequencies, roughly 400-800 THz.",
+                        "radio frequencies, roughly 3-8 MHz.",
+                        "audio frequencies, roughly 3-8 kHz."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -794,23 +781,101 @@
                 "params": {
                   "caption": "A 3x3 grid layout, like the chessboard example above -- click any two qubits to check whether they're directly connected.",
                   "qubits": [
-                    { "id": 0, "x": 0, "y": 0 },
-                    { "id": 1, "x": 1, "y": 0 },
-                    { "id": 2, "x": 2, "y": 0 },
-                    { "id": 3, "x": 0, "y": 1 },
-                    { "id": 4, "x": 1, "y": 1 },
-                    { "id": 5, "x": 2, "y": 1 },
-                    { "id": 6, "x": 0, "y": 2 },
-                    { "id": 7, "x": 1, "y": 2 },
-                    { "id": 8, "x": 2, "y": 2 }
+                    {
+                      "id": 0,
+                      "x": 0,
+                      "y": 0
+                    },
+                    {
+                      "id": 1,
+                      "x": 1,
+                      "y": 0
+                    },
+                    {
+                      "id": 2,
+                      "x": 2,
+                      "y": 0
+                    },
+                    {
+                      "id": 3,
+                      "x": 0,
+                      "y": 1
+                    },
+                    {
+                      "id": 4,
+                      "x": 1,
+                      "y": 1
+                    },
+                    {
+                      "id": 5,
+                      "x": 2,
+                      "y": 1
+                    },
+                    {
+                      "id": 6,
+                      "x": 0,
+                      "y": 2
+                    },
+                    {
+                      "id": 7,
+                      "x": 1,
+                      "y": 2
+                    },
+                    {
+                      "id": 8,
+                      "x": 2,
+                      "y": 2
+                    }
                   ],
                   "edges": [
-                    [0, 1], [1, 2],
-                    [3, 4], [4, 5],
-                    [6, 7], [7, 8],
-                    [0, 3], [3, 6],
-                    [1, 4], [4, 7],
-                    [2, 5], [5, 8]
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      7,
+                      8
+                    ],
+                    [
+                      0,
+                      3
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      7
+                    ],
+                    [
+                      2,
+                      5
+                    ],
+                    [
+                      5,
+                      8
+                    ]
                   ]
                 }
               }
@@ -887,12 +952,11 @@
                     "content": {
                       "options": [
                         "direct physical couplings allowing two-qubit gates between connected qubits.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the order in which qubits were fabricated on the chip.",
+                        "classical wires carrying measurement results to a readout computer.",
+                        "a measurement having already occurred between the two qubits."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -906,12 +970,11 @@
                     "content": {
                       "options": [
                         "a physical coupling between them, as designed into the chip.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "both qubits must currently hold the same measured value.",
+                        "a classical communication channel between the two qubits' control electronics.",
+                        "both qubits must be cooled to a lower temperature than the rest of the chip."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -925,12 +988,11 @@
                     "content": {
                       "options": [
                         "it inserts extra gates (e.g. SWAPs) to move qubit information until the needed qubits are adjacent.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it physically moves the qubits closer together on the chip.",
+                        "it establishes a new direct coupling between the two qubits on demand.",
+                        "it substitutes a classical computation for the missing quantum interaction."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -944,12 +1006,11 @@
                     "content": {
                       "options": [
                         "no — every inserted gate adds extra time and its own chance of error.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — SWAP gates are implemented in classical control software, outside the quantum circuit.",
+                        "yes — routing only affects which qubits are labeled which, not the circuit that runs.",
+                        "no — but only time is added; SWAP gates are considered perfectly error-free."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1122,12 +1183,11 @@
                     "content": {
                       "options": [
                         "its duration, amplitude, and frequency.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "its color, polarization, and direction of travel.",
+                        "its duration, its distance from the dilution refrigerator, and the ambient temperature.",
+                        "the qubit's coherence time, its gate error rate, and its coupling strength."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1141,12 +1201,11 @@
                     "content": {
                       "options": [
                         "its closely spaced energy levels risk unwanted leakage into a third level if pulses aren't shaped carefully.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "transmons have no well-defined |0⟩/|1⟩ states to target in the first place.",
+                        "transmons operate at optical frequencies, where pulse shaping equipment is less precise.",
+                        "transmons lack a shunting capacitor, making them highly sensitive to charge noise."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1160,12 +1219,11 @@
                     "content": {
                       "options": [
                         "adds a calculated correction to a pulse's shape to cancel out unwanted leakage into a third energy level.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "lengthens every pulse to guarantee it never leaks into a third energy level.",
+                        "cools the qubit further to suppress leakage into unwanted states.",
+                        "replaces microwave control entirely with a slower, more precise optical pulse."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1179,12 +1237,11 @@
                     "content": {
                       "options": [
                         "exploiting the physical coupling between two specific, adjacent qubits via coordinated pulses.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "measuring one of the two qubits before the gate can be applied.",
+                        "cooling the two qubits to a lower temperature than the rest of the chip.",
+                        "routing a classical signal between the two qubits' readout resonators."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1198,12 +1255,11 @@
                     "content": {
                       "options": [
                         "via a shift in a coupled resonator's resonant frequency, which depends on the qubit's collapsed state.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "by directly measuring the qubit's Josephson junction current.",
+                        "by briefly warming the qubit above its critical temperature and observing the result.",
+                        "by applying a second qubit as a classical control bit and reading that instead."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1473,12 +1529,11 @@
                     "content": {
                       "options": [
                         "unwanted interaction with the environment leaking quantum information out of a qubit, destroying its prepared state.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the deliberate act of measuring a qubit to obtain a classical result.",
+                        "the process by which a qubit's gate error rate is calculated.",
+                        "the intentional entangling of a qubit with its neighbor during a two-qubit gate."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1492,12 +1547,11 @@
                     "content": {
                       "options": [
                         "how long it takes, on average, for a qubit to spontaneously decay from \\|1⟩ to \\|0⟩.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "how long a two-qubit gate takes to complete on average.",
+                        "how long it takes for phase information to be scrambled by the environment.",
+                        "how long the dilution refrigerator takes to reach operating temperature."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1511,12 +1565,11 @@
                     "content": {
                       "options": [
                         "how long phase information is preserved; it can be disturbed by subtler effects than energy loss alone, and is bounded by T2 ≤ 2×T1.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "how long it takes for a qubit to lose energy and decay to |0⟩; it is always exactly equal to T1.",
+                        "how long a full circuit can run before qubit count must be reduced; it is unrelated to T1.",
+                        "how accurately a two-qubit gate performs its intended operation; it is always greater than 2×T1."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1530,12 +1583,11 @@
                     "content": {
                       "options": [
                         "a circuit's total runtime must finish within the coherence window, or results become corrupted regardless of how many qubits exist.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "qubit count is actually irrelevant to a quantum computer's capability entirely.",
+                        "more qubits always means proportionally longer coherence time, so the two metrics are equivalent.",
+                        "decoherence only affects classical control electronics, not the qubits themselves."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1549,12 +1601,11 @@
                     "content": {
                       "options": [
                         "superconducting: microseconds to a few hundred microseconds; trapped ions: seconds or longer.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "superconducting: seconds or longer; trapped ions: microseconds to a few hundred microseconds.",
+                        "both platforms achieve coherence times in the millisecond range, with no significant difference.",
+                        "superconducting qubits have no meaningful coherence time; trapped ions decohere within nanoseconds."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1568,12 +1619,11 @@
                     "content": {
                       "options": [
                         "how accurately an actively applied gate performs its intended effect; distinct from T1/T2, which measure passive survival time.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "how long a qubit survives without any gates being applied at all; T1/T2 measure the opposite.",
+                        "the same quantity as T1, just expressed as a percentage instead of a duration.",
+                        "how many two-qubit gates a chip's topology allows in parallel; unrelated to T1/T2."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1587,12 +1637,11 @@
                     "content": {
                       "options": [
                         "single-qubit gates below roughly 0.1% error; two-qubit gates in the rough 0.5%-1% range.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "single-qubit gates around 10% error; two-qubit gates around 25%-30% error.",
+                        "both single- and two-qubit gates below 0.001% error, matching classical logic gates.",
+                        "single-qubit gates around 0.5%-1% error; two-qubit gates below roughly 0.1% error."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1914,12 +1963,11 @@
                     "content": {
                       "options": [
                         "no-cloning forbids copying, and direct measurement would collapse and destroy the protected information.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "quantum computers have no concept of an 'error' the way classical computers do.",
+                        "quantum error correction requires more qubits than currently exist, making it theoretically impossible.",
+                        "classical redundancy schemes work identically on qubits, so no new technique is needed at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1933,12 +1981,11 @@
                     "content": {
                       "options": [
                         "they reveal whether/where an error occurred without collapsing or revealing the protected logical information.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "they directly measure and reveal the logical qubit's protected state for verification.",
+                        "they physically repair a decohered qubit by re-cooling it below its critical temperature.",
+                        "they replace the need for redundant physical qubits entirely."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1952,12 +1999,11 @@
                     "content": {
                       "options": [
                         "gate error rate; roughly 0.5%-1% per gate for current leading hardware, close to typical cited thresholds.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "qubit count; roughly one million physical qubits, far beyond current hardware.",
+                        "T1 coherence time; roughly one second, far beyond current hardware.",
+                        "classical wiring bandwidth; roughly one gigabit per second per qubit."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1971,12 +2017,11 @@
                     "content": {
                       "options": [
                         "that increasing code size measurably decreased the logical error rate below the best individual physical qubit's error rate (the break-even point).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "that a fully error-corrected, million-qubit quantum computer had been built.",
+                        "that Shor's algorithm had successfully factored a cryptographically-sized RSA key.",
+                        "that increasing code size had no measurable effect on the logical error rate."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1990,12 +2035,11 @@
                     "content": {
                       "options": [
                         "correction uses redundant physical qubits to structurally prevent errors; mitigation reduces noise's effect via software/statistics without redundant qubits, and is what most near-term hardware relies on today.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "correction and mitigation are two names for exactly the same technique.",
+                        "mitigation uses redundant physical qubits; correction is a purely software-based statistical technique.",
+                        "correction is already standard on all near-term hardware; mitigation is a future, theoretical technique."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2009,12 +2053,11 @@
                     "content": {
                       "options": [
                         "routing growing numbers of control/readout wires into the dilution refrigerator without introducing heat or noise.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "finding enough physical space on Earth to house the dilution refrigerator.",
+                        "the classical computer used to program the quantum chip running out of memory.",
+                        "a shortage of the rare-earth metals used to fabricate Josephson junctions."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2028,12 +2071,11 @@
                     "content": {
                       "options": [
                         "no — today's results use roughly a hundred or so physical qubits per logical qubit; real-scale applications need many thousands of logical qubits.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — current error-corrected processors already exceed the qubit count Shor's algorithm needs.",
+                        "yes, but only for RSA keys shorter than those used in practice today.",
+                        "the question is moot — Shor's algorithm doesn't benefit from error correction at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2047,12 +2089,11 @@
                     "content": {
                       "options": [
                         "no single metric (qubit count, coherence time, gate error) alone captures a real machine's full capability.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "qubit count alone is actually sufficient, but composite benchmarks are used for marketing purposes.",
+                        "coherence time alone is actually sufficient, but composite benchmarks are required by regulation.",
+                        "composite benchmarks were only introduced because gate error rates can no longer be measured directly."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }

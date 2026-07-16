@@ -1,0 +1,16 @@
+.route-transition {
+  animation: route-transition-in var(--duration-base) var(--ease-out);
+}
+
+@keyframes route-transition-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-transition {
+    animation: none;
+  }
+}

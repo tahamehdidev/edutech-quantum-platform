@@ -199,11 +199,17 @@ export function BlochSphere({ params }) {
       <div
         className="bloch-sphere__canvas-wrapper"
         tabIndex={mode === "free_placement" ? 0 : undefined}
-        role={mode === "free_placement" ? "group" : undefined}
+        role={mode === "free_placement" ? "group" : "img"}
         aria-label={
           mode === "free_placement"
             ? "Interactive qubit state sphere. Drag, or focus and use the arrow keys, to rotate it."
-            : undefined
+            : // Not draggable in these modes (rotation happens via the gate/slider/measure controls
+              // below, not the sphere itself), so no tabIndex/keydown -- but it's still a meaningful
+              // visual the previous audit found completely unlabeled for screen-reader users. The
+              // exact numeric state is already announced via the role="status" readout below in
+              // every mode, so this only needs to orient a screen-reader user to what the graphic
+              // is, not repeat the numbers.
+              "Visual representation of the qubit's state on the Bloch sphere; see the readout below for the exact values."
         }
         onKeyDown={mode === "free_placement" ? handleFreePlacementKeyDown : undefined}
       >

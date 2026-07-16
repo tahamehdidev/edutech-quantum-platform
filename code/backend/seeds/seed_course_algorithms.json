@@ -254,12 +254,11 @@
                     "content": {
                       "options": [
                         "produces an equal superposition (the \\|+⟩ state).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "flips it directly to |1⟩.",
+                        "leaves it completely unchanged.",
+                        "collapses it to a definite classical bit."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -273,12 +272,11 @@
                     "content": {
                       "options": [
                         "it changes phase, which only shows up through interference, not direct measurement.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the Z gate has no effect on a qubit whatsoever, in any circumstance.",
+                        "the Z gate only applies to two-qubit systems, never to a single qubit.",
+                        "measurement equipment is not sensitive enough to detect the Z gate's effect."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -292,12 +290,11 @@
                     "content": {
                       "options": [
                         "no — phase can be any point on a circle (complex e^iφ); sign flips are a special case.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — phase is always either +1 or −1, with no other possible values.",
+                        "no — phase can only take one of four discrete values: 0°, 90°, 180°, or 270°.",
+                        "yes, but only for single-qubit gates; multi-qubit gates allow a continuous range."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -311,12 +308,11 @@
                     "content": {
                       "options": [
                         "any quantum operation can be built or closely approximated using only gates from that set.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the gate set contains exactly one gate that works for every possible circuit.",
+                        "the gate set can only be used on universally-compatible hardware platforms.",
+                        "every gate in the set must act on all qubits in the circuit simultaneously."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -330,12 +326,11 @@
                     "content": {
                       "options": [
                         "the order in which operations are applied to that qubit, over time.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the physical left-to-right position of qubits on the chip.",
+                        "the relative importance of each gate to the circuit's final result.",
+                        "the order in which the gates were designed, not the order they execute."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -349,12 +344,11 @@
                     "content": {
                       "options": [
                         "it acts on two qubits jointly, and its effect on the target depends on the control qubit's state.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it is the only gate that can be reversed once applied.",
+                        "it is the only gate that requires cooling below the superconducting critical temperature.",
+                        "it acts on a single qubit, just like the other gates, but takes twice as long to apply."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -629,12 +623,11 @@
                     "content": {
                       "options": [
                         "Hadamard on the first qubit, then CNOT with that qubit as control.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "CNOT on both qubits, then Hadamard on the second qubit.",
+                        "Hadamard on both qubits simultaneously, with no CNOT needed.",
+                        "Pauli-X on the first qubit, then Pauli-Z on the second qubit."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -648,12 +641,11 @@
                     "content": {
                       "options": [
                         "entanglement is information held jointly, not in either qubit's individual state.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the Bloch sphere can only represent one qubit total, entangled or not.",
+                        "entangled qubits have no definite phase, which the Bloch sphere requires to plot a point.",
+                        "it can, in fact — each qubit still maps to its own independent point on the sphere."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -667,12 +659,11 @@
                     "content": {
                       "options": [
                         "it cannot be used to send any information; Bob's measurement statistics are unaffected by anything Alice does, without a classical message.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it can be used to send one classical bit of information instantly, with no message needed.",
+                        "it can be used to send information, but only over distances shorter than a few meters.",
+                        "it says entanglement decays instantly once either qubit is measured, preventing any later use."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -686,12 +677,11 @@
                     "content": {
                       "options": [
                         "CNOT (unknown qubit as control, her Bell-pair qubit as target), then Hadamard on the unknown qubit specifically.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "Hadamard on her Bell-pair qubit, then CNOT with the unknown qubit as target.",
+                        "CNOT (her Bell-pair qubit as control, the unknown qubit as target), then Hadamard on her Bell-pair qubit.",
+                        "Hadamard on the unknown qubit, then CNOT with her Bell-pair qubit as control."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -705,12 +695,11 @@
                     "content": {
                       "options": [
                         "the receiver needs classical bits, which travel no faster than light, to complete the protocol.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it does allow faster-than-light communication, under carefully controlled lab conditions.",
+                        "the sender's qubit is destroyed before the receiver's qubit can be used, blocking communication.",
+                        "the receiver's qubit collapses before the sender's measurement is complete."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -724,12 +713,11 @@
                     "content": {
                       "options": [
                         "two.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "one.",
+                        "four.",
+                        "an unlimited number, since the qubit is in superposition."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -867,8 +855,26 @@
                 "widgetType": "amplitude_bar_chart",
                 "params": {
                   "caption": "Amplitudes just after the oracle flips the marked state's sign, before the diffusion operator is applied.",
-                  "labels": ["000", "001", "010", "011", "100", "101", "110", "111"],
-                  "amplitudes": [0.354, 0.354, 0.354, -0.354, 0.354, 0.354, 0.354, 0.354],
+                  "labels": [
+                    "000",
+                    "001",
+                    "010",
+                    "011",
+                    "100",
+                    "101",
+                    "110",
+                    "111"
+                  ],
+                  "amplitudes": [
+                    0.354,
+                    0.354,
+                    0.354,
+                    -0.354,
+                    0.354,
+                    0.354,
+                    0.354,
+                    0.354
+                  ],
                   "highlightedIndex": 3
                 }
               }
@@ -965,12 +971,11 @@
                     "content": {
                       "options": [
                         "quadratic (roughly √N vs. N), not exponential.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "exponential, reducing search time from N to log(N).",
+                        "no speedup at all — Grover's algorithm runs in the same time as classical search.",
+                        "cubic, reducing search time from N to N^(1/3)."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -984,12 +989,11 @@
                     "content": {
                       "options": [
                         "by flipping the sign (phase) of its amplitude, leaving measurement probability unchanged at that exact moment.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "by immediately setting its measurement probability to 100%.",
+                        "by physically removing every other state from the superposition.",
+                        "by increasing its amplitude's magnitude directly, without touching its phase."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1003,12 +1007,11 @@
                     "content": {
                       "options": [
                         "reflects all amplitudes about their average, amplifying the marked state's amplitude.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "flips the sign of the marked state's amplitude, the same as the oracle.",
+                        "measures the register, collapsing it to the marked state directly.",
+                        "resets every amplitude to be exactly equal, undoing the oracle's effect."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1022,12 +1025,11 @@
                     "content": {
                       "options": [
                         "approximately (π/4)√N.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "approximately N/2.",
+                        "approximately log₂(N).",
+                        "exactly 1, regardless of N."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1041,12 +1043,11 @@
                     "content": {
                       "options": [
                         "the success probability can decrease, since the amplitude oscillates past its peak.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "nothing changes — the success probability stays at its peak indefinitely.",
+                        "the algorithm crashes, since amplitudes cannot be recomputed past the optimal count.",
+                        "the success probability continues increasing steadily toward 100%."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1060,12 +1061,11 @@
                     "content": {
                       "options": [
                         "N, the size of the search space (and M, the number of marked items, in the general case).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the identity of the marked item itself, which the algorithm is trying to find.",
+                        "the qubit's T1 and T2 coherence times.",
+                        "nothing — the optimal count is always exactly the same regardless of the search space."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1079,12 +1079,11 @@
                     "content": {
                       "options": [
                         "approximately (π/4)√(N/M).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "approximately (π/4)√(N×M).",
+                        "approximately (π/4)√N, unchanged regardless of M.",
+                        "approximately (π/4)(N/M)."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1322,12 +1321,11 @@
                     "content": {
                       "options": [
                         "the difficulty of factoring the product of two large primes back into those primes.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the difficulty of finding the discrete logarithm of a large prime.",
+                        "the difficulty of reversing a cryptographic hash function.",
+                        "the difficulty of guessing a randomly generated symmetric key."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1341,12 +1339,11 @@
                     "content": {
                       "options": [
                         "empirical/practical — no proof that fast factoring is impossible exists.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "a mathematical proof — it has been formally proven that no fast factoring algorithm can exist.",
+                        "a mathematical proof, but only for keys shorter than 2048 bits.",
+                        "neither — RSA's security has never been seriously examined by cryptographers."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1360,12 +1357,11 @@
                     "content": {
                       "options": [
                         "the ability to compute the private decryption exponent and read messages.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the ability to impersonate the server without ever needing the private key.",
+                        "only the ability to determine how the key was originally generated.",
+                        "nothing directly — factoring N reveals no path to the private key at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1379,12 +1375,11 @@
                     "content": {
                       "options": [
                         "the discrete logarithm problem — related to, but distinct from, RSA's factoring problem.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the factoring problem — identical to RSA's underlying hard problem.",
+                        "the shortest-vector lattice problem — completely unrelated to RSA's.",
+                        "the discrete logarithm problem, which is a special case of RSA's factoring problem."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1398,12 +1393,11 @@
                     "content": {
                       "options": [
                         "not automatically — a different variant of Shor's algorithm, tuned for discrete logarithms, is needed.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — the exact same run of Shor's algorithm breaks both simultaneously.",
+                        "no — Diffie-Hellman is fundamentally immune to any quantum algorithm.",
+                        "yes, but only because Diffie-Hellman is mathematically identical to RSA."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1417,12 +1411,11 @@
                     "content": {
                       "options": [
                         "RSA/Diffie-Hellman establishes a shared key; AES handles fast bulk encryption with that key.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "AES establishes a shared key; RSA/Diffie-Hellman handles fast bulk encryption with that key.",
+                        "RSA/Diffie-Hellman and AES both independently encrypt the full message, redundantly.",
+                        "AES is used only for authentication; RSA/Diffie-Hellman handles all encryption."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1706,12 +1699,11 @@
                     "content": {
                       "options": [
                         "finding the period of f(x) = aˣ mod N.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "finding the greatest common divisor of two randomly chosen large primes.",
+                        "solving a system of linear equations over a finite field.",
+                        "computing the discrete logarithm of N directly."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1725,12 +1717,11 @@
                     "content": {
                       "options": [
                         "occasionally finds a factor by luck with no quantum step, otherwise confirms a is valid to proceed with.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "performs the entire factoring computation classically, making the quantum step unnecessary.",
+                        "verifies that N is not a prime number, which is required before Shor's algorithm can run.",
+                        "computes the exact period of f(x) = aˣ mod N without needing a quantum computer at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1744,12 +1735,11 @@
                     "content": {
                       "options": [
                         "reorganizes the information in a superposition so a hidden periodic pattern becomes visible upon measurement.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "directly measures and reveals the period of f(x) = aˣ mod N without any further steps.",
+                        "encrypts the superposition so that only the intended recipient can read the result.",
+                        "collapses the superposition immediately, destroying any periodic pattern it may have held."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1763,12 +1753,11 @@
                     "content": {
                       "options": [
                         "an odd period r, or a^(r/2) ≡ −1 (mod N).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "an even period r, or a^(r/2) ≡ 1 (mod N).",
+                        "N being an even number, or a being a perfect square.",
+                        "the Quantum Fourier Transform returning a value greater than N."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1782,12 +1771,11 @@
                     "content": {
                       "options": [
                         "no — it succeeds with high probability per attempt, not with certainty.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — Shor's algorithm always succeeds on the first attempt, by construction.",
+                        "no — it has a fixed, low probability of success that never improves with retries.",
+                        "yes, but only for values of N smaller than 2048 bits."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1801,12 +1789,11 @@
                     "content": {
                       "options": [
                         "no — demonstrated only on small numbers; real-scale RSA requires far more qubits and error correction than currently exist.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "yes — several 2048-bit RSA keys have already been factored using Shor's algorithm.",
+                        "yes, but only using classical supercomputers simulating the quantum algorithm.",
+                        "the question doesn't apply, since RSA does not use prime factorization at all."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -1820,12 +1807,11 @@
                     "content": {
                       "options": [
                         "the practice of recording currently-encrypted data today with the intent of decrypting it once sufficiently powerful quantum computers exist in the future.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the practice of decrypting old data immediately, before quantum computers become available.",
+                        "a post-quantum encryption algorithm standardized by NIST in 2024.",
+                        "the practice of harvesting entangled qubits today for use in a future quantum computer."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2147,12 +2133,11 @@
                     "content": {
                       "options": [
                         "it only faces a quadratic (Grover's) speedup, fixable by longer keys, not an exponential (Shor's) break.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "AES is not vulnerable to quantum computers in any way, unlike RSA.",
+                        "AES faces the same exponential (Shor's) break as RSA, but is easier to replace.",
+                        "AES's vulnerability is quadratic, but cannot be fixed by using longer keys."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2166,12 +2151,11 @@
                     "content": {
                       "options": [
                         "the class of problems quantum computers solve efficiently; whether it's strictly larger than classical P is the formal version of \"what can quantum computers do that classical ones structurally cannot.\"",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the class of problems only classical computers can solve efficiently; it has no relation to quantum computing.",
+                        "a specific post-quantum cryptographic standard finalized by NIST in 2024.",
+                        "the class of problems that are provably impossible for any computer, quantum or classical, to solve."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2185,12 +2169,11 @@
                     "content": {
                       "options": [
                         "ML-KEM (key exchange), ML-DSA (signatures), SLH-DSA (hash-based signature backup).",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "RSA-4096 (key exchange), AES-256 (signatures), SHA-3 (hash-based signature backup).",
+                        "ML-KEM (signatures), ML-DSA (key exchange), SLH-DSA (bulk encryption).",
+                        "QKD (key exchange), Shor's algorithm (signatures), Grover's algorithm (hash-based backup)."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2204,12 +2187,11 @@
                     "content": {
                       "options": [
                         "it's hash-based, so it only faces Grover's modest quadratic threat, not Shor's, even if lattice math is someday weakened.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "it's lattice-based, so it faces neither Grover's nor Shor's threat under any circumstances.",
+                        "it's hash-based, but still faces the same exponential (Shor's) threat as RSA.",
+                        "it requires a quantum computer to run, so it can never be broken by another quantum computer."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2223,12 +2205,11 @@
                     "content": {
                       "options": [
                         "lattice-based problems, structurally different from the factoring/discrete-log problems Shor's algorithm solves.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "factoring problems, the same structural family Shor's algorithm already solves.",
+                        "discrete-log problems, the same structural family Shor's algorithm already solves.",
+                        "hash-based problems, the same structural family SLH-DSA relies on."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2242,12 +2223,11 @@
                     "content": {
                       "options": [
                         "it addresses harvest-now-decrypt-later today while hedging against unforeseen weaknesses in either algorithm alone.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "post-quantum algorithms are faster than classical ones, so there's no downside to switching immediately.",
+                        "regulations already require every organization to drop classical encryption entirely by 2024.",
+                        "classical encryption has already been broken by existing quantum computers, making it mandatory."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2261,12 +2241,11 @@
                     "content": {
                       "options": [
                         "the physical fact that measuring a quantum state disturbs it, making eavesdropping detectable.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "the assumption that no sufficiently powerful quantum computer will ever be built.",
+                        "a computational hardness assumption identical to RSA's, just applied to photons instead of numbers.",
+                        "the fact that classical eavesdropping equipment cannot physically intercept fiber-optic cables."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }
@@ -2280,12 +2259,11 @@
                     "content": {
                       "options": [
                         "PQC is software-only and deployable on existing infrastructure; QKD requires real quantum hardware with practical distance limitations.",
-                        "[Distractor A]",
-                        "[Distractor B]",
-                        "[Distractor C]"
+                        "QKD is software-only and deployable on existing infrastructure; PQC requires specialized quantum hardware.",
+                        "PQC has already been proven completely unbreakable, unlike QKD.",
+                        "QKD has already been deployed across the entire internet, making PQC unnecessary."
                       ],
-                      "correctOptionIndex": 0,
-                      "_note": "Distractor options require manual authoring before production use"
+                      "correctOptionIndex": 0
                     },
                     "created_by_id": "00000000-0000-0000-0000-000000000001"
                   }

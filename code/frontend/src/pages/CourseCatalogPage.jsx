@@ -82,6 +82,15 @@ export function CourseCatalogPage() {
     );
   }
 
+  if (courses !== null && courses.length === 0) {
+    return (
+      <main className="course-catalog">
+        <h1>Course Catalog</h1>
+        <p className="course-catalog__empty">No courses are available yet — check back soon.</p>
+      </main>
+    );
+  }
+
   return (
     <main className="course-catalog">
       <h1>Course Catalog</h1>
