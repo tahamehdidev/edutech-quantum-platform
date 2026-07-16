@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { PublicLayout } from "./components/layouts/PublicLayout.jsx";
 import { AuthenticatedLayout } from "./components/layouts/AuthenticatedLayout.jsx";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute.jsx";
+import { SmoothScroll } from "./components/layouts/SmoothScroll.jsx";
 import { LandingPage } from "./pages/LandingPage.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
 import { SignupPage } from "./pages/SignupPage.jsx";
@@ -17,24 +18,27 @@ import { NotFoundPage } from "./pages/NotFoundPage.jsx";
 // the pages themselves.
 export function App() {
   return (
-    <Routes>
-      <Route element={<PublicLayout />}>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-      </Route>
-      <Route element={<ProtectedRoute />}>
-        <Route element={<AuthenticatedLayout />}>
-          <Route path="/courses" element={<CourseCatalogPage />} />
-          <Route path="/courses/:courseId" element={<CourseDetailPage />} />
-          <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
-          <Route path="/practice-sets/:practiceSetId" element={<PracticeSetPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+    <>
+      <SmoothScroll />
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Route>
-      </Route>
-      {/* Nav-flow audit: no catch-all existed at all -- an unmatched URL rendered blank. Outside
-          both layouts since it applies regardless of auth state. */}
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AuthenticatedLayout />}>
+            <Route path="/courses" element={<CourseCatalogPage />} />
+            <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+            <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
+            <Route path="/practice-sets/:practiceSetId" element={<PracticeSetPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+          </Route>
+        </Route>
+        {/* Nav-flow audit: no catch-all existed at all -- an unmatched URL rendered blank. Outside
+            both layouts since it applies regardless of auth state. */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 }

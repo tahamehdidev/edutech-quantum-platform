@@ -69,6 +69,13 @@
   cursor: grabbing;
 }
 
+/* M8 responsive-audit finding: same as the real lesson-player Bloch sphere widget (BlochSphere.css)
+   -- the canvas's pointer handlers already unify mouse/touch/pen via Pointer Events, but with no
+   touch-action set, a touch-drag here would also trigger the browser's native page-pan gesture. */
+.landing-hero-visual__scene canvas {
+  touch-action: none;
+}
+
 /* Dual-agent critique finding (P0): this box is pixel-identical to its parent
    .landing-hero-visual, which has overflow: hidden (clipping the glow's own bleed, above) --
    the global :focus-visible rule's default +2px outward outline-offset was being clipped away

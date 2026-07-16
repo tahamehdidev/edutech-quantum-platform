@@ -180,6 +180,13 @@
     background-color: var(--landing-bg);
     border-top: 1px solid var(--landing-border);
     overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .landing-navbar__mobile-menu {
+      scroll-behavior: auto;
+    }
   }
 
   /* Plays once on mount (React conditionally mounts this element, it isn't a class toggle on an

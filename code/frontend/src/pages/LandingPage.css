@@ -102,6 +102,11 @@
     transparent 70%
   );
   background-repeat: no-repeat;
+  /* These three are the navbar's own anchor-link targets (#courses/#method/#start-anywhere) --
+     without this, jumping to one lands it flush against the viewport top, hidden under the fixed
+     navbar. SmoothScroll.jsx's Lenis-driven scrollTo reads this automatically, same as a native
+     anchor jump would. */
+  scroll-margin-top: var(--landing-navbar-height);
 }
 
 .landing-page__courses {
@@ -145,6 +150,23 @@
    normally, trading the "hero always fits one viewport" polish for "the heading is never
    clipped" -- correctness over charm, per PRODUCT.md. */
 @media (max-width: 767px) {
+  .landing-page__hero {
+    height: auto;
+    min-height: calc(100dvh - var(--landing-navbar-height));
+    overflow: visible;
+  }
+}
+
+/* M8 responsive-audit finding: the same overflow risk above, but triggered by viewport HEIGHT, not
+   width -- confirmed live at a completely ordinary desktop width (1280px) with a browser-window
+   height of ~800px (one of the single most common real laptop viewport heights, e.g. 1280x800,
+   1366x768 minus chrome): the hero panel needed ~825px but only ~732px was available, silently
+   clipping the "Free to start -- no card required" reassurance line (itself an earlier critique
+   fix) under overflow: hidden, with no scrollbar or other visible sign anything was missing.
+   Confirmed the threshold sits between 800px and 850px; 900px leaves a safe margin. Same fix as
+   the width-based breakpoint above, for the same reason: correctness over charm once content
+   genuinely doesn't fit. */
+@media (max-height: 900px) {
   .landing-page__hero {
     height: auto;
     min-height: calc(100dvh - var(--landing-navbar-height));

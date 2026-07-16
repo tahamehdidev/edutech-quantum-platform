@@ -865,7 +865,12 @@
               "type": "simulation",
               "content": {
                 "widgetType": "amplitude_bar_chart",
-                "params": {}
+                "params": {
+                  "caption": "Amplitudes just after the oracle flips the marked state's sign, before the diffusion operator is applied.",
+                  "labels": ["000", "001", "010", "011", "100", "101", "110", "111"],
+                  "amplitudes": [0.354, 0.354, 0.354, -0.354, 0.354, 0.354, 0.354, 0.354],
+                  "highlightedIndex": 3
+                }
               }
             },
             {

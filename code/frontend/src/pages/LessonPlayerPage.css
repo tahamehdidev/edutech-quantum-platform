@@ -69,7 +69,10 @@
   padding: var(--space-8) 0;
   color: var(--color-success);
   text-align: center;
-  animation: lesson-player-complete-in 400ms var(--ease-out);
+  /* Motion-consistency pass: was a bespoke 400ms, the only entrance animation in the app not
+     using the duration scale (course-catalog-card-in, course-detail-lessons-in, and
+     authenticated-layout-toast-in all use --duration-slow). */
+  animation: lesson-player-complete-in var(--duration-slow) var(--ease-out);
 }
 
 .lesson-player__complete p {

@@ -8,8 +8,17 @@
   box-sizing: border-box;
 }
 
+/* Deliberately `auto`, not `smooth` -- SmoothScroll.jsx (Lenis) now owns real scroll easing for
+   wheel/touch/anchor-link scrolling, which native scroll-behavior: smooth can't do anything for
+   anyway (it only ever affected discrete anchor/programmatic jumps, never ordinary wheel/trackpad
+   scrolling). Leaving CSS smooth-scroll active at the same time double-animates every scroll
+   Lenis also drives -- a real, documented conflict (Lenis's own setup guidance calls this out
+   specifically), not a hypothetical one. `auto` here is also exactly the correct reduced-motion
+   fallback for whenever Lenis skips initializing (SmoothScroll.jsx checks the same media query),
+   so no separate override is needed. */
 html {
   color-scheme: light;
+  scroll-behavior: auto;
 }
 
 body {

@@ -1208,8 +1208,12 @@
               "prompt": "Order these encoding strategies from fewest qubits required to most qubits required, for the same 8-feature dataset.",
               "type": "drag_drop",
               "content": {
-                "items": [],
-                "correctOrder": []
+                "items": [
+                  "Basis encoding: one qubit per bit",
+                  "Amplitude encoding: log₂N qubits",
+                  "Angle encoding: roughly one qubit per feature"
+                ],
+                "correctOrder": [1, 2, 0]
               },
               "created_by_id": "00000000-0000-0000-0000-000000000001"
             }

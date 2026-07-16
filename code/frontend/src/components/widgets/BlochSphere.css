@@ -21,6 +21,15 @@
   overflow: hidden;
 }
 
+/* M8 responsive-audit finding: the canvas's own pointer handlers (BlochSphereScene.jsx) use
+   Pointer Events, which already unify mouse/touch/pen -- but with no touch-action set, a real
+   touch-drag on this canvas would ALSO trigger the browser's native page-pan/scroll gesture
+   underneath the finger, fighting the sphere's own rotation. touch-action: none hands all touch
+   handling to the pointer-event listeners instead, the standard fix for exactly this combination. */
+.bloch-sphere__canvas-wrapper canvas {
+  touch-action: none;
+}
+
 /* Dual-agent critique finding (P0): free_placement mode is now keyboard-focusable directly on
    this wrapper, which has overflow: hidden and is flush with its own border-box on every side --
    the exact same clipped-focus-ring shape already found and fixed twice elsewhere in this app

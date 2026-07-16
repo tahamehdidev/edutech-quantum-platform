@@ -61,3 +61,16 @@ if (typeof window !== "undefined" && !window.IntersectionObserver) {
     disconnect() {}
   };
 }
+
+// jsdom does not implement ResizeObserver at all -- same category of gap as matchMedia/
+// IntersectionObserver above. First needed by the real (unmocked) `lenis` package, which
+// SmoothScroll.jsx constructs on every App render -- previously only BlochSphereScene's own gap
+// was worked around by mocking that one component in each consuming test; this stub covers any
+// component/library that touches ResizeObserver instead of requiring a mock per call site.
+if (typeof window !== "undefined" && !window.ResizeObserver) {
+  window.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
