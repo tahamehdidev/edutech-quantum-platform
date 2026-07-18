@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Pumpkin disc + Charcoal mark: inverse of the nav's own treatment (orange strokes on
+       currentColor), deliberately, because thin strokes on a dark disc read as a dark blob at
+       real 16x16 tab-icon size. A solid orange background guarantees the tab icon reads as
+       orange at any size; the mark on top is a bonus at larger sizes (bookmarks, PWA icon).
+       Note: an XML comment body must never contain two adjacent hyphens anywhere, not just at
+       the delimiters. An earlier version of this file used a spaced double hyphen as a dash,
+       which made the whole SVG invalid XML and silently blank in the browser tab, with no
+       console error; only opening the file directly revealed the parse error. -->
+  <defs>
+    <radialGradient id="discGradient" cx="34%" cy="28%" r="78%">
+      <stop offset="0%" stop-color="#FF9C5C" />
+      <stop offset="55%" stop-color="#FE7F2D" />
+      <stop offset="100%" stop-color="#F26A12" />
+    </radialGradient>
+  </defs>
+  <!-- Radial light source (upper-left) instead of a flat fill: the subtle lift/falloff is what
+       separates a "premium app icon" read from a plain filled circle, at a cost cheap enough to
+       stay crisp at 16px (two solid gradient stops, no blur/filter primitives, which some
+       browsers' lightweight favicon renderers handle inconsistently). -->
+  <circle cx="16" cy="16" r="16" fill="url(#discGradient)" />
+  <!-- Faint inner rim: a hair darker than the base orange, just inside the very edge, so the
+       disc reads as a crafted object with a defined boundary rather than a flat cutout floating
+       on the tab background. -->
+  <circle cx="16" cy="16" r="15.25" fill="none" stroke="#D65D0F" stroke-width="0.5" opacity="0.4" />
+  <!-- QubitMark (LandingLogo.jsx) geometry, inlined and thickened: a favicon has no CSS
+       context to inherit currentColor from, and strokes need to be much bolder than the nav's
+       own 1.5/1.75 to survive downscaling to 16px. The ellipse ring keeps a slightly thinner
+       stroke than the main orbit (matching the nav mark's own 1.75/1.5 ratio) so it reads as the
+       farther, foreshortened ring rather than two identical circles. -->
+  <g transform="translate(3 3)">
+    <circle cx="14" cy="14" r="10" stroke="#233D4D" stroke-width="3.2" fill="none" />
+    <ellipse
+      cx="14"
+      cy="14"
+      rx="10"
+      ry="4.4"
+      stroke="#233D4D"
+      stroke-width="2.8"
+      fill="none"
+      transform="rotate(-18 14 14)"
+    />
+    <circle cx="22.6" cy="8.2" r="3.4" fill="#233D4D" />
+    <!-- Small highlight on the state-dot: the one deliberate accent of dimensionality on the
+         mark itself, echoing the disc's own light source instead of introducing a second,
+         unrelated one. -->
+    <circle cx="21.6" cy="7.2" r="1" fill="#3A5872" opacity="0.7" />
+  </g>
+</svg>

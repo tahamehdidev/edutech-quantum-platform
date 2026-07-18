@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <title>Qubit — NUST</title>
+    <!-- QubitMark (LandingLogo.jsx) inlined at literal colors -- see the file's own comment for
+         why this can't just reference the React component. SVG favicons are supported by every
+         current evergreen browser; no PNG fallback needed for this app's target audience. The
+         ?v= query string is a cache-buster: browsers cache favicons per-URL independent of the
+         page cache, so a plain refresh can keep showing a stale/missing icon from before this
+         file existed unless the URL itself changes. Bump the version whenever favicon.svg's
+         content changes. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=4" />
     <!-- font-display=swap avoids invisible text while the woff2 loads (DESIGN.md typography). -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
