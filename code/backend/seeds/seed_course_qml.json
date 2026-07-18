@@ -168,7 +168,39 @@
               "content": {
                 "widgetType": "quadrant_selector",
                 "params": {
-                  "quadrants": 4
+                  "caption": "Two axes -- what kind of data, and what kind of device processes it -- give four combinations.",
+                  "xAxisLabel": "Processing device",
+                  "yAxisLabel": "Data",
+                  "xAxisValues": [
+                    "Classical",
+                    "Quantum"
+                  ],
+                  "yAxisValues": [
+                    "Classical",
+                    "Quantum"
+                  ],
+                  "quadrants": [
+                    {
+                      "label": "Classical data, classical processing",
+                      "description": "Ordinary machine learning.",
+                      "highlighted": false
+                    },
+                    {
+                      "label": "Classical data, quantum processing",
+                      "description": "Feeding ordinary data into a quantum model -- this course's primary focus.",
+                      "highlighted": true
+                    },
+                    {
+                      "label": "Quantum data, classical processing",
+                      "description": "Analyzing data that came from a quantum sensor or experiment.",
+                      "highlighted": false
+                    },
+                    {
+                      "label": "Quantum data, quantum processing",
+                      "description": "The molecule-simulation case -- the problem is quantum through and through.",
+                      "highlighted": false
+                    }
+                  ]
                 }
               }
             },
@@ -908,7 +940,11 @@
               "type": "simulation",
               "content": {
                 "widgetType": "basis_encoder",
-                "params": {}
+                "params": {
+                  "caption": "Try a different number -- the encoding updates live.",
+                  "defaultNumber": 6,
+                  "qubitCount": 3
+                }
               }
             },
             {
@@ -963,33 +999,63 @@
               }
             },
             {
-              "order_index": 3,
+              "type": "simulation",
+              "content": {
+                "widgetType": "amplitude_bar_chart",
+                "params": {
+                  "caption": "A 3-qubit amplitude encoding of the vector [2, 0, 0, 0, 1, 0, 0, 1], normalized so the squared amplitudes sum to 1.",
+                  "labels": [
+                    "000",
+                    "001",
+                    "010",
+                    "011",
+                    "100",
+                    "101",
+                    "110",
+                    "111"
+                  ],
+                  "amplitudes": [
+                    0.816,
+                    0,
+                    0,
+                    0,
+                    0.408,
+                    0,
+                    0,
+                    0.408
+                  ]
+                }
+              },
+              "order_index": 3
+            },
+            {
+              "order_index": 4,
               "type": "question",
               "content": {},
               "question_ref": 1026
             },
             {
-              "order_index": 4,
+              "order_index": 5,
               "type": "explanation",
               "content": {
                 "text": "Amplitude encoding's main advantage is using exponentially fewer qubits for the same amount of data. But here's the real cost: preparing an arbitrary amplitude-encoded state in general requires a circuit whose gate count grows with the size of the data, and on real near-term hardware, precisely preparing specific amplitude values is experimentally difficult and error-prone. Efficient in qubits, expensive in gates and precision — a genuine tradeoff, not a free upgrade."
               }
             },
             {
-              "order_index": 5,
+              "order_index": 6,
               "type": "explanation",
               "content": {
                 "text": "That cost deserves a sharper number. For a generic, arbitrary vector with no special structure, the circuit depth needed to prepare it can actually grow exponentially with the number of qubits — which can quietly cancel out the qubit savings that made amplitude encoding attractive in the first place. In practice, amplitude encoding pays off mainly when the data has exploitable structure, or when an approximate encoding is acceptable."
               }
             },
             {
-              "order_index": 6,
+              "order_index": 7,
               "type": "question",
               "content": {},
               "question_ref": 1027
             },
             {
-              "order_index": 7,
+              "order_index": 8,
               "type": "explanation",
               "content": {
                 "text": "One more practical gotcha worth knowing. Amplitude encoding requires normalizing the data vector so its values' squares sum to 1, since that's what makes it a valid quantum state. This means the original scale of the data — how big the numbers were before normalization — is thrown away unless captured separately. A dataset where overall magnitude matters, not just relative proportions, needs that information preserved through some other channel."
@@ -1285,14 +1351,20 @@
               }
             },
             {
-              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 1100,
+              "order_index": 2
+            },
+            {
+              "order_index": 3,
               "type": "explanation",
               "content": {
                 "text": "This is genuinely a hybrid pipeline, worth naming explicitly: the quantum circuit produces a number, and everything around that number — the loss calculation, the bookkeeping of training — is ordinary classical code. QML in practice today is almost always this kind of quantum-classical hybrid, not an all-quantum pipeline end to end."
               }
             },
             {
-              "order_index": 3,
+              "order_index": 4,
               "type": "question",
               "content": {},
               "question_ref": 1035
@@ -1312,6 +1384,16 @@
                   "None of it — it's a classical simulation only"
                 ],
                 "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 1100,
+              "prompt": "A PQC measures P(|1⟩) = 0.3 on the output qubit. Using squared-error loss, (target − prediction)², what is the loss if the target label is 1?",
+              "type": "numeric",
+              "content": {
+                "correctValue": 0.49,
+                "tolerance": 0.01
               },
               "created_by_id": "00000000-0000-0000-0000-000000000001"
             }

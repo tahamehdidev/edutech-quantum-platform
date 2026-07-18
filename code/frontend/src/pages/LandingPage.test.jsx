@@ -1,7 +1,19 @@
-import { test, expect, vi, afterEach } from "vitest";
+import { test, expect, vi, afterEach, beforeEach } from "vitest";
 import { render, screen, within, fireEvent, act } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
+import { courseService } from "../services/course.service.js";
 import { LandingPage } from "./LandingPage.jsx";
+
+vi.mock("../services/course.service.js", () => ({
+  courseService: { list: vi.fn() },
+}));
+
+beforeEach(() => {
+  // Never resolves by default -- most tests here don't care about the course-card links, so this
+  // just keeps them pinned to the "/courses" fallback instead of triggering an unhandled-rejection
+  // warning from a real fetch attempt in jsdom.
+  courseService.list.mockReturnValue(new Promise(() => {}));
+});
 
 // LandingHeroVisual's own tests cover its rendering/prop-passthrough in isolation now that it's
 // a controlled, presentational component; the drag/idle-animation/readout-reveal state it used to
@@ -191,6 +203,38 @@ test("renders all three courses with their verbatim core questions", () => {
       "A qubit is a delicate physical thing, not just a mathematical symbol — so what does it actually take, physically, to build, control, and keep one alive long enough to compute anything useful?"
     )
   ).toBeInTheDocument();
+});
+
+test("a course card links to the catalog before its real course ID has loaded", () => {
+  renderLandingPage();
+
+  expect(screen.getByRole("link", { name: /Quantum Machine Learning/ })).toHaveAttribute(
+    "href",
+    "/courses"
+  );
+});
+
+test("a course card links to its own course detail page once the real ID resolves", async () => {
+  courseService.list.mockResolvedValue({
+    courses: [
+      { id: 9, title: "Quantum Machine Learning" },
+      { id: 10, title: "Quantum Algorithms" },
+      { id: 8, title: "Quantum Computing Hardware" },
+    ],
+  });
+  renderLandingPage();
+
+  expect(
+    await screen.findByRole("link", { name: /Quantum Machine Learning/ })
+  ).toHaveAttribute("href", "/courses/9");
+  expect(screen.getByRole("link", { name: /Quantum Algorithms/ })).toHaveAttribute(
+    "href",
+    "/courses/10"
+  );
+  expect(screen.getByRole("link", { name: /Quantum Computing Hardware/ })).toHaveAttribute(
+    "href",
+    "/courses/8"
+  );
 });
 
 test("start-anywhere section lists all three courses with their entry notes", () => {

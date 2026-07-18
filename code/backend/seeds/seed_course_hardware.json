@@ -1394,20 +1394,32 @@
               }
             },
             {
-              "order_index": 2,
+              "type": "simulation",
+              "content": {
+                "widgetType": "bloch_sphere",
+                "params": {
+                  "mode": "t2_dephasing",
+                  "startState": "+",
+                  "t2Ms": 1500
+                }
+              },
+              "order_index": 2
+            },
+            {
+              "order_index": 3,
               "type": "explanation",
               "content": {
                 "text": "T2 can never exceed 2 × T1 — dephasing is always at least as fast as relaxation, because anything that disturbs the qubit's energy state also necessarily disturbs its phase, but phase can be disturbed by much subtler effects that don't involve any energy loss at all. In practice, T2 is very often the shorter, more limiting timescale."
               }
             },
             {
-              "order_index": 3,
+              "order_index": 4,
               "type": "question",
               "content": {},
               "question_ref": 3043
             },
             {
-              "order_index": 4,
+              "order_index": 5,
               "type": "explanation",
               "content": {
                 "text": "A circuit's total runtime — every gate applied, every qubit involved — needs to comfortably finish within these coherence windows, or the computation's result becomes corrupted by accumulated decoherence before it can even be read out. This is exactly why \"decoherence time, not qubit count alone\" is the right way to judge a quantum computer's real near-term capability."
@@ -1502,13 +1514,19 @@
               }
             },
             {
-              "order_index": 4,
+              "type": "question",
+              "content": {},
+              "question_ref": 3100,
+              "order_index": 4
+            },
+            {
+              "order_index": 5,
               "type": "question",
               "content": {},
               "question_ref": 3046
             },
             {
-              "order_index": 5,
+              "order_index": 6,
               "type": "explanation",
               "content": {
                 "text": "When Chapter 6 discusses whether a surface code's physical qubits are \"below the error threshold,\" it's specifically this gate error rate — not T1/T2 directly — that the threshold is measured against. Keeping these two concepts clearly distinct is exactly what makes the error-correction discussion make sense."
@@ -1679,6 +1697,16 @@
                 "correctOptionIndex": 1
               },
               "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 3100,
+              "prompt": "A single-qubit gate has a 0.1% error rate. Using the simple approximation (total expected error ≈ number of gates × per-gate error rate), roughly how many gates can run before the total expected error reaches 10%?",
+              "type": "numeric",
+              "content": {
+                "correctValue": 100,
+                "tolerance": 10
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
             }
           ]
         }
@@ -1744,13 +1772,19 @@
               }
             },
             {
-              "order_index": 2,
+              "type": "question",
+              "content": {},
+              "question_ref": 3101,
+              "order_index": 2
+            },
+            {
+              "order_index": 3,
               "type": "question",
               "content": {},
               "question_ref": 3055
             },
             {
-              "order_index": 3,
+              "order_index": 4,
               "type": "explanation",
               "content": {
                 "text": "The specific dominant real-world implementation of this idea: a family of codes called surface codes arranges data and ancilla qubits in a two-dimensional grid, using only nearest-neighbor interactions. This fits naturally onto the kind of grid-like, nearest-neighbor-only chip layouts Chapter 3 described — which is exactly why surface codes are the leading practical approach for superconducting qubits specifically."
@@ -1771,6 +1805,24 @@
                   "They eliminate the need for any qubits at all"
                 ],
                 "correctOptionIndex": 1
+              },
+              "created_by_id": "00000000-0000-0000-0000-000000000001"
+            },
+            {
+              "id": 3101,
+              "prompt": "Order the steps of syndrome-based error detection.",
+              "type": "drag_drop",
+              "content": {
+                "items": [
+                  "Measure only the ancilla qubits, not the data qubits",
+                  "Interpret the resulting syndrome to locate the error",
+                  "Entangle ancilla qubits with the data qubits in a specific pattern"
+                ],
+                "correctOrder": [
+                  2,
+                  0,
+                  1
+                ]
               },
               "created_by_id": "00000000-0000-0000-0000-000000000001"
             }

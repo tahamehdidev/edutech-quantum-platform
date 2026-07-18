@@ -2,6 +2,7 @@ import { test, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import { courseService } from "../services/course.service.js";
 import { progressService } from "../services/progress.service.js";
 import { CourseCatalogPage, truncateAtWordBoundary } from "./CourseCatalogPage.jsx";
@@ -13,6 +14,9 @@ const LONG_NARRATIVE =
   "a superconducting transmon qubit — that can be cooled to near absolute zero, controlled by " +
   "precisely shaped microwave pulses.";
 
+vi.mock("../context/AuthContext.jsx", () => ({
+  useAuth: vi.fn(),
+}));
 vi.mock("../services/course.service.js", () => ({
   courseService: { list: vi.fn() },
 }));
@@ -36,6 +40,10 @@ function renderCatalog() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // Every existing test in this file predates the auth-aware hero/CTA work and exercises the
+  // authenticated experience (no signup nudge) -- default to that so none of them need updating
+  // just to keep passing; tests that specifically need the anonymous branch override this.
+  useAuth.mockReturnValue({ isAuthenticated: true, isLoading: false });
 });
 
 test("shows skeleton placeholders while the initial fetch is in flight", () => {
@@ -54,6 +62,15 @@ test("renders every course with its narrative once loaded", async () => {
   expect(await screen.findByRole("heading", { name: "Quantum Machine Learning" })).toBeInTheDocument();
   expect(screen.getByText("Building a useful quantum computer...")).toBeInTheDocument();
   expect(progressService.listForUser).toHaveBeenCalledWith({ userId: "me" });
+});
+
+test("each card renders its matching course icon", async () => {
+  courseService.list.mockResolvedValue({ courses: COURSES, pagination: {} });
+  progressService.listForUser.mockResolvedValue({ progress: [], pagination: {} });
+  const { container } = renderCatalog();
+
+  await screen.findByRole("heading", { name: "Quantum Machine Learning" });
+  expect(container.querySelectorAll(".course-catalog__icon")).toHaveLength(COURSES.length);
 });
 
 test("a course with no progress row shows 'Not started'", async () => {
@@ -213,4 +230,57 @@ test("a fetch failure shows the error banner with a retry action that re-fetches
   await user.click(screen.getByRole("button", { name: "Try again" }));
 
   expect(await screen.findByRole("heading", { name: "Quantum Algorithms" })).toBeInTheDocument();
+});
+
+test("the hero shows the course count and, once authenticated progress loads, XP and in-progress stats", async () => {
+  courseService.list.mockResolvedValue({ courses: COURSES, pagination: {} });
+  progressService.listForUser.mockResolvedValue({
+    progress: [
+      { course_id: 8, xp: 40, current_streak: 1, completed_at: null },
+      { course_id: 9, xp: 60, current_streak: 0, completed_at: null },
+    ],
+    pagination: {},
+  });
+  renderCatalog();
+
+  expect(await screen.findByText("3 courses")).toBeInTheDocument();
+  expect(screen.getByText("2 in progress")).toBeInTheDocument();
+  expect(screen.getByText("100 XP earned")).toBeInTheDocument();
+});
+
+test("an anonymous visitor sees a signup CTA and no XP/in-progress hero stats", async () => {
+  useAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
+  courseService.list.mockResolvedValue({ courses: COURSES, pagination: {} });
+  renderCatalog();
+
+  expect(await screen.findByText("3 courses")).toBeInTheDocument();
+  expect(screen.queryByText(/in progress/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/XP earned/)).not.toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Sign up free" })).toHaveAttribute("href", "/signup");
+});
+
+test("while auth is still resolving, neither the authenticated stats nor the signup CTA render", () => {
+  useAuth.mockReturnValue({ isAuthenticated: false, isLoading: true });
+  courseService.list.mockReturnValue(new Promise(() => {}));
+  progressService.listForUser.mockReturnValue(new Promise(() => {}));
+  renderCatalog();
+
+  expect(screen.queryByRole("link", { name: "Sign up free" })).not.toBeInTheDocument();
+});
+
+test("each card shows an explicit call-to-action matching its progress state", async () => {
+  courseService.list.mockResolvedValue({ courses: COURSES, pagination: {} });
+  progressService.listForUser.mockResolvedValue({
+    progress: [
+      { course_id: 8, xp: 40, current_streak: 1, completed_at: null },
+      { course_id: 9, xp: 500, current_streak: 0, completed_at: "2026-01-01T00:00:00Z" },
+    ],
+    pagination: {},
+  });
+  renderCatalog();
+
+  await screen.findByRole("heading", { name: "Quantum Algorithms" });
+  expect(screen.getByText("Continue")).toBeInTheDocument();
+  expect(screen.getByText("Review course")).toBeInTheDocument();
+  expect(screen.getByText("Start course")).toBeInTheDocument();
 });

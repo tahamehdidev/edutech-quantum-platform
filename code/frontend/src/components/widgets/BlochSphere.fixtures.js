@@ -36,3 +36,12 @@ export const t1DecayParams = {
   startState: "1",
   t1Ms: 1500,
 };
+
+// Hardware course Lesson 5.3 -- starts at |+> (equatorial, per the widget's own doc comment: the
+// standard depiction of pure dephasing starts on the equator so the vector shrinks straight
+// toward the sphere's center, not toward a pole).
+export const t2DephasingParams = {
+  mode: "t2_dephasing",
+  startState: "+",
+  t2Ms: 1500,
+};

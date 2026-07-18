@@ -54,11 +54,12 @@ test("a learner sees a cross-course progress summary, not the course catalog's b
   });
   renderDashboard();
 
-  // 160 (the real sum) only ever appears once, and only as the total -- distinct from either
-  // individual course's own XP, which is what actually proves this is a sum, not a stray echo.
-  const totalXp = await screen.findByText("160 XP");
-  expect(totalXp).toHaveClass("dashboard__headline-stat-value");
-  expect(screen.getByText("across all your courses")).toBeInTheDocument();
+  // 160 (the real sum) only ever appears once, in the hero's own stat row -- distinct from
+  // either individual course's own XP, which is what actually proves this is a sum, not a stray
+  // echo.
+  expect(await screen.findByText("160 XP earned")).toBeInTheDocument();
+  expect(screen.getByText("2 courses started")).toBeInTheDocument();
+  expect(screen.getByText("3-day best streak")).toBeInTheDocument();
   // The whole row is the link now (critique fix: a title-only link left the card's padding and
   // XP badge outside the real touch target). Its accessible name is a deliberate aria-label
   // (critique fix: without one, the anchor's name was every descendant text node concatenated
@@ -72,6 +73,42 @@ test("a learner sees a cross-course progress summary, not the course catalog's b
   // Only courses with a real Progress row appear -- QML (id 9, no progress) is absent.
   expect(screen.queryByText("Quantum Machine Learning")).not.toBeInTheDocument();
   expect(progressService.listForUser).toHaveBeenCalledWith({ userId: "me" });
+});
+
+test("each course row and the hero stats render their icons", async () => {
+  useAuth.mockReturnValue({ user: { id: "u1", role: "learner" } });
+  courseService.list.mockResolvedValue({
+    courses: [{ id: 8, title: "Quantum Computing Hardware" }],
+  });
+  progressService.listForUser.mockResolvedValue({
+    progress: [{ course_id: 8, xp: 30, current_streak: 1, completed_at: null }],
+  });
+  const { container } = renderDashboard();
+
+  await screen.findByRole("link", { name: /Quantum Computing Hardware/ });
+  expect(container.querySelector(".dashboard__hero-stat svg")).toBeInTheDocument();
+  expect(container.querySelector(".dashboard__row-icon")).toBeInTheDocument();
+});
+
+test("each row shows an explicit call-to-action matching its progress state", async () => {
+  useAuth.mockReturnValue({ user: { id: "u1", role: "learner" } });
+  courseService.list.mockResolvedValue({
+    courses: [
+      { id: 8, title: "Quantum Computing Hardware" },
+      { id: 10, title: "Quantum Algorithms" },
+    ],
+  });
+  progressService.listForUser.mockResolvedValue({
+    progress: [
+      { course_id: 8, xp: 120, current_streak: 3, completed_at: null },
+      { course_id: 10, xp: 500, current_streak: 0, completed_at: "2026-01-01T00:00:00Z" },
+    ],
+  });
+  renderDashboard();
+
+  await screen.findByRole("link", { name: /Quantum Computing Hardware/ });
+  expect(screen.getByText("Continue")).toBeInTheDocument();
+  expect(screen.getByText("Review course")).toBeInTheDocument();
 });
 
 test("a course row's whole card is the clickable link, not just the title text", async () => {
@@ -98,20 +135,26 @@ test("a learner with zero progress rows sees an empty state pointing at the cata
   renderDashboard();
 
   expect(await screen.findByText(/started any courses yet/)).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: "Browse the course catalog" })).toHaveAttribute(
-    "href",
-    "/courses"
-  );
+  expect(screen.getByRole("link", { name: "Browse courses" })).toHaveAttribute("href", "/courses");
 });
 
 test("an instructor with zero cohorts sees an empty state explaining cohorts are admin-provisioned, not a bare 'not found'", async () => {
   useAuth.mockReturnValue({ user: { id: "i1", role: "instructor" } });
   cohortService.list.mockResolvedValue({ cohorts: [] });
-  renderDashboard();
+  const { container } = renderDashboard();
 
-  expect(await screen.findByText(/have any cohorts yet/)).toBeInTheDocument();
+  expect(await screen.findByText("No cohorts assigned yet")).toBeInTheDocument();
   expect(screen.getByText(/provisioned directly by an admin/)).toBeInTheDocument();
   expect(dashboardService.getCompletion).not.toHaveBeenCalled();
+  // This is the entire admin experience of this screen (GET /cohorts is always scoped to the
+  // caller's own id, and an admin owns none), not a rare edge case -- it gets the same hero
+  // treatment as every other loaded state, not the bare heading-plus-paragraph this used to be.
+  expect(container.querySelector(".dashboard__hero")).toBeInTheDocument();
+  expect(
+    container.querySelector(".dashboard__empty-cta-text")?.contains(
+      container.querySelector(".dashboard__empty-cta-icon")
+    )
+  ).toBe(true);
 });
 
 test("an instructor with exactly one cohort skips the picker and loads its completion + pacing data directly", async () => {
@@ -147,11 +190,10 @@ test("an instructor with exactly one cohort skips the picker and loads its compl
   expect(screen.queryByLabelText("Cohort")).not.toBeInTheDocument();
   expect(dashboardService.getCompletion).toHaveBeenCalledWith(5);
   expect(dashboardService.getLessonPacing).toHaveBeenCalledWith(5);
-  // Headline stat mirrors the learner view's "100 XP" card -- an orienting number before the
-  // per-course breakdown, instead of diving straight into card 1 of N (critique finding).
-  const headlineValue = screen.getByText("24");
-  expect(headlineValue).toHaveClass("dashboard__headline-stat-value");
-  expect(screen.getByText("students enrolled, across 1 course")).toBeInTheDocument();
+  // Hero stats mirror the learner view's own orienting numbers -- shown before the per-course
+  // breakdown, instead of diving straight into card 1 of N (critique finding).
+  expect(screen.getByText("24 students enrolled")).toBeInTheDocument();
+  expect(screen.getByText("1 course")).toBeInTheDocument();
   expect(screen.getByText("13 in progress · 11 not started · 0 completed · 340 avg XP")).toBeInTheDocument();
   // A full bar here means "everyone started," not "everyone finished" -- this visible caption
   // (not just the ProgressBar's aria-label) is what tells a sighted user that.
@@ -184,7 +226,8 @@ test("the headline stat singularizes correctly for exactly one student and one c
   dashboardService.getLessonPacing.mockResolvedValue({ lessons: [] });
   renderDashboard();
 
-  expect(await screen.findByText("student enrolled, across 1 course")).toBeInTheDocument();
+  expect(await screen.findByText("1 student enrolled")).toBeInTheDocument();
+  expect(screen.getByText("1 course")).toBeInTheDocument();
 });
 
 test("an instructor with multiple cohorts sees a picker, and switching cohorts re-fetches both endpoints", async () => {
@@ -208,10 +251,34 @@ test("an instructor with multiple cohorts sees a picker, and switching cohorts r
   expect(dashboardService.getLessonPacing).toHaveBeenCalledWith(6);
 });
 
-test("an admin is treated the same as an instructor for this screen", async () => {
+// Bug fix: admin used to fall into InstructorDashboard, which immediately calls
+// cohortService.list() -- but GET /cohorts is backend-restricted to role "instructor" specifically
+// (cohort.routes.js), not "instructor or admin" like every other cohort route. An admin account
+// hit a hard 403 error banner here every time, never actually reaching any empty-cohorts state.
+// Admin now gets its own dedicated branch that never calls cohortService at all.
+test("an admin sees a dedicated dashboard, not the instructor's cohort-scoped one", async () => {
   useAuth.mockReturnValue({ user: { id: "a1", role: "admin" } });
-  cohortService.list.mockResolvedValue({ cohorts: [] });
+  courseService.list.mockResolvedValue({
+    courses: [
+      { id: 8, title: "Quantum Computing Hardware" },
+      { id: 9, title: "Quantum Machine Learning" },
+      { id: 10, title: "Quantum Algorithms" },
+    ],
+  });
   renderDashboard();
 
-  expect(await screen.findByText(/have any cohorts yet/)).toBeInTheDocument();
+  expect(await screen.findByText("Cohort reporting is scoped to instructors")).toBeInTheDocument();
+  expect(screen.getByText("3 courses in the catalog")).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Browse courses" })).toHaveAttribute("href", "/courses");
+  // The actual bug: this must never call the instructor-only cohort endpoint at all.
+  expect(cohortService.list).not.toHaveBeenCalled();
+});
+
+test("an admin dashboard still renders correctly if the course-count fetch fails", async () => {
+  useAuth.mockReturnValue({ user: { id: "a1", role: "admin" } });
+  courseService.list.mockRejectedValue(new Error("network down"));
+  renderDashboard();
+
+  expect(await screen.findByText("Cohort reporting is scoped to instructors")).toBeInTheDocument();
+  expect(screen.queryByText(/courses in the catalog/)).not.toBeInTheDocument();
 });

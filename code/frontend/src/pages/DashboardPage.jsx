@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { BookOpen, ChevronRight, Flame, Zap, Users, Gauge, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { courseService } from "../services/course.service.js";
 import { progressService } from "../services/progress.service.js";
@@ -10,14 +11,25 @@ import { Card } from "../components/ui/Card.jsx";
 import { Button } from "../components/ui/Button.jsx";
 import { ProgressBar } from "../components/ui/ProgressBar.jsx";
 import { XpStreakBadge } from "../components/ui/XpStreakBadge.jsx";
+import { getCourseIcon } from "../components/ui/CourseIcons.jsx";
 import "./DashboardPage.css";
 
-// Role-branches once, at the top, into two components that share nothing beyond page chrome --
+// Role-branches once, at the top, into three components that share nothing beyond page chrome --
 // there's no step-through/gating logic here at all (this is a read-only reporting screen, not a
-// lesson/practice-set interaction), so neither branch needs anything from those two pages.
+// lesson/practice-set interaction), so none of the branches need anything from those two pages.
+//
+// Bug fix: admin used to fall into the same branch as instructor, which immediately calls
+// cohortService.list() -- but GET /cohorts is backend-restricted to role "instructor" specifically
+// (cohort.routes.js's own listCohortsController route, "no admin variant is documented for this
+// route" per 02-api-contract.md §6.2), not "instructor or admin" like every other cohort route.
+// An admin account hit a hard 403 error banner on this page, every single time, never even
+// reaching InstructorDashboard's own empty-cohorts state -- a real functional bug, not just a
+// cosmetic one. Admin gets its own branch now, which never calls that endpoint at all.
 export function DashboardPage() {
   const { user } = useAuth();
-  return user.role === "learner" ? <LearnerDashboard /> : <InstructorDashboard />;
+  if (user.role === "learner") return <LearnerDashboard />;
+  if (user.role === "admin") return <AdminDashboard />;
+  return <InstructorDashboard />;
 }
 
 // Both role branches hit an identical top-level error banner and initial skeleton -- shared here
@@ -44,6 +56,70 @@ function DashboardSkeleton() {
         <div className="dashboard__skeleton-line" />
         <div className="dashboard__skeleton-line" />
       </div>
+    </main>
+  );
+}
+
+// Deliberately fetches nothing but GET /courses (public, safe for any role) -- cohort completion
+// and pacing genuinely belong to whichever instructor owns each cohort, not to the admin account
+// (see DashboardPage's own role-branch comment above), and there's no dedicated admin
+// content-management UI in this app yet (the project plan's own explicit scope decision). Rather
+// than pretend otherwise with fake data or a dead end, this states that plainly and points at the
+// one thing an admin genuinely can do from here today: browse what's actually in the catalog.
+function AdminDashboard() {
+  const [courseCount, setCourseCount] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    courseService
+      .list()
+      .then(({ courses }) => {
+        if (!cancelled) setCourseCount(courses.length);
+      })
+      .catch(() => {
+        // Silently degrade -- the hero stat is a nice-to-have; the card below is the actual
+        // content of this page and doesn't depend on it.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <main className="dashboard">
+      <div className="dashboard__hero">
+        <div className="dashboard__hero-pattern" aria-hidden="true" />
+        <div className="dashboard__hero-content">
+          <h1>Dashboard</h1>
+          <p className="dashboard__hero-subtitle">Course oversight for admin accounts.</p>
+          {courseCount !== null ? (
+            <div className="dashboard__hero-stats">
+              <span className="dashboard__hero-stat">
+                <BookOpen size={16} aria-hidden="true" />
+                {courseCount} {courseCount === 1 ? "course" : "courses"} in the catalog
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <Card className="dashboard__empty-cta">
+        <div className="dashboard__empty-cta-text">
+          <ShieldCheck size={20} aria-hidden="true" className="dashboard__empty-cta-icon" />
+          <div>
+            <p className="dashboard__empty-cta-title">Cohort reporting is scoped to instructors</p>
+            <p className="dashboard__empty-cta-subtitle">
+              Completion and pacing data belongs to whichever instructor owns each cohort, not the
+              admin account &mdash; this isn&rsquo;t a sign anything is broken. Course, chapter,
+              and lesson management happens directly through the API for now; there&rsquo;s no
+              dedicated admin content UI yet.
+            </p>
+          </div>
+        </div>
+        <Link to="/courses" className="button button--primary">
+          Browse courses
+        </Link>
+      </Card>
     </main>
   );
 }
@@ -98,53 +174,94 @@ function LearnerDashboard() {
   }
 
   const totalXp = entries.reduce((sum, entry) => sum + entry.xp, 0);
+  const longestStreak = entries.reduce((max, entry) => Math.max(max, entry.current_streak), 0);
 
   return (
     <main className="dashboard">
-      <h1>Dashboard</h1>
+      <div className="dashboard__hero">
+        <div className="dashboard__hero-pattern" aria-hidden="true" />
+        <div className="dashboard__hero-content">
+          <h1>Dashboard</h1>
+          <p className="dashboard__hero-subtitle">Your progress across every course you&rsquo;ve started.</p>
+          {entries.length > 0 ? (
+            <div className="dashboard__hero-stats">
+              <span className="dashboard__hero-stat">
+                <BookOpen size={16} aria-hidden="true" />
+                {entries.length} {entries.length === 1 ? "course" : "courses"} started
+              </span>
+              <span className="dashboard__hero-stat">
+                <Zap size={16} aria-hidden="true" />
+                {totalXp} XP earned
+              </span>
+              {longestStreak > 0 ? (
+                <span className="dashboard__hero-stat">
+                  <Flame size={16} aria-hidden="true" />
+                  {longestStreak}-day best streak
+                </span>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
       {entries.length === 0 ? (
-        <p className="dashboard__empty">
-          You haven&rsquo;t started any courses yet.{" "}
-          <Link to="/courses">Browse the course catalog</Link> to get going.
-        </p>
+        <Card className="dashboard__empty-cta">
+          <div className="dashboard__empty-cta-text">
+            <BookOpen size={20} aria-hidden="true" className="dashboard__empty-cta-icon" />
+            <div>
+              <p className="dashboard__empty-cta-title">You haven&rsquo;t started any courses yet</p>
+              <p className="dashboard__empty-cta-subtitle">
+                Browse the catalog and pick one to start earning XP.
+              </p>
+            </div>
+          </div>
+          <Link to="/courses" className="button button--primary">
+            Browse courses
+          </Link>
+        </Card>
       ) : (
-        <>
-          <Card className="dashboard__headline-stat">
-            <span className="dashboard__headline-stat-value">{totalXp} XP</span>
-            <span className="dashboard__headline-stat-label">across all your courses</span>
-          </Card>
-          <ul className="dashboard__list">
-            {entries.map((entry) => {
-              // Same critique finding as Course Catalog's card-link: with no aria-label, the
-              // anchor's accessible name is every descendant text node concatenated with no
-              // separation (e.g. "Quantum Computing Hardware10 XP") -- this restores a scannable
-              // "title -- status" name, matching CourseCatalogPage.jsx's own fix.
-              const statusLabel = entry.completed_at
-                ? "Completed"
-                : `In progress, ${entry.xp} XP${
-                    entry.current_streak > 0 ? `, ${entry.current_streak}-day streak` : ""
-                  }`;
-              return (
-                <li key={entry.course_id}>
-                  <Link
-                    to={`/courses/${entry.course_id}`}
-                    className="dashboard__row-link"
-                    aria-label={`${entry.courseTitle} — ${statusLabel}`}
-                  >
-                    <Card className="dashboard__row">
+        <ul className="dashboard__list">
+          {entries.map((entry, index) => {
+            // Same critique finding as Course Catalog's card-link: with no aria-label, the
+            // anchor's accessible name is every descendant text node concatenated with no
+            // separation (e.g. "Quantum Computing Hardware10 XP") -- this restores a scannable
+            // "title -- status" name, matching CourseCatalogPage.jsx's own fix.
+            const statusLabel = entry.completed_at
+              ? "Completed"
+              : `In progress, ${entry.xp} XP${
+                  entry.current_streak > 0 ? `, ${entry.current_streak}-day streak` : ""
+                }`;
+            const ctaLabel = entry.completed_at ? "Review course" : "Continue";
+            const CourseIcon = getCourseIcon(entry.courseTitle);
+            return (
+              <li key={entry.course_id} style={{ "--dashboard-row-index": index }}>
+                <Link
+                  to={`/courses/${entry.course_id}`}
+                  className="dashboard__row-link"
+                  aria-label={`${entry.courseTitle} — ${statusLabel}`}
+                >
+                  <Card className="dashboard__row">
+                    <div className="dashboard__row-icon-chip">
+                      <CourseIcon className="dashboard__row-icon" />
+                    </div>
+                    <div className="dashboard__row-body">
                       <span className="dashboard__row-title">{entry.courseTitle}</span>
                       {entry.completed_at ? (
                         <span className="dashboard__completed">Completed</span>
                       ) : (
                         <XpStreakBadge xp={entry.xp} streak={entry.current_streak} />
                       )}
-                    </Card>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </>
+                    </div>
+                    <span className="dashboard__row-cta">
+                      {ctaLabel}
+                      <ChevronRight size={16} aria-hidden="true" />
+                    </span>
+                  </Card>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </main>
   );
@@ -218,21 +335,66 @@ function InstructorDashboard() {
   }
 
   if (cohorts.length === 0) {
+    // Real, not a placeholder: GET /cohorts is documented instructor-only, always the caller's
+    // own cohorts (02-api-contract.md §6.2, "no admin variant is documented for this route") --
+    // an admin account has created zero cohorts under its own id, so this branch is the ENTIRE
+    // admin experience of this page, every single time, not a rare edge case. Same hero + empty-
+    // cta-card language as LearnerDashboard's own empty state below, no button here (there's
+    // genuinely nothing to click through to -- cohort assignment isn't self-serve).
     return (
       <main className="dashboard">
-        <h1>Dashboard</h1>
-        <p className="dashboard__empty">
-          You don&rsquo;t have any cohorts yet. Cohorts are provisioned directly by an admin
-          &mdash; there&rsquo;s no self-serve cohort creation in this app yet, so this isn&rsquo;t
-          a sign anything is broken.
-        </p>
+        <div className="dashboard__hero">
+          <div className="dashboard__hero-pattern" aria-hidden="true" />
+          <div className="dashboard__hero-content">
+            <h1>Dashboard</h1>
+            <p className="dashboard__hero-subtitle">Cohort activity, for pacing and completion.</p>
+          </div>
+        </div>
+        <Card className="dashboard__empty-cta">
+          <div className="dashboard__empty-cta-text">
+            <Users size={20} aria-hidden="true" className="dashboard__empty-cta-icon" />
+            <div>
+              <p className="dashboard__empty-cta-title">No cohorts assigned yet</p>
+              <p className="dashboard__empty-cta-subtitle">
+                Cohorts are provisioned directly by an admin &mdash; there&rsquo;s no self-serve
+                cohort creation in this app yet, so this isn&rsquo;t a sign anything is broken.
+                Once a cohort is assigned to your account, its completion and pacing data will
+                appear here.
+              </p>
+            </div>
+          </div>
+        </Card>
       </main>
     );
   }
 
   return (
     <main className="dashboard">
-      <h1>Dashboard</h1>
+      <div className="dashboard__hero">
+        <div className="dashboard__hero-pattern" aria-hidden="true" />
+        <div className="dashboard__hero-content">
+          <h1>Dashboard</h1>
+          <p className="dashboard__hero-subtitle">Cohort activity, for pacing and completion.</p>
+          {/* completion[0].totalStudents is safe to read from just the first row -- the backend
+              computes it as the cohort's whole active-roster size (a single CROSS JOIN per
+              query, per dashboard.service.js), so every row in this array carries the same
+              value. */}
+          {completion !== null && completion.length > 0 ? (
+            <div className="dashboard__hero-stats">
+              <span className="dashboard__hero-stat">
+                <Users size={16} aria-hidden="true" />
+                {completion[0].totalStudents}{" "}
+                {completion[0].totalStudents === 1 ? "student enrolled" : "students enrolled"}
+              </span>
+              <span className="dashboard__hero-stat">
+                <BookOpen size={16} aria-hidden="true" />
+                {completion.length} {completion.length === 1 ? "course" : "courses"}
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
       {cohorts.length > 1 ? (
         <label className="dashboard__cohort-picker">
           Cohort
@@ -249,21 +411,11 @@ function InstructorDashboard() {
         </label>
       ) : null}
 
-      {/* completion[0].totalStudents is safe to read from just the first row -- the backend
-          computes it as the cohort's whole active-roster size (a single CROSS JOIN per query,
-          per dashboard.service.js), so every row in this array carries the same value. */}
-      {completion !== null && completion.length > 0 ? (
-        <Card className="dashboard__headline-stat">
-          <span className="dashboard__headline-stat-value">{completion[0].totalStudents}</span>
-          <span className="dashboard__headline-stat-label">
-            {completion[0].totalStudents === 1 ? "student enrolled" : "students enrolled"}, across{" "}
-            {completion.length} {completion.length === 1 ? "course" : "courses"}
-          </span>
-        </Card>
-      ) : null}
-
-      <section className="dashboard__section">
-        <h2>Completion</h2>
+      <Card as="section" className="dashboard__section">
+        <h2>
+          <Users className="dashboard__section-icon" size={18} aria-hidden="true" />
+          Completion
+        </h2>
         {completion === null ? (
           <div aria-hidden="true" className="dashboard__skeleton">
             <div className="dashboard__skeleton-line" />
@@ -272,10 +424,15 @@ function InstructorDashboard() {
           <p className="dashboard__empty">No students have started a course in this cohort yet.</p>
         ) : (
           <ul className="dashboard__list">
-            {completion.map((course) => (
+            {completion.map((course) => {
+              const CourseIcon = getCourseIcon(course.courseTitle);
+              return (
               <li key={course.courseId}>
-                <Card className="dashboard__row">
-                  <h3>{course.courseTitle}</h3>
+                <Card className="dashboard__row dashboard__row--plain">
+                  <h3>
+                    <CourseIcon size={18} aria-hidden="true" className="dashboard__row-title-icon" />
+                    {course.courseTitle}
+                  </h3>
                   {/* The bar reads "engagement" (started + completed), not "% complete" -- a
                       full bar can happen the moment every enrolled student has merely started,
                       which would otherwise misread as "done" in a section titled Completion.
@@ -293,13 +450,17 @@ function InstructorDashboard() {
                   </p>
                 </Card>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="dashboard__section">
-        <h2>Lesson pacing</h2>
+      <Card as="section" className="dashboard__section">
+        <h2>
+          <Gauge className="dashboard__section-icon" size={18} aria-hidden="true" />
+          Lesson pacing
+        </h2>
         {pacing === null ? (
           <div aria-hidden="true" className="dashboard__skeleton">
             <div className="dashboard__skeleton-line" />
@@ -310,7 +471,7 @@ function InstructorDashboard() {
           <ul className="dashboard__list">
             {pacing.map((lesson) => (
               <li key={lesson.lessonId}>
-                <Card className="dashboard__row">
+                <Card className="dashboard__row dashboard__row--plain">
                   <h3>{lesson.lessonTitle}</h3>
                   <p className="dashboard__stats">
                     {lesson.averageInterQuestionSeconds}s avg between questions (n=
@@ -322,7 +483,7 @@ function InstructorDashboard() {
             ))}
           </ul>
         )}
-      </section>
+      </Card>
     </main>
   );
 }

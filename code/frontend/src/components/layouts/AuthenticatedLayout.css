@@ -1,37 +1,65 @@
-/* Plain functional bar -- nav-flow audit fix, not a visual redesign. Reuses existing tokens only
-   (color-card/border/foreground etc from tokens.css), same restraint as the rest of this
-   "precision instrument" system. */
+/* Phase 5.5 redesign: sticky + a permanent (not scroll-triggered) shadow -- always visible on a
+   long lesson-scroll page, with real elevation instead of a hairline border. Deliberately no
+   scroll listener to toggle the shadow on/off: this codebase already had one real motion-timing
+   incident this project (the reverted loading-animation/route-transition overlay), and a
+   constant shadow gets the same "the nav has presence" result with nothing that can race. */
 .authenticated-layout__nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
   display: flex;
   align-items: center;
   gap: var(--space-5);
   padding: var(--space-3) var(--space-5);
   background-color: var(--color-card);
-  border-bottom: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 /* min-height (not just padding), matching Button.css's own convention -- robust to font-metric
    drift. Critique finding: these previously had zero vertical padding beyond the text's own
    line-height, measuring ~23px tall (confirmed live at both 1280px and 375px) -- well under the
    44px touch-target floor, on the one nav bar every authenticated screen in the app shares. */
+.authenticated-layout__wordmark {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-lg);
+  color: var(--color-foreground);
+  text-decoration: none;
+}
+
 .authenticated-layout__nav-link {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-height: 44px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-full);
   color: var(--color-foreground);
   font-size: var(--text-sm);
   text-decoration: none;
+  transition: background-color var(--duration-fast) var(--ease-out);
 }
 
 .authenticated-layout__nav-link:hover {
   color: var(--color-accent);
 }
 
+/* Pushes the anonymous nav's Log in + Sign up group to the far right, matching the authenticated
+   nav's own Logout placement below -- the wordmark stays left, everything auth-related clusters
+   right. */
+.authenticated-layout__nav-link--pushed {
+  margin-left: auto;
+}
+
 /* Critique finding: nav gave zero indication of current location -- color only changed on
    :hover and reverted the instant the mouse left, with no persistent state and nothing for a
    screen reader. NavLink's own aria-current="page" (set automatically, not duplicated here)
-   covers non-visual users; this covers sighted ones. */
+   covers non-visual users; this covers sighted ones. Phase 5.5: color+weight alone read as weak
+   at a glance across a busy nav -- a background pill (still restrained: --color-muted, not the
+   brand accent as a fill) gives the same signal more legibly without escalating into a loud
+   accent-filled tab. */
 .authenticated-layout__nav-link--active {
+  background-color: var(--color-muted);
   color: var(--color-accent);
   font-weight: var(--weight-medium);
 }

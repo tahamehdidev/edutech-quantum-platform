@@ -32,18 +32,105 @@
   margin-block: calc(var(--space-2) * -1);
 }
 
-.dashboard__headline-stat {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
+/* Reinvention pass: same restrained hero treatment as Course Catalog/Course Detail's own
+   orientation bands (dot grid + 3% accent tint) -- replaces the old single headline-stat Card so
+   all three core screens share one visual language instead of three different "big number"
+   treatments. */
+.dashboard__hero {
+  position: relative;
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in oklch, var(--color-accent) 3%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 15%, var(--color-border));
+  overflow: hidden;
 }
 
-.dashboard__headline-stat-value {
-  font-size: var(--text-3xl);
+.dashboard__hero-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--color-accent) 35%, transparent) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom right, black, transparent 75%);
+  mask-image: linear-gradient(to bottom right, black, transparent 75%);
+  pointer-events: none;
+}
+
+.dashboard__hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard__hero h1 {
+  margin: 0 0 var(--space-2);
+  text-wrap: balance;
+}
+
+.dashboard__hero-subtitle {
+  margin: 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-lg);
+}
+
+.dashboard__hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.dashboard__hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.dashboard__hero-stat svg {
+  color: var(--color-accent);
+}
+
+/* Same restrained CTA card pattern as Course Catalog/Course Detail's own prompt cards -- reused
+   verbatim so a learner with no progress yet (or an admin with no cohorts assigned) sees one
+   consistent "next step" pattern app-wide. */
+.dashboard__empty-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* Icon + title/subtitle grouped as one flex item -- without this wrapper, space-between on the
+   parent (needed so an optional trailing button anchors the right edge) would instead distribute
+   its extra space BETWEEN the icon and the text next to it once there's no button to soak that
+   space up (the admin "no cohorts assigned" card has none), pushing the text away from its own
+   icon. Matches the same grouping Course Detail/Course Catalog's own signup-cta cards already use. */
+.dashboard__empty-cta-text {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.dashboard__empty-cta-icon {
+  flex-shrink: 0;
+  margin-top: 0.2em;
+  color: var(--color-accent);
+}
+
+.dashboard__empty-cta-title {
+  margin: 0;
+  color: var(--color-foreground);
   font-weight: var(--weight-semibold);
 }
 
-.dashboard__headline-stat-label {
+.dashboard__empty-cta-subtitle {
+  margin: var(--space-1) 0 0;
   color: var(--color-muted-foreground);
   font-size: var(--text-sm);
 }
@@ -65,19 +152,121 @@
   display: block;
   color: inherit;
   text-decoration: none;
+  /* Same quiet staggered entrance as Course Catalog's cards -- reads as one coherent list of
+     parallel items appearing together, not a generic fade applied by reflex. --dashboard-row-index
+     is set inline per <li> since the list length varies (unlike Catalog's fixed 3 cards). */
+  animation: dashboard-row-in var(--duration-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--dashboard-row-index, 0) * 60ms);
 }
 
+@keyframes dashboard-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard__row-link {
+    animation: none;
+  }
+}
+
+/* Phase 5.5: real resting elevation (was border-only) -- brings this up to Course Catalog's own
+   bar instead of the flatter treatment this screen had before. */
 .dashboard__row {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  transition: border-color var(--duration-base) var(--ease-out);
+  align-items: center;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out);
   border: 1px solid transparent;
 }
 
 .dashboard__row-link:hover .dashboard__row,
 .dashboard__row-link:focus-visible .dashboard__row {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
   border-color: var(--color-border-strong);
+}
+
+/* Reinvention pass: a real chip (was a bare icon) -- matches Course Catalog's own icon-chip
+   language at the same scale, so per-course identity reads consistently everywhere it appears. */
+.dashboard__row-icon-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: color-mix(in oklch, var(--color-accent) 12%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 20%, var(--color-border));
+}
+
+.dashboard__row-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-accent);
+}
+
+.dashboard__row-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1;
+}
+
+/* Explicit click-through affordance, matching Course Catalog's own card CTA -- names the action
+   outright instead of relying on the row's hover-lift alone to signal it's interactive. */
+.dashboard__row-cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.dashboard__row-cta svg {
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+.dashboard__row-link:hover .dashboard__row-cta svg,
+.dashboard__row-link:focus-visible .dashboard__row-cta svg {
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard__row-cta svg {
+    transition: none;
+  }
+}
+
+.dashboard__row-title-icon {
+  flex-shrink: 0;
+  margin-right: var(--space-2);
+  vertical-align: -3px;
+  color: var(--color-accent);
+}
+
+/* Instructor sub-rows (Completion/Pacing) aren't links -- no hover-lift affordance to promise,
+   so they keep the flat resting shadow without the interactive treatment above. */
+.dashboard__row--plain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: stretch;
+  box-shadow: var(--shadow-sm);
 }
 
 .dashboard__row h3 {
@@ -120,9 +309,24 @@
   font-style: italic;
 }
 
+/* .dashboard__section is now a Card (Phase 5.5) -- Card.css already supplies the
+   padding/background/radius, this just adds the vertical stack for the heading + content. */
+.dashboard__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
 .dashboard__section h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--text-xl);
-  margin-bottom: var(--space-3);
+  margin: 0;
+}
+
+.dashboard__section-icon {
+  color: var(--color-accent);
 }
 
 .dashboard__cohort-picker {

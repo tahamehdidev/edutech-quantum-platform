@@ -8,6 +8,7 @@ import {
   rotationSliderParams,
   measurementParams,
   t1DecayParams,
+  t2DephasingParams,
 } from "./BlochSphere.fixtures.js";
 
 // The actual WebGL 3D rendering is its own module (BlochSphereScene.jsx) specifically so it can
@@ -194,3 +195,39 @@ test(
   },
   ANIMATION_TEST_TIMEOUT_MS
 );
+
+test(
+  "t2_dephasing: Start Dephasing shrinks coherence over time while the populations stay fixed",
+  async () => {
+    const user = userEvent.setup();
+    render(<BlochSphere params={t2DephasingParams} />);
+
+    // Equatorial start (|+>): populations are 50/50 and stay that way -- dephasing decays
+    // coherence, not population, which is the entire point of this being a separate mode from
+    // t1_decay above.
+    expect(screen.getByRole("status")).toHaveTextContent("P(|0⟩) = 50% · P(|1⟩) = 50%");
+    expect(screen.getByRole("status")).toHaveTextContent("Coherence = 100%");
+
+    await user.click(screen.getByRole("button", { name: "Start Dephasing" }));
+
+    await waitFor(
+      () => expect(screen.getByRole("status")).not.toHaveTextContent("Coherence = 100%"),
+      ANIMATION_WAIT_OPTIONS
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("P(|0⟩) = 50% · P(|1⟩) = 50%");
+  },
+  ANIMATION_TEST_TIMEOUT_MS
+);
+
+// No "Reset after Start Dephasing has begun" test here, matching t1_decay's own test file above --
+// Reset is disabled for the whole (fixed, 6s) animation duration, same guard every mode uses, and
+// waiting that out is deliberately not covered for the same slow-decay-style mode already, for the
+// same jsdom-rAF-is-~10x-slower-than-real reason noted at this file's own top comment.
+test("t2_dephasing: Reset is disabled while dephasing is actively in flight", async () => {
+  const user = userEvent.setup();
+  render(<BlochSphere params={t2DephasingParams} />);
+
+  await user.click(screen.getByRole("button", { name: "Start Dephasing" }));
+  expect(screen.getByRole("button", { name: "Reset" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Start Dephasing" })).toBeDisabled();
+});

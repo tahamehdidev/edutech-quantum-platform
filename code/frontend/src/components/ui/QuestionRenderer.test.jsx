@@ -7,6 +7,8 @@ import { dragDropQuestion } from "../widgets/DragDrop.fixtures.js";
 import { groverDiffusionParams } from "../widgets/AmplitudeBarChart.fixtures.js";
 import { gridTopologyParams } from "../widgets/TopologyDiagram.fixtures.js";
 import { freePlacementParams } from "../widgets/BlochSphere.fixtures.js";
+import { dataProcessingQuadrantParams } from "../widgets/QuadrantSelector.fixtures.js";
+import { basisEncoderParams } from "../widgets/BasisEncoder.fixtures.js";
 
 // BlochSphere's actual WebGL rendering lives in its own module specifically so it can be mocked
 // like this (see BlochSphere.test.jsx for the jsdom ResizeObserver/WebGL gap this works around).
@@ -14,18 +16,15 @@ vi.mock("../widgets/BlochSphereScene.jsx", () => ({
   BlochSphereScene: () => <div data-testid="bloch-sphere-scene" />,
 }));
 
-// Dispatcher only (Frontend Milestone 2) -- registry entries fill in as each widget lands in
-// Milestone 4. This test proves the dispatcher's *shape* is correct for whatever doesn't have a
-// widget yet, without asserting on widgets that don't exist. quadrant_selector/basis_encoder were
-// never part of the six shared widgets (see QuestionRenderer.jsx's own comment), so they stay
-// placeholders even now that all six are built.
-test.each(["quadrant_selector", "basis_encoder"])(
-  'renders a not-yet-implemented placeholder for type "%s"',
-  (type) => {
-    render(<QuestionRenderer type={type} />);
-    expect(screen.getByText(`Widget "${type}" not yet implemented.`)).toBeInTheDocument();
-  }
-);
+test('dispatches type "quadrant_selector" to the real QuadrantSelector widget', () => {
+  render(<QuestionRenderer type="quadrant_selector" params={dataProcessingQuadrantParams} />);
+  expect(screen.getByText(dataProcessingQuadrantParams.caption)).toBeInTheDocument();
+});
+
+test('dispatches type "basis_encoder" to the real BasisEncoder widget', () => {
+  render(<QuestionRenderer type="basis_encoder" params={basisEncoderParams} />);
+  expect(screen.getByText(basisEncoderParams.caption)).toBeInTheDocument();
+});
 
 test('dispatches type "mcq" to the real Mcq widget', () => {
   render(<QuestionRenderer type="mcq" question={mcqQuestion} onSubmit={vi.fn()} />);

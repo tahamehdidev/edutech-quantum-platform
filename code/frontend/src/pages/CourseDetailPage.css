@@ -20,11 +20,156 @@
   color: var(--color-muted-foreground);
 }
 
+/* Phase 5.5 (build) + reinvention pass: a genuine orientation moment at the top of the page --
+   the course's own icon at real size inside a distinct chip, a faint dot-grid pattern (evokes a
+   circuit board / topology diagram without being literal -- ties to the subject matter while
+   staying restrained, per DESIGN.md's "one accent, ~10% of surface" strategy), and a stats strip
+   giving the hero real information density instead of just a title and one paragraph. Low-chroma
+   accent tint at 3%, not 8% -- 8% measured as visibly pink/rose live, not the subtle warm-neutral
+   tint intended (see DashboardPage.css's own note, same technique family). Not a WebGL sphere or
+   anything landing-page-scale: that page's hero is a marketing device, this one's job is course
+   orientation, so a calmer treatment is the correct register match. */
+.course-detail__hero {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in oklch, var(--color-accent) 3%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 15%, var(--color-border));
+  overflow: hidden;
+}
+
+/* Purely decorative -- a dot grid fading toward the bottom-right corner, sitting behind the real
+   content (z-index below the icon chip/text below). aria-hidden since it carries no information. */
+.course-detail__hero-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--color-accent) 35%, transparent) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom right, black, transparent 75%);
+  mask-image: linear-gradient(to bottom right, black, transparent 75%);
+  pointer-events: none;
+}
+
+.course-detail__hero-icon-chip {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-lg);
+  background-color: color-mix(in oklch, var(--color-accent) 12%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 20%, var(--color-border));
+}
+
+.course-detail__hero-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--color-accent);
+}
+
+.course-detail__hero-content {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+/* Confirmed live at 375px: side-by-side with the 72px icon chip left only ~180px for the text
+   column, wrapping the narrative into a 15+ line tall, narrow sliver instead of a readable block.
+   Stacking (icon above, text below) below the project's own mobile breakpoint gives the text the
+   full available width back. */
+@media (max-width: 480px) {
+  .course-detail__hero {
+    flex-direction: column;
+  }
+}
+
+.course-detail__hero h1 {
+  margin: 0 0 var(--space-2);
+  text-wrap: balance;
+}
+
 .course-detail__narrative {
   margin: 0;
+  max-width: 70ch;
   color: var(--color-muted-foreground);
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
+  text-wrap: pretty;
+}
+
+.course-detail__hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.course-detail__hero-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.course-detail__hero-stat svg {
+  color: var(--color-accent);
+}
+
+.course-detail__progress-strip {
+  display: flex;
+}
+
+.course-detail__progress-completed {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-success);
+}
+
+/* A calmer treatment than Button.css's own bigger CTAs -- this is a secondary moment on a page
+   whose main job (for an anonymous visitor) is still showing the syllabus, not selling as hard
+   as the landing page's own final-CTA section does. */
+.course-detail__signup-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.course-detail__signup-cta-text {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.course-detail__signup-cta-icon {
+  flex-shrink: 0;
+  margin-top: 0.2em;
+  color: var(--color-accent);
+}
+
+.course-detail__signup-cta-title {
+  margin: 0;
+  color: var(--color-foreground);
+  font-weight: var(--weight-semibold);
+}
+
+.course-detail__signup-cta-subtitle {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
 }
 
 .course-detail__empty {
@@ -85,10 +230,34 @@
   gap: var(--space-3);
 }
 
+/* Phase 5.5: real resting elevation (was flat, bg-color-only) -- brings this up to Course
+   Catalog's/Dashboard's own bar. No hover-lift transform here (unlike those cards' link-driven
+   lift) -- this is a disclosure button, not a navigation card, so the existing background-tint
+   hover already communicates interactivity correctly. */
+/* Staggered mount reveal -- the whole list is visible on load (not scroll-triggered; this sits
+   near the top of the page, so gating it behind IntersectionObserver would just be a pointless
+   delay), same "backwards" fill-mode + nth-item delay pattern already used on Course Catalog's
+   own cards and Dashboard's own rows. --chapter-index is set inline per <li> in JSX. */
 .course-detail__chapter {
   background-color: var(--color-card);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
+  animation: course-detail-chapter-in var(--duration-slow) var(--ease-out) backwards;
+  animation-delay: calc(var(--chapter-index, 0) * 60ms);
+}
+
+@keyframes course-detail-chapter-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .course-detail__chapter {
+    animation: none;
+  }
 }
 
 /* Transparent wrapper -- the heading exists for a11y structure (screen-reader heading
@@ -99,14 +268,21 @@
   font-weight: inherit;
 }
 
+/* Reinvention pass: a real circular badge (was plain small text) -- gives the chapter number an
+   actual visual anchor instead of reading as a stray label competing with the title. */
 .course-detail__chapter-index {
   flex-shrink: 0;
-  /* Same first-line alignment nudge as the chevron above, sized for this element's own smaller
-     font -- see the header rule's comment. */
-  margin-top: 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background-color: color-mix(in oklch, var(--color-accent) 10%, var(--color-muted));
+  color: var(--color-accent);
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
-  font-weight: var(--weight-regular);
-  color: var(--color-muted-foreground);
+  font-weight: var(--weight-semibold);
 }
 
 /* Dual-agent critique finding (P1): align-items: center only reads correctly while the title
@@ -215,6 +391,23 @@
 .course-detail__lesson:hover,
 .course-detail__lesson:focus-visible {
   background-color: var(--color-muted);
+}
+
+/* Anonymous visitor: the title itself is still the free preview, but there's genuinely nothing
+   to click through to -- muted text (not the interactive foreground color) and no hover state
+   signal that plainly, rather than a link that would just bounce to /login with no context. */
+.course-detail__lesson--locked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--color-muted-foreground);
+  cursor: default;
+}
+
+.course-detail__lesson-lock {
+  flex-shrink: 0;
+  color: var(--color-muted-foreground);
 }
 
 /* ---------- Skeleton ---------- */

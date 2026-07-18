@@ -189,9 +189,20 @@
    own clip truncates it -- the previous 60px blur / -12px spread reaches roughly 48px outward,
    getting hard-cut at 16px instead of finishing its own fade (the same overflow-clipping bug
    shape already found and fixed elsewhere on this page for the focus ring and the ambient glow).
-   Retuned to reach ~10px (blur 24 minus spread 14), safely inside that 16px allowance with a
-   buffer for the blur's own tail, so it fully fades on its own before hero's clip ever applies. */
+   Retuned again (request: "a more stronger shadow... that blends out seamlessly") -- the same
+   16px budget still applies (nothing about the clip changed): three layers, each kept at or
+   under it. A true all-around ambient layer (0 0 20px -8px, reach 12px) makes the shadow read on
+   every edge -- top and sides, not just the bottom -- which the two offset-only layers below it
+   can't do on their own (an offset shadow with no spread is invisible on the edge opposite the
+   offset). The directional depth layer (was 30/-16, reach 14) and the tight near-shadow (was
+   12/-6, reach 6) both got darker alphas too (0.34->0.42, 0.18->0.26) for the "darker on every
+   side" request -- reach on both left unchanged, so the 16px clip budget still isn't touched. */
 .landing-page__hero-panel {
+  position: relative;
+  /* Clips the new dot-pattern layer below to the panel's own rounded corners -- doesn't affect
+     the box-shadow itself (box-shadow paints outside the border box as part of this element's
+     own decoration, not as a clippable descendant). */
+  overflow: hidden;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -205,15 +216,50 @@
   background-color: oklch(from var(--landing-bg-alt) l c h / 0.55);
   border: 1px solid oklch(100% 0 0 / 0.6);
   box-shadow:
-    0 16px 24px -14px oklch(from var(--landing-ink) l c h / 0.22),
-    0 2px 8px oklch(from var(--landing-ink) l c h / 0.08);
+    0 0 20px -8px oklch(from var(--landing-ink) l c h / 0.3),
+    0 20px 30px -16px oklch(from var(--landing-ink) l c h / 0.42),
+    0 6px 12px -6px oklch(from var(--landing-ink) l c h / 0.26);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
+/* Same dot-grid + accent-tint motif as the app's own DashboardPage/CourseCatalogPage/
+   CourseDetailPage hero bands (request: "the same backgroundish... the orange hue and dots"),
+   ported to this page's own theme tokens (--landing-pumpkin, the raw decorative-only brand
+   orange already used for the sphere's ambient glow -- never for text/icons, per
+   LandingTheme.css's own contrast notes). Sits behind the copy/sphere (plain DOM order: this is
+   the panel's first child, everything else paints after it) with no explicit z-index needed.
+   No corner mask (request: "the orange hue that's only around the sphere -- spread it evenly
+   inside the rectangle") -- both the flat wash and the dot texture below now cover the whole
+   panel uniformly instead of fading toward one corner, so the sphere's own separate ambient glow
+   (LandingHeroVisual.css) reads as a focused highlight layered on top of an even base tone,
+   rather than the only source of color in the box. 5% wash (not 8%) -- the same high-chroma-
+   accent lesson already learned twice this session (DashboardPage/CourseDetailPage's own
+   comments): --landing-pumpkin's chroma (0.178) is high enough that 8% read as a visibly tinted
+   pink/orange wash, not the subtle warmth intended, when checked live in the browser. */
+.landing-page__hero-pattern {
+  position: absolute;
+  inset: 0;
+  background-color: oklch(from var(--landing-pumpkin) l c h / 0.05);
+  background-image: radial-gradient(
+    circle,
+    oklch(from var(--landing-pumpkin) l c h / 0.4) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+  pointer-events: none;
+}
+
 /* Gap trimmed (was --space-5, 24px) -- h1, tagline, readout, and button now read as one grouped
-   block instead of four evenly-spaced-apart lines. */
+   block instead of four evenly-spaced-apart lines.
+   position/z-index added for the new .landing-page__hero-pattern layer above: without them, this
+   (a plain non-positioned block) paints in CSS's stacking-order step 3, BEFORE any positioned
+   z-index:auto descendant (the pattern is position:absolute, stacking step 6) -- meaning the
+   pattern would silently paint over this text instead of behind it. z-index: 1 (a positive stack
+   level, step 7) puts it unambiguously above the pattern regardless of DOM order. */
 .landing-page__hero-copy {
+  position: relative;
+  z-index: 1;
   flex: 1 1 340px;
   display: flex;
   flex-direction: column;
@@ -334,13 +380,18 @@
 
 /* Card.jsx's default surface is the app's dark --color-card -- overridden here, on this page
    only, to sit on the light landing palette instead. Transparent border reserved from the start
-   (not added only on hover) so the hover state's border-color change never shifts layout. */
+   (not added only on hover) so the hover state's border-color change never shifts layout.
+   Now rendered as a real <Link> (Card's `as` prop) instead of a plain div -- the whole card
+   links to its course's detail page, so the anchor's own default color/underline are reset here
+   (text-decoration-line otherwise inherits down to every child text node regardless of nesting). */
 .card.landing-page__course-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
   background-color: var(--landing-bg);
   border: 1px solid transparent;
+  color: inherit;
+  text-decoration: none;
   transition:
     transform var(--duration-base) var(--ease-out),
     border-color var(--duration-base) var(--ease-out),

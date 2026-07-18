@@ -1,15 +1,16 @@
 import { test, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { lessonService } from "../services/lesson.service.js";
 import { screenService } from "../services/screen.service.js";
 import { practiceSetService } from "../services/practiceSet.service.js";
 import { attemptService } from "../services/attempt.service.js";
+import { courseService } from "../services/course.service.js";
 import { LessonPlayerPage, renderWithKetNotation } from "./LessonPlayerPage.jsx";
 
 vi.mock("../services/lesson.service.js", () => ({
-  lessonService: { getById: vi.fn() },
+  lessonService: { getById: vi.fn(), listForChapter: vi.fn() },
 }));
 vi.mock("../services/screen.service.js", () => ({
   screenService: { listForLesson: vi.fn() },
@@ -20,6 +21,9 @@ vi.mock("../services/practiceSet.service.js", () => ({
 vi.mock("../services/attempt.service.js", () => ({
   attemptService: { submit: vi.fn() },
 }));
+vi.mock("../services/course.service.js", () => ({
+  courseService: { getById: vi.fn() },
+}));
 
 const LESSON = {
   id: 7,
@@ -29,6 +33,21 @@ const LESSON = {
   order_index: 1,
   next_lesson_id: null,
 };
+
+const COURSE = {
+  id: 3,
+  title: "Quantum Computing Hardware",
+  chapters: [
+    { id: 1, title: "Introduction", order_index: 1 },
+    { id: 2, title: "What a Qubit Is, Physically", order_index: 2 },
+    { id: 3, title: "Going Further", order_index: 3 },
+  ],
+};
+
+const CHAPTER_LESSONS = [
+  { id: 7, chapter_id: 2, title: "Qubits 101", order_index: 1 },
+  { id: 8, chapter_id: 2, title: "Superposition", order_index: 2 },
+];
 
 const MCQ_QUESTION = {
   id: 55,
@@ -56,8 +75,10 @@ function renderPlayer(lessonId = "7") {
 beforeEach(() => {
   vi.clearAllMocks();
   lessonService.getById.mockResolvedValue(LESSON);
+  lessonService.listForChapter.mockResolvedValue({ lessons: CHAPTER_LESSONS, pagination: {} });
   screenService.listForLesson.mockResolvedValue({ screens: SCREENS, pagination: {} });
   practiceSetService.listForLesson.mockResolvedValue({ practiceSets: [], pagination: {} });
+  courseService.getById.mockResolvedValue(COURSE);
 });
 
 test("fetches the lesson and its screens in parallel, then shows the first screen", async () => {
@@ -270,6 +291,45 @@ test("a lesson with a next lesson in sequence shows a 'Next lesson' link once co
     "href",
     "/lessons/8"
   );
+});
+
+test("shows real chapter/course orientation once the secondary context fetch resolves", async () => {
+  renderPlayer();
+  await screen.findByText("A qubit has two states.");
+
+  expect(
+    await screen.findByText("Quantum Computing Hardware · Chapter 2 of 3 · Lesson 1 of 2")
+  ).toBeInTheDocument();
+});
+
+test("a progress-fetch failure for chapter context still renders the lesson, degrading gracefully", async () => {
+  courseService.getById.mockRejectedValue(new Error("network down"));
+  renderPlayer();
+
+  expect(await screen.findByText("A qubit has two states.")).toBeInTheDocument();
+  expect(screen.queryByText(/Chapter \d+ of \d+/)).not.toBeInTheDocument();
+});
+
+test("renders one progress dot per screen plus one for the lesson-complete step", async () => {
+  const { container } = renderPlayer();
+  await screen.findByText("A qubit has two states.");
+
+  // 3 screens (SCREENS fixture) + 1 for the lesson-complete step.
+  expect(container.querySelectorAll(".lesson-player__dot")).toHaveLength(4);
+  expect(container.querySelector(".lesson-player__dot--current")).toHaveAttribute(
+    "aria-current",
+    "step"
+  );
+});
+
+test("renders a sibling-lesson outline once chapter context resolves, with the current lesson marked", async () => {
+  renderPlayer();
+  await screen.findByText("A qubit has two states.");
+
+  const outline = await screen.findByRole("complementary", { name: "Chapter lessons" });
+  expect(within(outline).getByText("Superposition")).toBeInTheDocument();
+  const currentLink = within(outline).getByRole("link", { name: /Qubits 101/ });
+  expect(currentLink).toHaveAttribute("aria-current", "page");
 });
 
 test("a generic fetch failure shows the error banner with a retry action that re-fetches", async () => {

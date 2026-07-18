@@ -8,6 +8,7 @@ import {
   applyGate,
   measurementOutcome,
   t1DecayTheta,
+  t2DephasingRadius,
 } from "./blochPhysics.js";
 
 test.each([
@@ -99,4 +100,11 @@ test("t1DecayTheta starts at |1> (south pole) and approaches |0> (north pole) ov
   expect(partiallyDecayed).toBeLessThan(Math.PI);
   expect(partiallyDecayed).toBeGreaterThan(0);
   expect(t1DecayTheta(50_000, 1000)).toBeCloseTo(0, 2); // effectively fully decayed
+});
+
+test("t2DephasingRadius starts at 1 (pure state) and decays toward 0 (fully mixed) over time", () => {
+  expect(t2DephasingRadius(0, 1000)).toBeCloseTo(1);
+  // One full T2 constant elapsed -- the defining property of an exponential time constant.
+  expect(t2DephasingRadius(1000, 1000)).toBeCloseTo(1 / Math.E);
+  expect(t2DephasingRadius(50_000, 1000)).toBeCloseTo(0, 2); // effectively fully dephased
 });

@@ -13,3 +13,14 @@ test("merges a passed className with the base class", () => {
   expect(el.className).toContain("card");
   expect(el.className).toContain("extra");
 });
+
+test("renders a <div> by default", () => {
+  const { container } = render(<Card>Content</Card>);
+  expect(container.querySelector("div.card")).toBeInTheDocument();
+});
+
+test("the `as` prop renders a different element (e.g. a real <section> landmark)", () => {
+  const { container } = render(<Card as="section">Content</Card>);
+  expect(container.querySelector("section.card")).toBeInTheDocument();
+  expect(container.querySelector("div.card")).not.toBeInTheDocument();
+});

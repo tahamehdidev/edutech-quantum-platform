@@ -170,6 +170,59 @@ test("the completion summary reports how many questions needed a retry", async (
   expect(screen.getByText("You got there — 1 of 2 took a retry.")).toBeInTheDocument();
 });
 
+test("shows the question count in the header", async () => {
+  renderPracticeSet();
+  await screen.findByText("Question 1 of 2");
+
+  expect(screen.getByText("2 questions")).toBeInTheDocument();
+});
+
+test("renders one progress dot per question plus one for the practice-complete step", async () => {
+  const { container } = renderPracticeSet();
+  await screen.findByText("Question 1 of 2");
+
+  expect(container.querySelectorAll(".practice-set__dot")).toHaveLength(3);
+  expect(container.querySelector(".practice-set__dot--current")).toHaveAttribute(
+    "aria-current",
+    "step"
+  );
+});
+
+test("the completion breakdown marks only the retried question, not the clean one", async () => {
+  const user = userEvent.setup();
+  renderPracticeSet();
+  await screen.findByText("Question 1 of 2");
+
+  attemptService.submit.mockResolvedValueOnce({ isCorrect: false, xpAwarded: false });
+  await user.click(screen.getByLabelText("superconducting circuits."));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await screen.findByText(/Not quite/);
+
+  attemptService.submit.mockResolvedValueOnce({ isCorrect: true, xpAwarded: true });
+  await user.click(screen.getByRole("button", { name: "Try Again" }));
+  await user.click(screen.getByLabelText("Distractor A"));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await screen.findByText(/Correct!/);
+  await user.click(screen.getByRole("button", { name: "Next" }));
+
+  attemptService.submit.mockResolvedValueOnce({ isCorrect: true, xpAwarded: true });
+  await user.click(screen.getByLabelText("trapped ions."));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await visibleQuestion().findByText(/Correct!/);
+  await user.click(screen.getByRole("button", { name: "Finish practice" }));
+
+  const complete = within(screen.getByRole("status"));
+  const breakdown = complete
+    .getByText("Name the four major physical qubit platforms covered in this lesson.")
+    .closest("li");
+  expect(breakdown.querySelector(".practice-set__complete-row-icon--retried")).toBeInTheDocument();
+
+  const cleanRow = complete
+    .getByText("Which platform is known for very long coherence times?")
+    .closest("li");
+  expect(cleanRow.querySelector(".practice-set__complete-row-icon--retried")).not.toBeInTheDocument();
+});
+
 test("a nonexistent practice set shows a 'not found' message with a real link back, no retry button", async () => {
   practiceSetService.getById.mockRejectedValue({
     response: { data: { error: { code: "NOT_FOUND", message: "Practice set not found." } } },

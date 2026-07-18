@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -16,17 +16,39 @@ function threeJsPointToAngles(point) {
 }
 
 // physics (theta, phi) -> three.js scene axes: physics' pole axis (z) becomes three.js Y (up,
-// matching a natural "north pole on top" view); physics x/y become three.js x/z.
-function BlochArrow({ theta, phi, color }) {
+// matching a natural "north pole on top" view); physics x/y become three.js x/z. radius (default
+// 1, matching a pure-state Bloch vector) is only ever <1 for the t2_dephasing mode -- every other
+// mode's state is always a pure state, whose vector genuinely has length 1 by definition, so
+// leaving this prop unset there is correct, not an oversight.
+function BlochArrow({ theta, phi, radius = 1, color }) {
   const arrowRef = useRef(null);
+  const { invalidate } = useThree();
 
-  useEffect(() => {
+  // Bug fix ("the arrow keeps glitching," reported live on the landing hero, whose idle-rotation
+  // loop changes theta/phi on every animation frame): setDirection() is a raw three.js mutation,
+  // invisible to R3F's own reconciler -- the Canvas above uses frameloop="demand", which only
+  // auto-schedules a repaint when it applies a JSX-driven prop to a host three.js element itself
+  // (via applyProps). theta/phi here are plain props on this custom component, consumed manually,
+  // so that auto-invalidation never fired; the canvas only ever repainted when something UNRELATED
+  // happened to trigger one (a drag event, a resize), so the arrow's visible position lagged
+  // several frames behind its real state and then jumped when a repaint finally landed -- the
+  // "glitch." Two fixes, both required: useLayoutEffect (not useEffect) applies the mutation
+  // synchronously before the browser paints, matching R3F's own documented pattern for mutating
+  // three.js objects outside React's reactive prop system; invalidate() (from useThree) then
+  // explicitly tells the demand-mode renderer a new frame is actually needed, every time.
+  useLayoutEffect(() => {
     if (!arrowRef.current) return;
     const x = Math.sin(theta) * Math.cos(phi);
     const y = Math.sin(theta) * Math.sin(phi);
     const z = Math.cos(theta);
     arrowRef.current.setDirection(new THREE.Vector3(x, z, y).normalize());
-  }, [theta, phi]);
+    // headLength/headWidth scale down with radius too (not held constant) -- at radius 1 this is
+    // exactly the original 0.22/0.14, and the Math.max floor keeps the arrowhead from growing
+    // larger than the shaft it's attached to once the shaft has shrunk to almost nothing.
+    const headScale = Math.max(radius, 0.4);
+    arrowRef.current.setLength(radius, 0.22 * headScale, 0.14 * headScale);
+    invalidate();
+  }, [theta, phi, radius, invalidate]);
 
   // Length 1.0, exactly the sphere radius -- a Bloch vector's tip lies ON the sphere surface by
   // definition (|psi> is always normalized), so anything longer/shorter than the radius was
@@ -136,6 +158,7 @@ function DraggableSphere({ onDrag, onDragEnd }) {
 export function BlochSphereScene({
   theta,
   phi,
+  radius = 1,
   arrowColor,
   wireframeColor = "#6E8B9D", // --color-border-strong (site-wide identity migration)
   draggable,
@@ -155,12 +178,14 @@ export function BlochSphereScene({
   );
 
   return (
-    // frameloop="demand": render only on invalidation (any state change to a component inside
-    // this Canvas auto-invalidates), not on every requestAnimationFrame tick regardless of
-    // whether anything moved. Without this, the default "always" mode keeps re-rendering the
-    // WebGL scene at the display refresh rate even while the arrow is frozen (reduced-motion,
-    // or the landing hero after a visitor drags it and the ambient loop stops) -- real,
-    // avoidable GPU/battery cost on low-end devices for a scene that isn't visibly changing.
+    // frameloop="demand": render only on invalidation -- a JSX-driven prop change on a host
+    // three.js element auto-invalidates, but a ref-driven imperative mutation (BlochArrow's own
+    // setDirection call, above) does not; that call now pairs with an explicit invalidate() for
+    // exactly this reason (see BlochArrow's own comment -- its absence was the "glitching arrow"
+    // bug). Without frameloop="demand" at all, the default "always" mode would keep re-rendering
+    // the WebGL scene at the display refresh rate even while the arrow is genuinely frozen
+    // (reduced-motion, or the landing hero after a visitor drags it and the ambient loop stops)
+    // -- real, avoidable GPU/battery cost on low-end devices for a scene that isn't changing.
     //
     // Camera: all scene content now maxes out at radius 1.0 (sphere, arrow, axis all fixed to
     // match). At [0, 0.6, 3.2]/fov 35, the sphere's silhouette subtended ~17.9deg -- MORE than
@@ -190,7 +215,7 @@ export function BlochSphereScene({
       <line geometry={axisGeometry}>
         <lineBasicMaterial color={wireframeColor} />
       </line>
-      <BlochArrow theta={theta} phi={phi} color={arrowColor} />
+      <BlochArrow theta={theta} phi={phi} radius={radius} color={arrowColor} />
       {draggable && <DraggableSphere onDrag={onDrag} onDragEnd={onDragEnd} />}
     </Canvas>
   );

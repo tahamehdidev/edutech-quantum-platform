@@ -160,3 +160,14 @@ export function t1DecayTheta(elapsedMs, t1Ms) {
   const populationOf0 = clamp(1 - Math.exp(-elapsedMs / t1Ms), 0, 1);
   return 2 * Math.acos(Math.sqrt(populationOf0));
 }
+
+// T2 dephasing: physically distinct from T1 relaxation above, not just a renamed copy of it --
+// pure dephasing leaves the population (theta, hence P(|0>)/P(|1>)) completely unchanged, and
+// only decays the *coherence* between |0> and |1> (the Bloch vector's transverse/xy-plane
+// component). Starting from an equatorial state (documented as startState "+"), the vector's
+// length shrinks from 1 straight toward 0 at the sphere's center as t -> infinity -- the standard
+// textbook picture of dephasing, and visually distinct from T1's "slides down the surface toward
+// a pole" -- exactly the point of building this as its own mode rather than reusing t1_decay's.
+export function t2DephasingRadius(elapsedMs, t2Ms) {
+  return Math.exp(-elapsedMs / t2Ms);
+}

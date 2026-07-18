@@ -7,15 +7,34 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 // explicitly whitelisted exceptions, not individually opted into auth. A forgotten whitelist
 // entry produces an obviously broken (locked) route, noticed immediately; a forgotten per-route
 // auth call produces a silently public route, which might never be noticed.
+//
+// `path` supports a `:param` segment (matched as one or more non-slash characters) so a handful
+// of read-only, syllabus-level GETs can be whitelisted without exposing every path under the same
+// prefix -- Phase 5.5's public course-preview: title/narrative/chapter-and-lesson-titles only.
+// Deliberately NOT whitelisted: GET /lessons/:lessonId/screens (the actual lesson content) and
+// GET /lessons/:lessonId/practice-sets, and nothing non-GET is ever whitelisted here -- the free
+// preview sells the syllabus, never the teaching material itself.
 const PUBLIC_ROUTES = [
   { method: "POST", path: "/auth/signup" },
   { method: "POST", path: "/auth/login" },
   { method: "POST", path: "/auth/refresh" },
   { method: "GET", path: "/health" },
+  { method: "GET", path: "/courses" },
+  { method: "GET", path: "/courses/:courseId" },
+  { method: "GET", path: "/courses/:courseId/chapters" },
+  { method: "GET", path: "/chapters/:chapterId/lessons" },
 ];
 
+// Compiled once at module load, not per-request -- these never change at runtime.
+const COMPILED_PUBLIC_ROUTES = PUBLIC_ROUTES.map(({ method, path }) => ({
+  method,
+  pattern: new RegExp(`^${path.replace(/:[^/]+/g, "[^/]+")}$`),
+}));
+
 function isPublicRoute(req) {
-  return PUBLIC_ROUTES.some((route) => route.method === req.method && route.path === req.path);
+  return COMPILED_PUBLIC_ROUTES.some(
+    (route) => route.method === req.method && route.pattern.test(req.path)
+  );
 }
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {

@@ -6,6 +6,7 @@ import {
   applyGate,
   measurementOutcome,
   t1DecayTheta,
+  t2DephasingRadius,
 } from "./blochPhysics.js";
 import { BlochSphereScene } from "./BlochSphereScene.jsx";
 import { Button } from "../ui/Button.jsx";
@@ -15,6 +16,8 @@ const GATE_ANIMATION_MS = 600;
 const MEASUREMENT_ANIMATION_MS = 350;
 const T1_ANIMATION_TOTAL_MS = 6000;
 const DEFAULT_T1_MS = 1500;
+const T2_ANIMATION_TOTAL_MS = 6000;
+const DEFAULT_T2_MS = 1500;
 
 // Shared by every animation this widget runs -- gate transitions, measurement collapse, and T1
 // decay all just need "call onFrame(elapsed) every frame for durationMs, honoring cancellation,
@@ -56,10 +59,12 @@ function formatCoefficients(theta, phi) {
 // deliberate placeholder -- extending it per-mode as each mode's shape becomes known, exactly as
 // flagged in the project plan, not something to front-load speculatively):
 //   mode: "free_placement" | "gate_application" | "rotation_slider" | "measurement" | "t1_decay"
+//         | "t2_dephasing"
 //   startState?: "0" | "1" | "+" | "-" | [theta, phi]   (default "0")
 //   availableGates?: string[]   gate_application only -- e.g. ["H","X","Z"] or [..., "Rx"]
 //   sliderLabel?: string        rotation_slider only -- what the slider represents (e.g. a feature value)
 //   t1Ms?: number               t1_decay only -- the decay time constant
+//   t2Ms?: number               t2_dephasing only -- the dephasing time constant
 //
 // Frontend Milestone 6 non-applicability finding: none of the four before/after-answer-state
 // concepts (pre/post attempt state, correct/incorrect indicator, xpAwarded distinction, retry
@@ -71,10 +76,18 @@ function formatCoefficients(theta, phi) {
 // closest to the graded pattern of the six widgets -- it should not be retrofitted with fake
 // correct/incorrect semantics it doesn't have. Out of scope for Milestone 6 by design.
 export function BlochSphere({ params }) {
-  const { mode, startState = "0", availableGates = [], sliderLabel, t1Ms = DEFAULT_T1_MS } = params;
+  const {
+    mode,
+    startState = "0",
+    availableGates = [],
+    sliderLabel,
+    t1Ms = DEFAULT_T1_MS,
+    t2Ms = DEFAULT_T2_MS,
+  } = params;
   const startAngles = useMemo(() => startStateToAngles(startState), [startState]);
 
   const [angles, setAngles] = useState(startAngles);
+  const [radius, setRadius] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   const [measurementResult, setMeasurementResult] = useState(null);
   const [rxAngleDegrees, setRxAngleDegrees] = useState(180);
@@ -120,6 +133,9 @@ export function BlochSphere({ params }) {
   function handleReset() {
     if (isAnimating) return;
     setMeasurementResult(null);
+    // Unconditional -- radius never moves in any mode except t2_dephasing, so resetting it here
+    // is a harmless no-op everywhere else, and means Reset doesn't need a per-mode branch.
+    setRadius(1);
     runAnimation(startAngles, GATE_ANIMATION_MS);
   }
 
@@ -141,6 +157,21 @@ export function BlochSphere({ params }) {
       durationMs: T1_ANIMATION_TOTAL_MS,
       isCancelled: () => cancelledRef.current,
       onFrame: (elapsed) => setAngles({ theta: t1DecayTheta(elapsed, t1Ms), phi: 0 }),
+      onComplete: () => setIsAnimating(false),
+    });
+  }
+
+  // T2 dephasing: deliberately does NOT touch angles at all (unlike handleStartDecay above) --
+  // dephasing leaves the population unchanged by definition, only the coherence (radius) decays.
+  // Sharing runFrameLoop the same way t1_decay does, just driving a different piece of state.
+  function handleStartDephasing() {
+    if (isAnimating) return;
+    cancelledRef.current = false;
+    setIsAnimating(true);
+    runFrameLoop({
+      durationMs: T2_ANIMATION_TOTAL_MS,
+      isCancelled: () => cancelledRef.current,
+      onFrame: (elapsed) => setRadius(t2DephasingRadius(elapsed, t2Ms)),
       onComplete: () => setIsAnimating(false),
     });
   }
@@ -216,6 +247,7 @@ export function BlochSphere({ params }) {
         <BlochSphereScene
           theta={angles.theta}
           phi={angles.phi}
+          radius={radius}
           arrowColor="#AD3400" /* --color-accent (site-wide identity migration) */
           draggable={mode === "free_placement" && !isAnimating}
           onDrag={setAngles}
@@ -233,6 +265,10 @@ export function BlochSphere({ params }) {
         <span>
           P(|0⟩) = {p0Percent}% &middot; P(|1⟩) = {p1Percent}%
         </span>
+        {/* Only t2_dephasing mode ever moves radius away from 1 -- the point of this readout is
+            showing that dephasing decays coherence *without* changing the populations above,
+            which would otherwise look like nothing is happening at all. */}
+        {mode === "t2_dephasing" && <span>Coherence = {Math.round(radius * 100)}%</span>}
       </div>
 
       {mode === "gate_application" && (
@@ -317,6 +353,17 @@ export function BlochSphere({ params }) {
         <div className="bloch-sphere__controls">
           <Button type="button" disabled={isAnimating} onClick={handleStartDecay}>
             Start Decay
+          </Button>
+          <Button type="button" variant="secondary" disabled={isAnimating} onClick={handleReset}>
+            Reset
+          </Button>
+        </div>
+      )}
+
+      {mode === "t2_dephasing" && (
+        <div className="bloch-sphere__controls">
+          <Button type="button" disabled={isAnimating} onClick={handleStartDephasing}>
+            Start Dephasing
           </Button>
           <Button type="button" variant="secondary" disabled={isAnimating} onClick={handleReset}>
             Reset

@@ -1,11 +1,30 @@
+/* Reinvention pass: was a single flat column capped at 700px with huge unused margins either
+   side at desktop widths -- this outer element now just centers a wider layout row (see
+   .lesson-player__layout below), which is what actually caps the reading column at 700px and
+   gives the freed-up wide-viewport space to a real sibling-lesson outline instead of nothing. */
 .lesson-player {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: 700px;
+  max-width: 1040px;
   margin: 0 auto;
   padding: var(--space-8) var(--space-5);
   min-height: 60vh;
+}
+
+.lesson-player__layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.lesson-player__main {
+  flex: 1 1 640px;
+  min-width: 0;
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 /* Now a real <Link> (nav-flow audit fix, was a <button onClick={navigate(-1)}>) -- text-decoration
@@ -32,6 +51,101 @@
   color: var(--color-foreground);
 }
 
+/* Reinvention pass: real orientation (course icon + title stack), replacing a bare <h1> with
+   nothing else -- matches the icon-chip language already used on Course Catalog/Detail cards, so
+   per-course identity reads consistently on the one screen that's actually inside the course. */
+.lesson-player__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.lesson-player__header-icon-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: color-mix(in oklch, var(--color-accent) 12%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 20%, var(--color-border));
+}
+
+.lesson-player__header-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-accent);
+}
+
+.lesson-player__header-text {
+  min-width: 0;
+}
+
+.lesson-player__header-text h1 {
+  margin: 0;
+}
+
+.lesson-player__context {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+}
+
+/* Screen-type dots (replaces a plain ProgressBar) -- a map of what's ahead: done/current/upcoming
+   are each visually distinct, plus one extra dot for the lesson-complete step itself. Decorative
+   (the adjacent step-count text already carries this same information for screen readers via
+   aria-live, so the dots themselves need no individual labels -- an unlabeled visual stepper,
+   same reasoning as ProgressBar's own bar not needing per-segment labels). */
+.lesson-player__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lesson-player__dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-muted);
+  border: 1px solid var(--color-border-strong);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.lesson-player__dot--done {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.lesson-player__dot--current {
+  transform: scale(1.4);
+  border-color: var(--color-accent);
+}
+
+.lesson-player__dot--complete {
+  /* The lesson-complete step's own dot is a ring (not filled) until reached -- visually distinct
+     from a plain "upcoming screen" dot, since it isn't a screen at all. */
+  border-color: var(--color-success);
+}
+
+.lesson-player__dot--complete.lesson-player__dot--current {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lesson-player__dot {
+    transition: none;
+  }
+}
+
 .lesson-player__step-count {
   margin: 0;
   color: var(--color-muted-foreground);
@@ -42,10 +156,105 @@
   flex: 1;
 }
 
+/* Reinvention pass: explanation/simulation screens now sit inside a real card (was bare text
+   floating directly in the page background) -- brings them up to the same resting elevation
+   every other content surface in the app already has. Question screens (Mcq/Numeric/DragDrop)
+   are deliberately NOT wrapped in this -- they already carry their own card-level styling, and
+   nesting a card inside a card is the one thing the design system's own layout rules ban. */
+.lesson-player__card {
+  padding: var(--space-5);
+  background-color: var(--color-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
 .lesson-player__explanation {
   margin: 0;
+  max-width: 65ch;
   font-size: var(--text-lg);
   line-height: var(--leading-relaxed);
+  text-wrap: pretty;
+}
+
+/* Wide-viewport-only mini outline of the current chapter's own lessons -- fills the space that
+   used to just be centered whitespace either side of the reading column. Hidden below this
+   breakpoint (a phone has no spare width for it in the first place, and stacking it above/below
+   the reading column would just push the actual lesson content down with no real benefit). */
+.lesson-player__outline {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .lesson-player__outline {
+    display: block;
+    flex: 0 0 260px;
+    position: sticky;
+    top: var(--space-5);
+    padding: var(--space-4);
+    background-color: var(--color-card);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.lesson-player__outline-heading {
+  margin: 0 0 var(--space-3);
+  color: var(--color-muted-foreground);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lesson-player__outline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.lesson-player__outline-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: background-color var(--duration-base) var(--ease-out);
+}
+
+.lesson-player__outline-link:hover,
+.lesson-player__outline-link:focus-visible {
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+}
+
+.lesson-player__outline-link--current {
+  background-color: color-mix(in oklch, var(--color-accent) 10%, var(--color-muted));
+  color: var(--color-foreground);
+  font-weight: var(--weight-medium);
+}
+
+.lesson-player__outline-index {
+  flex-shrink: 0;
+  width: 20px;
+  color: var(--color-muted-foreground);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.lesson-player__outline-link--current .lesson-player__outline-index {
+  color: var(--color-accent);
+}
+
+@media (max-width: 899px) {
+  .lesson-player__layout {
+    display: block;
+  }
 }
 
 .lesson-player__nav {

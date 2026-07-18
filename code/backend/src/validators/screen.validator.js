@@ -33,6 +33,11 @@ const BlochSphereParamsSchema = z.discriminatedUnion("mode", [
     startState: StartStateSchema.optional(),
     t1Ms: z.number().positive().optional(),
   }),
+  z.object({
+    mode: z.literal("t2_dephasing"),
+    startState: StartStateSchema.optional(),
+    t2Ms: z.number().positive().optional(),
+  }),
 ]);
 
 // Keyed by widgetType, same convention as CONTENT_SCHEMAS_BY_TYPE below -- widget types not listed

@@ -32,6 +32,97 @@
   color: var(--color-foreground);
 }
 
+/* Reinvention pass: real header (icon chip + question count), replacing a bare <h1> -- matches
+   Lesson Player's own header language, using a generic "drilling" icon (Target) rather than a
+   per-course one (nothing here identifies the course without another fetch hop through the
+   lesson, not worth the round trip for an icon alone). */
+.practice-set__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.practice-set__header-icon-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background-color: color-mix(in oklch, var(--color-accent) 12%, var(--color-card));
+  border: 1px solid color-mix(in oklch, var(--color-accent) 20%, var(--color-border));
+}
+
+.practice-set__header-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-accent);
+}
+
+.practice-set__header-text {
+  min-width: 0;
+}
+
+.practice-set__header-text h1 {
+  margin: 0;
+}
+
+.practice-set__context {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+}
+
+/* Question-count dots (was a plain ProgressBar) -- same map-of-what's-ahead treatment as Lesson
+   Player's own screen dots, plus one extra dot for the practice-complete step. */
+.practice-set__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.practice-set__dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-muted);
+  border: 1px solid var(--color-border-strong);
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    transform var(--duration-base) var(--ease-out);
+}
+
+.practice-set__dot--done {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.practice-set__dot--current {
+  transform: scale(1.4);
+  border-color: var(--color-accent);
+}
+
+.practice-set__dot--complete {
+  border-color: var(--color-success);
+}
+
+.practice-set__dot--complete.practice-set__dot--current {
+  background-color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-set__dot {
+    transition: none;
+  }
+}
+
 .practice-set__step-count {
   margin: 0;
   color: var(--color-muted-foreground);
@@ -80,6 +171,46 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-regular);
   color: var(--color-muted-foreground);
+}
+
+/* Per-question breakdown -- retriedQuestionIds was already tracked but never surfaced beyond its
+   count; this gives the completion moment real content instead of one summary sentence. Left-
+   aligned text within a centered flex column (.practice-set__complete's own align-items: center),
+   capped so long prompts still read as a scannable list, not full-width lines. */
+.practice-set__complete-breakdown {
+  width: 100%;
+  max-width: 480px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-align: left;
+}
+
+.practice-set__complete-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-card);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.practice-set__complete-row-icon {
+  flex-shrink: 0;
+  margin-top: 0.15em;
+  color: var(--color-success);
+}
+
+.practice-set__complete-row-icon--retried {
+  color: var(--color-caution);
+}
+
+.practice-set__complete-row-text {
+  color: var(--color-foreground);
 }
 
 /* Parity fix with Lesson Player's completion moment (LessonPlayerPage.css lines 89-91): without

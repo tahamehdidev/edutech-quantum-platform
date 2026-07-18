@@ -28,19 +28,19 @@ afterEach(() => {
 });
 
 test("renders no welcome toast when there's no welcomeName in router state", () => {
-  useAuth.mockReturnValue({ logout: vi.fn() });
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: true, isLoading: false });
   renderAt("/courses");
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
 });
 
 test("renders a welcome toast from location.state.welcomeName", () => {
-  useAuth.mockReturnValue({ logout: vi.fn() });
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: true, isLoading: false });
   renderAt({ pathname: "/courses", state: { welcomeName: "Ada Lovelace" } });
   expect(screen.getByRole("status")).toHaveTextContent("Account created — welcome, Ada Lovelace.");
 });
 
 test("the welcome toast dismisses itself after a few seconds", async () => {
-  useAuth.mockReturnValue({ logout: vi.fn() });
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: true, isLoading: false });
   vi.useFakeTimers();
   renderAt({ pathname: "/courses", state: { welcomeName: "Ada Lovelace" } });
   expect(screen.getByRole("status")).toBeInTheDocument();
@@ -53,17 +53,18 @@ test("the welcome toast dismisses itself after a few seconds", async () => {
 
 // Nav-flow audit: this whole nav used to be a literal empty placeholder comment -- no persistent
 // way to reach /dashboard or log out existed anywhere in the app.
-test("renders persistent Courses and Dashboard links", () => {
-  useAuth.mockReturnValue({ logout: vi.fn() });
+test("authenticated: renders persistent Courses and Dashboard links, plus Log out", () => {
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: true, isLoading: false });
   renderAt("/courses");
   expect(screen.getByRole("link", { name: "Courses" })).toHaveAttribute("href", "/courses");
   expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("href", "/dashboard");
+  expect(screen.getByRole("button", { name: "Log out" })).toBeInTheDocument();
 });
 
 // Critique fix: nav previously gave zero indication of current location -- color only changed
 // on :hover and reverted the instant the mouse left, nothing for a screen reader.
 test("marks the current route's nav link as active, both visually and via aria-current", () => {
-  useAuth.mockReturnValue({ logout: vi.fn() });
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: true, isLoading: false });
   renderAt("/dashboard");
 
   const dashboardLink = screen.getByRole("link", { name: "Dashboard" });
@@ -76,7 +77,7 @@ test("marks the current route's nav link as active, both visually and via aria-c
 
 test("Log out calls AuthContext's logout() and navigates to the landing page", async () => {
   const logout = vi.fn().mockResolvedValue();
-  useAuth.mockReturnValue({ logout });
+  useAuth.mockReturnValue({ logout, isAuthenticated: true, isLoading: false });
   const user = userEvent.setup();
   renderAt("/courses");
 
@@ -84,4 +85,31 @@ test("Log out calls AuthContext's logout() and navigates to the landing page", a
 
   expect(logout).toHaveBeenCalled();
   expect(await screen.findByText("Landing")).toBeInTheDocument();
+});
+
+// Phase 5.5: /courses is now reachable without a session, so the nav must never show
+// Courses/Dashboard/Log out to a visitor who was never logged in.
+test("anonymous: renders Log in / Sign up instead of Courses/Dashboard/Log out", () => {
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: false, isLoading: false });
+  renderAt("/courses");
+
+  expect(screen.getByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
+  expect(screen.getByRole("link", { name: "Sign up" })).toHaveAttribute("href", "/signup");
+  expect(screen.queryByRole("link", { name: "Dashboard" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Log out" })).not.toBeInTheDocument();
+});
+
+// The silent-refresh-on-mount check runs on every page load -- showing the anonymous nav to an
+// about-to-be-recognized returning user, even for one frame, is exactly the kind of flash this
+// project has had real flicker trouble with before (see RouteTransition.jsx's own history).
+test("while auth state is still loading, neither nav variant renders", () => {
+  useAuth.mockReturnValue({ logout: vi.fn(), isAuthenticated: false, isLoading: true });
+  renderAt("/courses");
+
+  expect(screen.queryByRole("link", { name: "Log in" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("link", { name: "Courses" })).not.toBeInTheDocument();
+  // The wordmark and the page content underneath still render -- only the auth-dependent nav
+  // links are withheld.
+  expect(screen.getByRole("link", { name: "Qubit" })).toBeInTheDocument();
+  expect(screen.getByText("Course catalog")).toBeInTheDocument();
 });

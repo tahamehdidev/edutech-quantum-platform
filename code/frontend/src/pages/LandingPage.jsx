@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "../components/ui/Card.jsx";
+import { RevealSection } from "../components/ui/RevealSection.jsx";
+import { NeuralNetIcon, AlgorithmIcon, QubitChipIcon } from "../components/ui/CourseIcons.jsx";
 import { LandingHeroVisual, isWebglAvailable } from "./LandingHeroVisual.jsx";
 import { LandingNavbar } from "./LandingNavbar.jsx";
 import { LandingWordmark } from "./LandingLogo.jsx";
-import { useInViewOnce } from "../hooks/useInViewOnce.js";
 import { useReducedMotion } from "../hooks/useReducedMotion.js";
 import { probabilityOf0 } from "../components/widgets/blochPhysics.js";
+import { courseService } from "../services/course.service.js";
 // Button.jsx itself always renders a real <button> (wrong semantics for pure navigation), so
 // these CTAs are plain <Link>s wearing Button.css's classes instead -- but that CSS only loads
 // when something imports it, and no <Button> component is ever mounted on this page. Explicit
@@ -14,51 +16,6 @@ import { probabilityOf0 } from "../components/widgets/blochPhysics.js";
 import "../components/ui/Button.css";
 import "./LandingTheme.css";
 import "./LandingPage.css";
-
-// One-stroke line icons distinguishing the three cards from each other (not decoration on top
-// of an otherwise-identical repeated card) -- currentColor, matching the design system's single
-// calm-accent "restrained" strategy rather than inventing a per-course color palette.
-function NeuralNetIcon({ className }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <circle cx="5" cy="8" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="5" cy="20" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="14" cy="14" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="23" cy="8" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="23" cy="20" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M7 9.3 12.2 13 M7 18.7 12.2 15 M15.8 13 21 9.3 M15.8 15 21 18.7"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
-
-function AlgorithmIcon({ className }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <circle cx="5" cy="14" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="23" cy="6" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="23" cy="22" r="2.25" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M7.2 13 15 7 M15 7h6 M7.2 15 15 21 M15 21h6" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function QubitChipIcon({ className }) {
-  return (
-    <svg className={className} width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
-      <rect x="9" y="9" width="10" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="14" cy="14" r="2" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M14 2v5 M14 21v5 M2 14h5 M21 14h5 M5.5 5.5l3.5 3.5 M19 19l3.5 3.5 M22.5 5.5 19 9 M9 19l-3.5 3.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-    </svg>
-  );
-}
 
 // Core questions are quoted verbatim from docs/07-course-narratives-spine.md, not rewritten --
 // each course is genuinely built around answering this one question, so it's the real, specific
@@ -115,25 +72,6 @@ function clamp(value, min, max) {
 const STATIC_THETA = Math.PI / 2.4;
 const STATIC_PHI = Math.PI / 4;
 
-// Third instance of the identical "observe once, add --visible on entry" wiring (Courses, Start
-// Anywhere, Method, Final CTA below) -- extracted per this project's own established convention
-// (see AttemptFeedback/AttemptActions in Frontend Milestone 4): the hero is deliberately excluded,
-// since it's visible on load and "revealing" it would be a pointless flash, not an entrance.
-function RevealSection({ id, className, children }) {
-  const [ref, isInView] = useInViewOnce();
-  return (
-    <section
-      id={id}
-      ref={ref}
-      className={[className, "scroll-reveal", isInView && "scroll-reveal--visible"]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      {children}
-    </section>
-  );
-}
-
 export function LandingPage() {
   // Hero sphere angles + drag/idle-animation state -- owned here (not LandingHeroVisual) since
   // the P(|0>)/P(|1>) readout these numbers drive now lives in the hero copy column, under the
@@ -156,6 +94,27 @@ export function LandingPage() {
   // formula's absolute-time position). The readout itself is always visible now (request: "keep
   // showing the interactive values at all times") -- no more hasEverInteracted reveal-gate.
   const [isDragging, setIsDragging] = useState(false);
+
+  // Real course IDs, keyed by the same title strings COURSES already uses -- lets the course
+  // cards link straight to their own /courses/:id page instead of the generic catalog. Fetched
+  // (not hardcoded) since IDs are a seed-load-order artifact, not a stable content identifier
+  // (same reasoning as CourseIcons.jsx's own title-keyed lookup). GET /courses is public, so this
+  // works for every visitor, logged in or not. Silently degrades to the catalog link below if it
+  // fails -- never a dead link, just a less-specific destination until it resolves.
+  const [courseIdByTitle, setCourseIdByTitle] = useState({});
+  useEffect(() => {
+    let cancelled = false;
+    courseService
+      .list()
+      .then(({ courses }) => {
+        if (cancelled) return;
+        setCourseIdByTitle(Object.fromEntries(courses.map((course) => [course.title, course.id])));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function handleHeroDrag(newAngles) {
     updateAngles(newAngles);
@@ -270,6 +229,7 @@ export function LandingPage() {
       <main className="landing-page" id="landing-main-content">
         <section className="landing-page__hero">
           <div className="landing-page__hero-panel">
+            <div className="landing-page__hero-pattern" aria-hidden="true" />
             <div className="landing-page__hero-copy">
               <h1>See the qubit before you compute with it.</h1>
               <p className="landing-page__hero-tagline">
@@ -343,6 +303,8 @@ export function LandingPage() {
               {COURSES.map((course, index) => (
                 <Card
                   key={course.name}
+                  as={Link}
+                  to={courseIdByTitle[course.name] ? `/courses/${courseIdByTitle[course.name]}` : "/courses"}
                   className="landing-page__course-card"
                   style={{ transitionDelay: `${index * 70}ms` }}
                 >

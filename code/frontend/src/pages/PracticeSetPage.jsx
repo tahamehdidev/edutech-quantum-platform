@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, CircleCheckBig } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleCheckBig, RotateCcw, Target } from "lucide-react";
 import { practiceSetService } from "../services/practiceSet.service.js";
 import { attemptService } from "../services/attempt.service.js";
 import { parseApiError } from "../utils/parseApiError.js";
 import { Button } from "../components/ui/Button.jsx";
-import { ProgressBar } from "../components/ui/ProgressBar.jsx";
 import { QuestionRenderer } from "../components/ui/QuestionRenderer.jsx";
 import "./PracticeSetPage.css";
 
@@ -146,8 +145,54 @@ export function PracticeSetPage() {
         <ChevronLeft size={16} aria-hidden="true" />
         Exit practice
       </Link>
-      <h1>{practiceSet.title}</h1>
-      <ProgressBar value={currentIndex + 1} max={questions.length} label="Practice progress" />
+
+      {/* Reinvention pass: a real header (icon chip + question count), not just a bare title --
+          matches the visual language every other core screen now uses. A generic "drilling" icon
+          (not a per-course one): unlike Lesson Player, nothing here identifies which course this
+          practice set belongs to without another fetch hop through its lesson, which isn't worth
+          the extra round trip for an icon alone. */}
+      <div className="practice-set__header">
+        <div className="practice-set__header-icon-chip">
+          <Target className="practice-set__header-icon" aria-hidden="true" />
+        </div>
+        <div className="practice-set__header-text">
+          <h1>{practiceSet.title}</h1>
+          <p className="practice-set__context">
+            {questions.length} {questions.length === 1 ? "question" : "questions"}
+          </p>
+        </div>
+      </div>
+
+      {/* Question-count dots (was a plain ProgressBar) -- same map-of-what's-ahead treatment as
+          Lesson Player's own screen dots. */}
+      <ol className="practice-set__dots" aria-label="Practice progress">
+        {questions.map((question, index) => (
+          <li key={question.id}>
+            <span
+              className={[
+                "practice-set__dot",
+                index < currentIndex && "practice-set__dot--done",
+                index === currentIndex && !isComplete && "practice-set__dot--current",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              aria-current={index === currentIndex && !isComplete ? "step" : undefined}
+            />
+          </li>
+        ))}
+        <li>
+          <span
+            className={[
+              "practice-set__dot",
+              "practice-set__dot--complete",
+              isComplete && "practice-set__dot--current",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            aria-current={isComplete ? "step" : undefined}
+          />
+        </li>
+      </ol>
       {!isComplete ? (
         <p className="practice-set__step-count" aria-live="polite">
           Question {currentIndex + 1} of {questions.length}
@@ -178,6 +223,28 @@ export function PracticeSetPage() {
               ? "No mistakes — nice work!"
               : `You got there — ${retriedQuestionIds.size} of ${questions.length} took a retry.`}
           </p>
+          {/* Reinvention pass: a real per-question breakdown, not just the one summary sentence --
+              retriedQuestionIds was already tracked but never surfaced beyond its count. */}
+          <ul className="practice-set__complete-breakdown">
+            {questions.map((question) => (
+              <li key={question.id} className="practice-set__complete-row">
+                {retriedQuestionIds.has(question.id) ? (
+                  <RotateCcw
+                    size={14}
+                    aria-hidden="true"
+                    className="practice-set__complete-row-icon practice-set__complete-row-icon--retried"
+                  />
+                ) : (
+                  <CircleCheckBig
+                    size={14}
+                    aria-hidden="true"
+                    className="practice-set__complete-row-icon"
+                  />
+                )}
+                <span className="practice-set__complete-row-text">{question.prompt}</span>
+              </li>
+            ))}
+          </ul>
           <Link to={`/lessons/${practiceSet.lesson_id}`} className="button button--primary">
             Back to lesson
           </Link>

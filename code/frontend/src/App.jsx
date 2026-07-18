@@ -26,10 +26,15 @@ export function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
         </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AuthenticatedLayout />}>
-            <Route path="/courses" element={<CourseCatalogPage />} />
-            <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+        {/* Phase 5.5: /courses and /courses/:courseId are deliberately OUTSIDE ProtectedRoute --
+            course browsing (syllabus, chapter/lesson titles) is public, so a visitor can preview
+            a course before signing up. AuthenticatedLayout's nav itself branches on auth state to
+            match. Only the routes that need an actual session (lesson content, practice sets, the
+            dashboard) stay behind ProtectedRoute, nested inside the same shell. */}
+        <Route element={<AuthenticatedLayout />}>
+          <Route path="/courses" element={<CourseCatalogPage />} />
+          <Route path="/courses/:courseId" element={<CourseDetailPage />} />
+          <Route element={<ProtectedRoute />}>
             <Route path="/lessons/:lessonId" element={<LessonPlayerPage />} />
             <Route path="/practice-sets/:practiceSetId" element={<PracticeSetPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />

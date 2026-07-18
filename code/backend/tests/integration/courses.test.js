@@ -467,6 +467,7 @@ const validBlochSphereParamsByMode = [
   { mode: "rotation_slider", sliderLabel: "Feature value" },
   { mode: "measurement", startState: "+" },
   { mode: "t1_decay", startState: "1", t1Ms: 1500 },
+  { mode: "t2_dephasing", startState: "+", t2Ms: 1500 },
 ];
 
 for (const params of validBlochSphereParamsByMode) {
@@ -541,6 +542,32 @@ test("Screen.content rejects a bloch_sphere t1_decay payload with a negative t1M
     .send({
       type: "simulation",
       content: { widgetType: "bloch_sphere", params: { mode: "t1_decay", t1Ms: -5 } },
+    });
+  assert.equal(res.status, 400);
+  assert.equal(res.body.error.code, "VALIDATION_ERROR");
+});
+
+test("Screen.content rejects a bloch_sphere t2_dephasing payload with a negative t2Ms", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const courseRes = await request(app)
+    .post("/courses")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Course" });
+  const chapterRes = await request(app)
+    .post(`/courses/${courseRes.body.course.id}/chapters`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Chapter" });
+  const lessonRes = await request(app)
+    .post(`/chapters/${chapterRes.body.chapter.id}/lessons`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({ title: "Lesson" });
+
+  const res = await request(app)
+    .post(`/lessons/${lessonRes.body.lesson.id}/screens`)
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send({
+      type: "simulation",
+      content: { widgetType: "bloch_sphere", params: { mode: "t2_dephasing", t2Ms: -5 } },
     });
   assert.equal(res.status, 400);
   assert.equal(res.body.error.code, "VALIDATION_ERROR");
