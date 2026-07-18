@@ -26,7 +26,14 @@ if (!connectionString) {
 }
 
 async function migrate() {
-  const client = new pg.Client({ connectionString });
+  // Mirrors src/config/db.js's convention: local Docker Postgres has no TLS at all, while a
+  // remote managed Postgres (e.g. Render, when running this script against production once to
+  // set up staging) rejects a plain connection. Run with NODE_ENV=production when pointed at a
+  // remote database.
+  const client = new pg.Client({
+    connectionString,
+    ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+  });
   await client.connect();
 
   try {

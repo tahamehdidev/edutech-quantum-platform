@@ -1,0 +1,48 @@
+# Render Blueprint (https://render.com/docs/blueprint-spec) -- lets Render provision the
+# backend web service and its Postgres database from one file instead of manual dashboard
+# clicks. Deploy via the Render dashboard's "New > Blueprint", pointed at this repo.
+#
+# Known limitation, deliberate for a demo deploy (see docs/03-security-architecture.md §8.2):
+# local dev uses TWO Postgres roles -- a bootstrap/owner role that runs migrations, and a
+# restricted `app_user` the running server connects as, with UPDATE/DELETE on `audit_log`
+# explicitly REVOKEd from `app_user` so that protection holds even if the app is compromised.
+# Render's single managed-Postgres connection string is one role that owns everything it
+# creates, and PostgreSQL table owners always bypass their own REVOKE/GRANT -- so on this
+# free-tier deploy, that specific defense-in-depth layer is a documented no-op, not a secret
+# gap. Recreating the two-role split would need a self-managed Postgres instance or a paid
+# tier with role-management access; out of scope for demo prep. If DATABASE_URL's role turns
+# out to lack CREATEROLE (migrations/000_create_app_role.sql's `CREATE ROLE app_user`), just
+# point ADMIN_DATABASE_URL and DATABASE_URL at the same connection string and skip 000/015's
+# role-specific statements when running migrate.js against this database.
+
+databases:
+  - name: qubit-postgres
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: qubit-backend
+    runtime: node
+    plan: free
+    rootDir: code/backend
+    buildCommand: npm install
+    startCommand: npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: qubit-postgres
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      # Set once the frontend's real Vercel URL is known (chicken-and-egg: this service needs
+      # to exist first so the frontend has an API URL to build against). No default/wildcard --
+      # exactly one trusted origin (docs/03-security-architecture.md §6.1).
+      - key: FRONTEND_URL
+        sync: false
+      # Optional (Phase 5 Polish) -- leave unset to keep Sentry a genuine no-op.
+      - key: SENTRY_DSN
+        sync: false

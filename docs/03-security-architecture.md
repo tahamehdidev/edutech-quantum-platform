@@ -80,7 +80,7 @@ async function login(email, password) {
 | Token | Lifetime | Storage |
 |---|---|---|
 | Access token | 15 minutes | In-memory / React state on frontend — never `localStorage` |
-| Refresh token | 7 days | `httpOnly`, `Secure`, `SameSite=Strict` cookie |
+| Refresh token | 7 days | `httpOnly`, `Secure`, `SameSite=Strict` locally / `SameSite=None` in production (Section 6.3 — cross-origin Vercel/Render deploy) cookie |
 
 15 minutes bounds the damage of a leaked access token to a narrow window without forcing constant re-authentication. 7 days matches realistic usage (a student working through coursework across a week) while the revocation mechanism below means that window is not a guaranteed 7 days of exposure if something goes wrong — it can be cut short immediately.
 
@@ -160,6 +160,8 @@ async function refresh(req, res) {
     { expiresIn: "15m" }
   );
 
+  // sameSite is "strict" locally, "none" in production (Section 6.3) -- see
+  // src/controllers/auth.controller.js's REFRESH_COOKIE_OPTIONS for the real, env-aware version.
   res.cookie("refreshToken", newRawToken, { httpOnly: true, secure: true, sameSite: "strict" });
   res.json({ accessToken: newAccessToken });
 }
@@ -534,10 +536,10 @@ Both are typically provided by the hosting platform (Render/Railway terminate TL
 **Classic cookie-riding CSRF has minimal surface here, so no CSRF-token mechanism is bolted on.** The reasoning, made explicit rather than assumed:
 
 - State-changing requests (`POST`/`PATCH`/`DELETE`) authenticate via a **bearer access token in the `Authorization` header**, not an ambient cookie. A malicious site's cross-origin form submission or `fetch` can trigger the browser into *sending* the refresh cookie automatically, but it cannot read that cookie's value (`httpOnly`) or otherwise construct a valid `Authorization: Bearer <token>` header — so the request never carries the one credential the API actually checks for anything other than `/auth/refresh` itself.
-- The refresh cookie itself is `sameSite: "strict"` (Section 2.3) — the strictest setting, meaning the browser withholds it entirely on any cross-site request, including top-level navigation. Combined with CORS's single trusted origin (Section 6.1), `/auth/refresh` isn't reachable with the cookie attached from anywhere but the real frontend origin either.
-- The one endpoint that *is* purely cookie-authenticated, `POST /auth/refresh`, only ever mints a new access token — it has no side effect an attacker would gain anything from forcing (no data changes, no privilege change), and `sameSite: "strict"` already blocks it cross-site regardless.
+- The refresh cookie's `sameSite` value is environment-dependent (Section 2.1): `"strict"` locally, where the frontend and backend share `localhost` (same site) and the strictest setting is free to apply — the browser withholds the cookie entirely on any cross-site request, including top-level navigation. In production the frontend (Vercel) and backend (Render) sit on different top-level domains, making every request between them cross-site by definition; `"strict"` would silently break refresh/logout there, so production uses `"none"` (with `Secure`, which `SameSite=None` requires) instead. Combined with CORS's single trusted origin (Section 6.1), `/auth/refresh` still isn't *reachable in a way an attacker can read the response from* anywhere but the real frontend origin — CORS, not `SameSite`, is doing that part of the job in production.
+- The one endpoint that *is* purely cookie-authenticated, `POST /auth/refresh`, only ever mints a new access token — it has no side effect an attacker would gain anything from forcing (no data changes, no privilege change). In production, a malicious page can blindly trigger this request (the cookie rides along under `SameSite=None`) and force an unwanted token rotation, but cannot read the response body (CORS blocks that) or otherwise act on it — a nuisance at worst (the legitimate session's next natural refresh still works, since rotation just replaces which raw token is valid), not a privilege or data compromise.
 
-A synchronizer-token or double-submit-cookie CSRF mechanism would add a second stateful concept for no marginal protection this design doesn't already provide — the two controls above (bearer-token auth for anything that matters, `SameSite=Strict` for the one cookie-only endpoint) are the whole defense, not a placeholder for one.
+A synchronizer-token or double-submit-cookie CSRF mechanism would add a second stateful concept for no marginal protection this design doesn't already provide — the two controls above (bearer-token auth for anything that matters, cookie scope/CORS for the one cookie-only endpoint) are the whole defense, not a placeholder for one.
 
 ---
 
