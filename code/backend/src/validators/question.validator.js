@@ -39,6 +39,11 @@ export const CreateQuestionSchema = z.object({
   prompt: z.string().min(1),
   type: z.enum(["mcq", "drag_drop", "numeric"]),
   content: z.unknown(),
+  // Both optional -- a question can be authored with neither, same as before this feature
+  // existed. hint is safe to show pre-attempt; explanation is never returned to a learner
+  // caller before their attempt is graded (question.service.js's toPublicQuestion).
+  hint: z.string().min(1).optional(),
+  explanation: z.string().min(1).optional(),
 });
 
 export const UpdateQuestionSchema = CreateQuestionSchema.partial();

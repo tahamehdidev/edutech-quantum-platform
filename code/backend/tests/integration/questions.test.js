@@ -35,6 +35,41 @@ test("POST /questions creates an unattached question owned by the caller", async
   assert.equal(res.body.question.content.correctOptionIndex, 2); // creator sees full content
 });
 
+test("hint is visible to a learner caller, explanation is stripped -- both are visible to the creator", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const createRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${instructorToken}`)
+    .send({
+      ...MCQ_BODY,
+      hint: "Think about what changes between the two options.",
+      explanation: "Because Grover's algorithm amplifies the marked state's amplitude.",
+    });
+  assert.equal(createRes.body.question.hint, "Think about what changes between the two options.");
+  assert.equal(
+    createRes.body.question.explanation,
+    "Because Grover's algorithm amplifies the marked state's amplitude."
+  );
+  const questionId = createRes.body.question.id;
+
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const learnerRes = await request(app)
+    .get(`/questions/${questionId}`)
+    .set("Authorization", `Bearer ${learnerToken}`);
+  assert.equal(learnerRes.body.question.hint, "Think about what changes between the two options.");
+  assert.equal(learnerRes.body.question.explanation, undefined);
+});
+
+test("a question with no hint/explanation authored returns both as null, not undefined", async () => {
+  const { accessToken } = await createUserWithToken({ role: "instructor" });
+  const createRes = await request(app)
+    .post("/questions")
+    .set("Authorization", `Bearer ${accessToken}`)
+    .send(MCQ_BODY);
+  assert.equal(createRes.body.question.hint, null);
+  assert.equal(createRes.body.question.explanation, null);
+});
+
 test("POST /questions rejects malformed mcq content -- fewer than 2 options", async () => {
   const { accessToken } = await createUserWithToken({ role: "instructor" });
   const res = await request(app)

@@ -12,6 +12,16 @@ import "./AttemptFeedback.css";
 // color, same sentence shape), which is exactly the "xpAwarded visual distinction" gap the
 // milestone's shape brief flagged. Zap/--color-warning matches XpStreakBadge's own XP treatment
 // (ui/XpStreakBadge.jsx) rather than inventing a second visual language for the same concept.
+// Explanation rides along on both outcomes (attempt.service.js sends it unconditionally) --
+// "why" is worth reading whether the learner reasoned it out correctly or just guessed right, not
+// only on a miss. A separate block below the verdict line rather than folded into it: the verdict
+// is a short, scannable status; the explanation is prose, and conflating the two would make the
+// one-line verdict wrap unpredictably across widgets with different-width feedback areas.
+function Explanation({ explanation }) {
+  if (!explanation) return null;
+  return <p className="attempt-feedback__explanation">{explanation}</p>;
+}
+
 export function AttemptFeedback({ status, result }) {
   if (status === ATTEMPT_STATUS.ERROR) {
     return (
@@ -24,27 +34,33 @@ export function AttemptFeedback({ status, result }) {
 
   if (status === ATTEMPT_STATUS.CORRECT) {
     return (
-      <p className="attempt-feedback attempt-feedback--correct" role="status">
-        <Check size={16} aria-hidden="true" />
-        <span>Correct!</span>{" "}
-        {result.xpAwarded ? (
-          <span className="attempt-feedback__xp-badge">
-            <Zap size={12} aria-hidden="true" />
-            XP awarded
-          </span>
-        ) : (
-          <span>You already earned XP for this question.</span>
-        )}
-      </p>
+      <div>
+        <p className="attempt-feedback attempt-feedback--correct" role="status">
+          <Check size={16} aria-hidden="true" />
+          <span>Correct!</span>{" "}
+          {result.xpAwarded ? (
+            <span className="attempt-feedback__xp-badge">
+              <Zap size={12} aria-hidden="true" />
+              XP awarded
+            </span>
+          ) : (
+            <span>You already earned XP for this question.</span>
+          )}
+        </p>
+        <Explanation explanation={result.explanation} />
+      </div>
     );
   }
 
   if (status === ATTEMPT_STATUS.INCORRECT) {
     return (
-      <p className="attempt-feedback attempt-feedback--incorrect" role="status">
-        <X size={16} aria-hidden="true" />
-        Not quite — try again.
-      </p>
+      <div>
+        <p className="attempt-feedback attempt-feedback--incorrect" role="status">
+          <X size={16} aria-hidden="true" />
+          Not quite — try again.
+        </p>
+        <Explanation explanation={result?.explanation} />
+      </div>
     );
   }
 

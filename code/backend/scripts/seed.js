@@ -83,6 +83,8 @@ async function loadLesson(chapterId, lesson, createdById) {
       type: question.type,
       content: question.content,
       createdById,
+      hint: question.hint,
+      explanation: question.explanation,
     });
     questionIdBySeedId.set(question.id, realQuestion.id);
   }
@@ -109,6 +111,8 @@ async function loadLesson(chapterId, lesson, createdById) {
         type: question.type,
         content: question.content,
         createdById,
+        hint: question.hint,
+        explanation: question.explanation,
       });
       const attached = await practiceSetQuestionRepository.attach(
         realPracticeSet.id,

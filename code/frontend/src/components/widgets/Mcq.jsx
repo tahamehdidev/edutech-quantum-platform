@@ -8,6 +8,7 @@ import {
 } from "../../hooks/useQuestionAttempt.js";
 import { AttemptFeedback } from "./AttemptFeedback.jsx";
 import { AttemptActions } from "./AttemptActions.jsx";
+import { QuestionHint } from "./QuestionHint.jsx";
 import "./Mcq.css";
 
 // question.content is the learner-shaped { options } (question.service.js strips the answer
@@ -126,6 +127,8 @@ export function Mcq({ question, onSubmit }) {
           );
         })}
       </fieldset>
+
+      <QuestionHint hint={question.hint} />
 
       {/* Sighted users see the correct option turn green above; this is the equivalent
           announcement for screen reader users, who get no signal otherwise that clicking "See

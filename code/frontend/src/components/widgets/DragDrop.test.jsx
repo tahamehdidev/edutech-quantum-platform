@@ -28,6 +28,34 @@ test("the first item's Move Up and the last item's Move Down are disabled", () =
   expect(screen.getByRole("button", { name: `Move "${last}" down` })).toBeDisabled();
 });
 
+test("shows a hint toggle when the question has one, and the explanation after submission", async () => {
+  const user = userEvent.setup();
+  const questionWithHelp = {
+    ...dragDropQuestion,
+    hint: "Fewer qubits generally means more classical bits packed per qubit.",
+  };
+  const onSubmit = vi.fn(() =>
+    Promise.resolve({
+      isCorrect: true,
+      xpAwarded: true,
+      explanation: "Amplitude encoding packs the most classical data per qubit.",
+    })
+  );
+  render(<DragDrop question={questionWithHelp} onSubmit={onSubmit} />);
+
+  await user.click(screen.getByRole("button", { name: "Show hint" }));
+  expect(
+    screen.getByText("Fewer qubits generally means more classical bits packed per qubit.")
+  ).toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(
+      screen.getByText("Amplitude encoding packs the most classical data per qubit.")
+    ).toBeInTheDocument()
+  );
+});
+
 test("moving the first item down swaps it with its neighbor and submits the new order", async () => {
   const user = userEvent.setup();
   const onSubmit = vi.fn(dragDropSubmitScenarios.correctFirstAttempt);

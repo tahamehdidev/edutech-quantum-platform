@@ -11,6 +11,22 @@ test("renders the prompt and starts with Submit disabled (blank input)", () => {
   expect(screen.getByRole("button", { name: "Submit" })).toBeDisabled();
 });
 
+test("shows a hint toggle when the question has one, and the explanation after submission", async () => {
+  const user = userEvent.setup();
+  const questionWithHelp = { ...numericQuestion, hint: "P(|0⟩) + P(|1⟩) = 1." };
+  const onSubmit = vi.fn(() =>
+    Promise.resolve({ isCorrect: true, xpAwarded: true, explanation: "Probabilities sum to 1." })
+  );
+  render(<Numeric question={questionWithHelp} onSubmit={onSubmit} />);
+
+  await user.click(screen.getByRole("button", { name: "Show hint" }));
+  expect(screen.getByText("P(|0⟩) + P(|1⟩) = 1.")).toBeInTheDocument();
+
+  await user.type(screen.getByRole("textbox"), "0.64");
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() => expect(screen.getByText("Probabilities sum to 1.")).toBeInTheDocument());
+});
+
 test.each(["-", "1.2.3", "abc", "   "])(
   'keeps Submit disabled for the non-numeric input "%s"',
   async (badInput) => {

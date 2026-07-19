@@ -22,16 +22,23 @@ function stripAnswerFields(type, content) {
 // not an ownership check -- any instructor/admin sees full content regardless of whether they
 // created or can edit this specific question. Exported so screen.service.js/practiceSet.service.js
 // can shape embedded Question data identically, rather than reimplementing this per resource.
+//
+// hint/explanation follow the same role split as content, but for different reasons each:
+// hint is safe pre-attempt for anyone (it's never the answer), so it's always included when
+// present -- there's no learner-specific stripping to do, unlike content. explanation is the
+// opposite: it's excluded entirely for a learner caller, not just here but everywhere this
+// function is reused (GET /questions, /screens/:id, /practice-sets/:id) -- a learner only ever
+// receives it via attempt.service.js's submitAttempt response, after their answer is graded.
 function toPublicQuestion(question, callerRole) {
+  const isLearner = callerRole === "learner";
   return {
     id: question.id,
     prompt: question.prompt,
     type: question.type,
     createdById: question.created_by_id,
-    content:
-      callerRole === "learner"
-        ? stripAnswerFields(question.type, question.content)
-        : question.content,
+    content: isLearner ? stripAnswerFields(question.type, question.content) : question.content,
+    hint: question.hint ?? null,
+    ...(isLearner ? {} : { explanation: question.explanation ?? null }),
   };
 }
 
@@ -49,13 +56,20 @@ async function getById(id, callerRole) {
   return toPublicQuestion(question, callerRole);
 }
 
-async function create({ prompt, type, content, createdById }) {
-  const question = await questionRepository.create({ prompt, type, content, createdById });
+async function create({ prompt, type, content, createdById, hint, explanation }) {
+  const question = await questionRepository.create({
+    prompt,
+    type,
+    content,
+    createdById,
+    hint,
+    explanation,
+  });
   return toPublicQuestion(question, "instructor"); // the creator always sees what they just authored in full
 }
 
-async function update(id, { prompt, type, content }) {
-  const question = await questionRepository.update(id, { prompt, type, content });
+async function update(id, { prompt, type, content, hint, explanation }) {
+  const question = await questionRepository.update(id, { prompt, type, content, hint, explanation });
   if (!question) throw new NotFoundError("Question not found.");
   return toPublicQuestion(question, "instructor");
 }

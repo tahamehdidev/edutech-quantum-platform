@@ -31,20 +31,29 @@ async function findById(id) {
   return result.rows[0] ?? null;
 }
 
-async function create({ prompt, type, content, createdById }) {
+async function create({ prompt, type, content, createdById, hint, explanation }) {
   const result = await pool.query(
-    "INSERT INTO question (prompt, type, content, created_by_id) VALUES ($1, $2, $3, $4) RETURNING *",
-    [prompt, type, JSON.stringify(content), createdById]
+    `INSERT INTO question (prompt, type, content, created_by_id, hint, explanation)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [prompt, type, JSON.stringify(content), createdById, hint ?? null, explanation ?? null]
   );
   return result.rows[0];
 }
 
-async function update(id, { prompt, type, content }) {
+async function update(id, { prompt, type, content, hint, explanation }) {
   const result = await pool.query(
     `UPDATE question
-     SET prompt = COALESCE($1, prompt), type = COALESCE($2, type), content = COALESCE($3, content)
-     WHERE id = $4 RETURNING *`,
-    [prompt ?? null, type ?? null, content !== undefined ? JSON.stringify(content) : null, id]
+     SET prompt = COALESCE($1, prompt), type = COALESCE($2, type), content = COALESCE($3, content),
+         hint = COALESCE($4, hint), explanation = COALESCE($5, explanation)
+     WHERE id = $6 RETURNING *`,
+    [
+      prompt ?? null,
+      type ?? null,
+      content !== undefined ? JSON.stringify(content) : null,
+      hint ?? null,
+      explanation ?? null,
+      id,
+    ]
   );
   return result.rows[0] ?? null;
 }

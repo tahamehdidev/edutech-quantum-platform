@@ -67,7 +67,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Each additional qubit doubles the number of amplitudes needed to describe the full joint state.",
+              "explanation": "Simulating N interacting qubits classically requires tracking roughly 2^N complex amplitudes, so memory requirements grow exponentially with N -- adding just one more qubit doubles the memory needed."
             },
             {
               "id": 1001,
@@ -82,7 +84,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The simulating system and the thing being simulated share the same kind of complexity.",
+              "explanation": "Feynman proposed using a quantum system to simulate another quantum system because a quantum system can naturally hold the same exponential complexity the original problem has, rather than being forced to represent it with an exponentially large classical data structure."
             }
           ]
         },
@@ -147,7 +151,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Which of these problems has an underlying quantum-mechanical structure that a classical model has to approximate rather than represent exactly?",
+              "explanation": "Predicting a new material's properties from its quantum-mechanical structure is a case where classical ML genuinely strains -- the underlying physics is itself quantum, the same exponential-scaling problem introduced earlier in this chapter."
             }
           ]
         },
@@ -233,7 +239,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Think about where the data comes from versus what kind of computer processes it.",
+              "explanation": "This course focuses on the classical-data, quantum-processing quadrant: ordinary classical data, encoded and then processed by a quantum circuit."
             }
           ]
         },
@@ -289,7 +297,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Each additional particle doubles the number of amplitudes needed to describe the full joint state.",
+                    "explanation": "Simulating many interacting quantum particles becomes intractable classically because the required information scales exponentially with particle count, not linearly."
                   }
                 },
                 {
@@ -307,7 +317,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Is a quantum circuit in QML meant to just run classical training faster, or is it a genuinely different kind of thing to train?",
+                    "explanation": "QML's core premise is using quantum circuits as a different kind of trainable model in their own right, not simply a faster way to run existing classical neural network training."
                   }
                 },
                 {
@@ -325,7 +337,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "In this quadrant, what's classical and what's quantum, exactly?",
+                    "explanation": "In the classical-data/quantum-processing quadrant, it's the device doing the computation that's quantum, not the data itself, which remains ordinary classical data throughout."
                   }
                 },
                 {
@@ -338,7 +352,9 @@
                       "correctValue": 1000000,
                       "tolerance": 100000
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "If 10 particles need about 2^10 numbers, how many does 2^20 give you for 20 particles?",
+                    "explanation": "Since the requirement scales exponentially (roughly 2^N), doubling the particle count from 10 to 20 doesn't double the requirement, it squares it, from about 1,000 to about 1,000,000."
                   }
                 }
               ]
@@ -358,7 +374,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Quantum circuits operate on qubits, not raw numbers -- something has to bridge that gap first.",
+              "explanation": "Before a quantum model can be trained, the classical data must first be represented as a quantum state -- this encoding step is a prerequisite the rest of the course builds on."
             }
           ]
         }
@@ -415,7 +433,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The first measurement already collapsed the qubit to a definite state -- what happens if you measure a state that's already definite?",
+              "explanation": "Once a qubit has been measured and found to be |0⟩, it's no longer in superposition -- an immediate second measurement in the same basis will find |0⟩ again with certainty."
             }
           ]
         },
@@ -479,7 +499,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "What genuinely quantum explanation fits equally-split, non-deterministic results, rather than a broken or patterned device?",
+              "explanation": "The 50/50 split is consistent with the qubit existing in neither state |0⟩ nor |1⟩ alone, but in a genuine combination of both, until measured -- not a broken box or a hidden deterministic pattern."
             },
             {
               "id": 1011,
@@ -489,7 +511,9 @@
                 "correctValue": 0,
                 "tolerance": 1000
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The state described leans heavily toward one pole of the Bloch sphere -- which measurement outcome does that correspond to?",
+              "explanation": "A state sitting close to one pole of the Bloch sphere measures overwhelmingly toward that pole's outcome -- here, that's |0⟩, matching a numeric answer of 0."
             }
           ]
         },
@@ -563,7 +587,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Look at which pole (or region) of the sphere the state is closest to.",
+              "explanation": "A state positioned closer to the |1⟩ pole of the Bloch sphere is far more likely to measure as |1⟩ than |0⟩."
             },
             {
               "id": 1013,
@@ -578,7 +604,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Probability alone only tells you the latitude on the sphere -- what other coordinate is there?",
+              "explanation": "Two states can share the exact same 50/50 measurement probabilities while sitting at different points around the equator -- probability alone (latitude) doesn't capture phase (longitude), so the states are physically distinguishable even though measurement statistics alone can't tell them apart."
             }
           ]
         },
@@ -658,7 +686,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's the quantum version of a very familiar classical logic operation.",
+              "explanation": "The X gate flips |0⟩ to |1⟩ and vice versa -- the quantum equivalent of a classical NOT gate."
             },
             {
               "id": 1015,
@@ -673,7 +703,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "This is the standard gate for creating a 50/50 superposition from a definite state.",
+              "explanation": "The Hadamard gate applied to |0⟩ produces an equal superposition of |0⟩ and |1⟩, known as the |+⟩ state."
             }
           ]
         },
@@ -694,7 +726,7 @@
               "content": {
                 "widgetType": "bloch_sphere",
                 "params": {
-                  "mode": "measure_demo"
+                  "mode": "measurement"
                 }
               }
             },
@@ -745,7 +777,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The two poles of the sphere represent the two definite, classical-like states.",
+                    "explanation": "The north pole of the Bloch sphere represents |0⟩ -- one of the two definite states, with the south pole representing |1⟩."
                   }
                 },
                 {
@@ -763,7 +797,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Distance from either pole corresponds to how balanced the measurement probabilities are.",
+                    "explanation": "A Bloch arrow very close to the equator corresponds to measurement probabilities close to 50/50 -- equidistant from both poles means roughly equal chances of either outcome."
                   }
                 },
                 {
@@ -781,7 +817,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "This is the standard gate for creating a 50/50 superposition from a definite state.",
+                    "explanation": "The Hadamard gate creates an equal superposition of |0⟩ and |1⟩ from |0⟩."
                   }
                 },
                 {
@@ -799,7 +837,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Once you've measured and gotten a result, is the qubit still \"undecided\"?",
+                    "explanation": "The instant a qubit is measured, its superposition collapses to a definite outcome matching the measurement result."
                   }
                 },
                 {
@@ -817,7 +857,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Probability alone only tells you the latitude on the sphere.",
+                    "explanation": "States with identical |0⟩/|1⟩ measurement probabilities can still sit at different points on the equator, or more generally the sphere, encoding phase information that probability alone doesn't capture -- making them physically distinguishable."
                   }
                 },
                 {
@@ -835,7 +877,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "There's a specific, named theorem that rules out copying an unknown state -- think about why that matters for backpropagation-style training later in the course.",
+                    "explanation": "The no-cloning theorem says an unknown quantum state can't be copied, so collapse-on-measurement can't be worked around by duplicating the state first -- exactly why later chapters need a workaround (the parameter-shift rule) instead of ordinary backpropagation."
                   }
                 }
               ]
@@ -855,7 +899,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Once you've measured and gotten a result, is the qubit still \"undecided,\" or does it now match what you found?",
+              "explanation": "After measuring |0⟩, the qubit's new state is |0⟩ -- measurement collapses the superposition to match whatever outcome was actually observed."
             },
             {
               "id": 1017,
@@ -870,7 +916,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "There's a specific, named theorem in quantum mechanics that rules out copying an unknown state -- not an energy or engineering limitation.",
+              "explanation": "The no-cloning theorem proves it's physically impossible to create an exact copy of an unknown quantum state -- so you can't sidestep collapse-on-measurement by duplicating the qubit first; there's no earlier point at which a clone could exist."
             }
           ]
         }
@@ -920,7 +968,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Different encodings make different tradeoffs -- what are the resources being traded?",
+              "explanation": "Different encoding methods trade off qubit count, circuit complexity, and which patterns become easy for the model to detect -- there's no universally \"correct\" choice, only tradeoffs suited to different datasets."
             }
           ]
         },
@@ -976,7 +1026,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Basis encoding maps each classical bit directly onto one qubit's state.",
+              "explanation": "Basis encoding maps each bit of the binary representation directly onto one qubit, so 9 (binary 1001) across 4 qubits produces the state |1001⟩."
             }
           ]
         },
@@ -1077,7 +1129,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Amplitude encoding packs data into the amplitudes of a superposition, not one qubit per data point -- how many amplitudes does N qubits give you?",
+              "explanation": "Amplitude encoding's main advantage is using exponentially fewer qubits for the same amount of data -- N qubits can encode 2^N data values as amplitudes, versus needing roughly one qubit per value in less compact encodings."
             },
             {
               "id": 1027,
@@ -1092,7 +1146,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Fewer qubits doesn't automatically mean a cheaper circuit -- what else has a cost?",
+              "explanation": "The circuit needed to prepare that exact arbitrary amplitude state may itself require exponentially many gates to construct, which can undermine the qubit savings amplitude encoding otherwise promises."
             }
           ]
         },
@@ -1146,7 +1202,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "This encoding trades qubit-efficiency for simplicity -- how directly does it map features to qubits?",
+              "explanation": "Angle encoding uses roughly one qubit per input feature in its most common form, encoding each feature as a rotation angle on its own qubit."
             }
           ]
         },
@@ -1195,7 +1253,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Amplitude encoding packs the most data per qubit.",
+                    "explanation": "Amplitude encoding uses the fewest qubits for a given amount of data, since it packs values into the amplitudes of a superposition rather than one qubit per value."
                   }
                 },
                 {
@@ -1213,7 +1273,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "This encoding trades qubit-efficiency for simplicity.",
+                    "explanation": "Angle encoding maps each classical feature to a qubit rotation angle."
                   }
                 },
                 {
@@ -1231,7 +1293,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Fewer qubits doesn't automatically mean a cheaper circuit.",
+                    "explanation": "Amplitude encoding's main practical drawback on near-term hardware is that preparing exact amplitude values is gate-expensive and error-prone."
                   }
                 },
                 {
@@ -1249,7 +1313,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It maps bits to qubits about as directly as possible -- what's the classical analogue of storing a number bit for bit?",
+                    "explanation": "Basis encoding most closely resembles directly storing a binary number, bit for bit -- each classical bit becomes one qubit's basis state."
                   }
                 }
               ]
@@ -1272,7 +1338,9 @@
                   0
                 ]
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Amplitude encoding packs the most data per qubit; basis encoding packs the least.",
+              "explanation": "From fewest to most qubits: amplitude encoding (log₂N qubits) uses the fewest, angle encoding (roughly one qubit per feature) sits in the middle, and basis encoding (one qubit per bit) uses the most for the same 8-feature dataset."
             }
           ]
         }
@@ -1335,7 +1403,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The word \"parameterized\" is the clue -- what's different about a circuit with parameters versus one without?",
+              "explanation": "A parameterized quantum circuit has gates with tunable angles that can be adjusted during training, rather than performing one fixed operation the way the circuits in Chapter 2 did."
             }
           ]
         },
@@ -1385,7 +1455,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Once a measurement result comes out of the circuit, everything downstream (loss, gradient, optimizer) is ordinary computation.",
+              "explanation": "In a typical QML pipeline, only the circuit that processes encoded data and produces a measurement is quantum -- the loss calculation and the optimizer that updates parameters both run on an ordinary classical computer."
             },
             {
               "id": 1100,
@@ -1395,7 +1467,9 @@
                 "correctValue": 0.49,
                 "tolerance": 0.01
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Subtract the prediction from the target, then square the result.",
+              "explanation": "(target − prediction)² = (1 − 0.3)² = 0.7² = 0.49."
             }
           ]
         },
@@ -1446,7 +1520,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Backpropagation needs to inspect intermediate values -- what does inspecting a quantum state require, and what does that action do to it?",
+              "explanation": "Inspecting an intermediate quantum state requires measuring it, and measurement collapses the state, destroying exactly the information ordinary backpropagation would need to compute a gradient through it."
             }
           ]
         },
@@ -1538,7 +1614,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The word \"parameterized\" is the clue.",
+                    "explanation": "A parameterized quantum circuit's defining feature is gates with tunable angles, not fixed ones."
                   }
                 },
                 {
@@ -1556,7 +1634,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "This term comes up whenever someone describes the specific structure of gates and layers chosen for a PQC.",
+                    "explanation": "The structural choice of gates and layers in a parameterized quantum circuit is called an ansatz."
                   }
                 },
                 {
@@ -1574,7 +1654,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Backpropagation needs to inspect intermediate values -- what does inspecting a quantum state require?",
+                    "explanation": "Standard backpropagation can't be used inside a quantum circuit because measuring an intermediate state would collapse it, destroying the needed information."
                   }
                 },
                 {
@@ -1592,7 +1674,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The rule evaluates the circuit at two specific shifted values of the parameter, not just one.",
+                    "explanation": "The parameter-shift rule computes a gradient for one parameter using exactly two circuit evaluations, shifted by +π/2 and −π/2 from the current value."
                   }
                 },
                 {
@@ -1610,7 +1694,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Separate the math itself (is the formula exact?) from what happens when you actually run it on noisy hardware.",
+                    "explanation": "The parameter-shift formula itself is mathematically exact, but a practical gradient estimate computed from real hardware still carries shot-sampling noise and hardware noise -- exactness of the formula doesn't guarantee a noise-free measurement."
                   }
                 },
                 {
@@ -1628,7 +1714,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Each parameter needs its own pair of shifted evaluations.",
+                    "explanation": "The number of required circuit evaluations scales roughly as 2P -- two evaluations (the parameter-shift pair) for each of the P tunable parameters."
                   }
                 }
               ]
@@ -1648,7 +1736,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It works around the no-peeking problem by never looking inside the circuit at all -- only at what comes out.",
+              "explanation": "The parameter-shift rule only requires the final measured output, evaluated twice at two different (shifted) values of the parameter -- never the internal quantum state at any step."
             },
             {
               "id": 1038,
@@ -1663,7 +1753,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Real quantum hardware doesn't give you one number directly -- it gives you a statistical estimate from repeated runs.",
+              "explanation": "Each evaluation is estimated from a finite number of shots, which carries statistical sampling noise, plus real hardware noise -- so two back-to-back runs with identical parameters can still give slightly different answers."
             },
             {
               "id": 1039,
@@ -1678,7 +1770,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Once you have a gradient, from however it was computed, what does training normally do with it?",
+              "explanation": "Once the gradient is computed via the parameter-shift rule, the parameter is updated in the direction that reduces the loss, exactly the way classical gradient descent works -- then the whole shift-and-measure process repeats for the next step."
             }
           ]
         }
@@ -1721,7 +1815,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One approach is the whole trained model; the other only uses the quantum circuit for one specific sub-step, then hands off to something classical.",
+              "explanation": "A QNN is the entire trainable model end to end, while a quantum kernel method uses the quantum circuit for just one step, computing a similarity score, and feeds that into a separate classical algorithm to actually make predictions."
             }
           ]
         },
@@ -1785,7 +1881,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The circuit isn't making the final decision here -- it's computing one specific number that gets fed elsewhere.",
+              "explanation": "A quantum kernel method uses the quantum circuit to compute a similarity, or overlap, score between pairs of encoded data points, which is then fed into a classical algorithm like an SVM."
             },
             {
               "id": 1048,
@@ -1800,7 +1898,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The two data qubits aren't measured directly -- a third, dedicated qubit's measurement statistics carry the answer instead.",
+              "explanation": "In a swap test, a separate helper qubit is measured, and its measurement probability reflects how similar the two original quantum states are -- the data qubits themselves aren't directly measured."
             }
           ]
         },
@@ -1851,7 +1951,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The same exponential-scaling argument from Chapter 1 applies here too.",
+              "explanation": "Simulating a molecule's quantum properties is a strong QNN candidate because the underlying problem is itself quantum-mechanical and scales exponentially for classical computers -- exactly the kind of problem a quantum model has a natural structural fit for."
             }
           ]
         },
@@ -1900,7 +2002,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The circuit isn't making the final decision here -- it's computing one specific number that gets fed elsewhere.",
+                    "explanation": "The classical algorithm (e.g. an SVM) makes the final prediction/classification, using the quantum-computed similarity scores as its input."
                   }
                 },
                 {
@@ -1918,7 +2022,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Data has to be encoded before the circuit can process it, and the comparison-to-target step has to come after a measurement, not before.",
+                    "explanation": "A QNN follows: encode the classical data, run it through the parameterized circuit, measure the output, then compare that result to the target and update the parameters -- in that order."
                   }
                 },
                 {
@@ -1936,7 +2042,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The same exponential-scaling argument from Chapter 1 applies here too.",
+                    "explanation": "Molecular simulation is a natural QNN use case because the underlying problem is itself exponentially hard classically, being quantum-mechanical in nature."
                   }
                 },
                 {
@@ -1954,7 +2062,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Has this been proven to hold universally, or does it depend on the specific dataset and remain actively researched?",
+                    "explanation": "Whether quantum kernels offer a genuine advantage over classical kernels is an open research question, dataset-dependent -- not a settled, universal fact in either direction."
                   }
                 }
               ]
@@ -1974,7 +2084,9 @@
                 ],
                 "correctOptionIndex": 0
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Changing as little else as possible points toward the approach that only replaces one specific step, not the whole model.",
+              "explanation": "A quantum kernel method fits better here, since it only replaces the similarity-computation step and still hands off to the existing classical SVM for the final classification -- a QNN would replace the whole model instead."
             }
           ]
         }
@@ -2024,7 +2136,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "A weak comparison, or a result that only works in simulation, would make the claim far less meaningful.",
+              "explanation": "The most important follow-up questions are whether the comparison was against a strong, well-tuned classical baseline, and whether the result holds on real, not just simulated, hardware -- a claim that skips either check is much weaker than it sounds."
             }
           ]
         },
@@ -2081,7 +2195,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's a problem with the training landscape itself, not the hardware or a classical ML concept borrowed wholesale.",
+              "explanation": "A barren plateau is a region of the training landscape where gradients vanish, making the model very hard to train -- and this problem tends to get worse, not better, at larger circuit scale."
             },
             {
               "id": 1057,
@@ -2096,7 +2212,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "If a circuit is easy to train, what does that potentially say about how hard it would be for a classical computer to simulate that same circuit?",
+              "explanation": "Some current research has identified an uncomfortable tension: a circuit easy enough to train well, avoiding barren plateaus, might also be a circuit a classical computer could simulate efficiently anyway -- potentially undermining the case for using a quantum model on that circuit at all."
             }
           ]
         },
@@ -2152,7 +2270,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Proof versus demonstration, real hardware versus simulation, and the strength of the comparison baseline.",
+                    "explanation": "Before accepting such a claim: is the advantage proven, not just demonstrated once? Does it hold on real hardware? And was the classical baseline genuinely strong, not a weak strawman?"
                   }
                 },
                 {
@@ -2170,7 +2290,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's a problem with the training landscape itself.",
+                    "explanation": "A barren plateau is a region of vanishing gradient in a quantum circuit's training landscape, making it hard to train, especially at scale."
                   }
                 },
                 {
@@ -2188,7 +2310,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "If a circuit is easy to train, what does that potentially say about how hard it would be for a classical computer to simulate?",
+                    "explanation": "A circuit easy to train may also be one a classical computer could simulate efficiently, potentially undermining the case for using it as a quantum model."
                   }
                 },
                 {
@@ -2206,7 +2330,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "One works with the noisy results you already have; the other adds redundant qubits to prevent errors structurally.",
+                    "explanation": "Mitigation reduces noise's effect and is used today; correction structurally prevents errors via redundant qubits and isn't yet available at large scale."
                   }
                 },
                 {
@@ -2224,7 +2350,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Strong evidence exists in some specific niches, but does that generalize to a blanket claim across all of machine learning?",
+                    "explanation": "QML's practical advantage over classical ML is open in general -- strong in specific niches like molecular simulation, but unresolved as a broad, general claim."
                   }
                 }
               ]
@@ -2244,7 +2372,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One works with the noisy results you already have; the other adds redundant qubits to prevent errors structurally.",
+              "explanation": "Error mitigation reduces noise's effect on results after the fact and is usable today, while error correction structurally prevents errors using redundant qubits but isn't yet available at large scale."
             }
           ]
         }

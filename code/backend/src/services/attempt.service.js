@@ -123,6 +123,11 @@ async function submitAttempt(userId, { questionId, contextType, contextId, answe
     xpAwarded,
     attemptedAt: attempt.attempted_at,
     ...(isCorrect ? {} : { correctAnswer: correctAnswerFor(question.type, question.content) }),
+    // Unlike correctAnswer, explanation rides along on BOTH outcomes -- "why" is worth reading
+    // whether the learner got it right or just got lucky/reasoned it out differently. This is the
+    // one place a learner ever receives it (question.service.js's toPublicQuestion excludes it
+    // from every pre-attempt response), since by now the attempt is already graded.
+    explanation: question.explanation ?? null,
   };
 }
 

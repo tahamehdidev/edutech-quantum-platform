@@ -11,8 +11,10 @@ async function submit({ questionId, contextType, contextId, answer }) {
   });
   // correctAnswer is present only when isCorrect is false, shaped like the submitted `answer`
   // ({ selectedOptionIndex } / { order } / { value }) -- powers the opt-in "See answer" action
-  // (Frontend Milestone 6). Never present on a correct attempt.
-  return data.attempt; // { id, questionId, isCorrect, xpAwarded, attemptedAt, correctAnswer? }
+  // (Frontend Milestone 6). Never present on a correct attempt. explanation is present on every
+  // response (null if the question has none authored) -- unlike correctAnswer, it's shown on
+  // both outcomes (AttemptFeedback.jsx).
+  return data.attempt; // { id, questionId, isCorrect, xpAwarded, attemptedAt, correctAnswer?, explanation }
 }
 
 // userId defaults to "me" (own history, any role); courseId is required by the backend when

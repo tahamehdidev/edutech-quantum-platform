@@ -26,6 +26,17 @@
   color: var(--color-destructive-text);
 }
 
+.attempt-feedback__explanation {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-muted);
+  color: var(--color-foreground);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-relaxed);
+}
+
 .attempt-feedback__xp-badge {
   display: inline-flex;
   align-items: center;

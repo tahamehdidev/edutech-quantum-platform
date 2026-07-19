@@ -26,6 +26,33 @@ test("selecting an option enables Submit and submits { selectedOptionIndex }", a
   expect(onSubmit).toHaveBeenCalledWith({ selectedOptionIndex: 1 });
 });
 
+test("shows a hint toggle when the question has one, and the explanation after a correct answer", async () => {
+  const user = userEvent.setup();
+  const questionWithHelp = {
+    ...mcqQuestion,
+    hint: "Compare the amplitudes before and after.",
+  };
+  const onSubmit = vi.fn(() =>
+    Promise.resolve({
+      isCorrect: true,
+      xpAwarded: true,
+      explanation: "Because the Hadamard gate creates an equal superposition.",
+    })
+  );
+  render(<Mcq question={questionWithHelp} onSubmit={onSubmit} />);
+
+  await user.click(screen.getByRole("button", { name: "Show hint" }));
+  expect(screen.getByText("Compare the amplitudes before and after.")).toBeInTheDocument();
+
+  await user.click(screen.getByLabelText(mcqQuestion.content.options[1]));
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(
+      screen.getByText("Because the Hadamard gate creates an equal superposition.")
+    ).toBeInTheDocument()
+  );
+});
+
 test("shows XP-awarded feedback and locks the options on a first-time correct answer", async () => {
   const user = userEvent.setup();
   render(<Mcq question={mcqQuestion} onSubmit={mcqSubmitScenarios.correctFirstAttempt} />);

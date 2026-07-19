@@ -265,8 +265,12 @@ WHERE status = 'active';
 | content | JSONB | nullable — validate shape in application code |
 | created_by_id | UUID | NOT NULL, FK → User.id |
 | created_at | TIMESTAMPTZ | NOT NULL, DEFAULT now() |
+| hint | TEXT | nullable — a pre-attempt nudge, never the answer itself |
+| explanation | TEXT | nullable — the "why" behind the correct answer |
 
 > Note: same limitation as `Cohort.instructor_id`/`Course.created_by_id` — the database cannot enforce that `created_by_id` references a User with `role IN ('instructor','admin')`. Enforced in application code at question-creation time.
+
+> `hint`/`explanation` follow different exposure rules despite living on the same row: `hint` is safe to send a learner caller at any time (it's never the answer), so it's always included alongside `content`. `explanation` must never appear in a pre-attempt response — it's excluded from every learner-facing `Question` payload and only reaches a learner via the attempt-submission response, after their answer is already graded (02-api-contract.md §4.4, §5.3).
 >
 > **Edit access** is broader than ownership: any instructor who has attached this question to one of their own courses can edit it, not just the creator. See `06-threat-model.md` for the reasoning and the accepted shared-mutable-resource tradeoff. `DELETE` cascades to `ScreenQuestion`/`PracticeSetQuestion` rows with no pre-check for existing attachments — also a deliberately accepted risk, documented in the same section.
 

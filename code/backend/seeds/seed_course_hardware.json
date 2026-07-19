@@ -57,7 +57,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "This is a meta-question about the course's prerequisites, not physics itself.",
+              "explanation": "This course assumes you already understand qubits, superposition, and measurement collapse conceptually -- it picks up from there to focus on the physical hardware, not re-teach the foundational quantum concepts."
             }
           ]
         },
@@ -114,7 +116,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Long coherence and high fidelity often trade off against speed and how many qubits you can practically control.",
+              "explanation": "Trapped ions are known for very long coherence times and high gate fidelity, but that comes at the cost of slower operating speed and harder scalability compared to platforms like superconducting circuits."
             },
             {
               "id": 3002,
@@ -129,7 +133,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "These atoms are uncharged, so they can't be trapped the same way ions (charged particles) are.",
+              "explanation": "Neutral atom arrays use tightly focused laser beams, optical tweezers, to hold individual uncharged atoms in place -- a fundamentally different trapping mechanism than the electromagnetic fields used for charged trapped ions."
             }
           ]
         },
@@ -191,7 +197,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The lesson names exactly four platforms, covered as the main candidates.",
+                    "explanation": "The four major platforms covered are superconducting circuits, trapped ions, photonic qubits, and neutral atom arrays."
                   }
                 },
                 {
@@ -209,7 +217,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Long coherence and high fidelity often trade off against speed and how many qubits you can practically control.",
+                    "explanation": "Trapped ions are known for very long coherence times, at the cost of slower operating speed and harder scalability than platforms like superconducting circuits."
                   }
                 },
                 {
@@ -227,7 +237,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "This platform uses particles of light -- what's true about photons that makes cooling largely unnecessary, but interaction hard?",
+                    "explanation": "Photonic qubits don't require extreme cooling since photons don't interact much with their environment, or each other, by default -- but that same weak interaction is exactly what makes controllably interacting two photonic qubits difficult."
                   }
                 },
                 {
@@ -245,7 +257,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Same platform as the \"optical tweezers\" question earlier in this chapter.",
+                    "explanation": "Neutral atom arrays use laser tweezers to hold individual atoms and have recently reported some of the largest qubit counts of any platform, thanks to how straightforwardly tweezers scale to more atoms."
                   }
                 },
                 {
@@ -263,7 +277,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "What existing, mature industry already knows how to mass-produce similar structures at scale?",
+                    "explanation": "Superconducting circuits can be fabricated using techniques adapted from existing chip-manufacturing processes, which is the main practical reason they dominate current large-scale efforts."
                   }
                 },
                 {
@@ -281,7 +297,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Think about what has to physically point at each individual qubit as their number grows.",
+                    "explanation": "Coordinating growing numbers of individually-aimed laser control beams becomes a hard optical/electronic engineering problem, separate from ordinary fabrication challenges."
                   }
                 }
               ]
@@ -301,7 +319,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Think about what has to physically point at each individual qubit as their number grows.",
+              "explanation": "Coordinating individually-aimed laser control beams for a growing number of atoms becomes a genuinely hard optical and electronic engineering problem -- a bottleneck separate from, and in addition to, ordinary fabrication challenges."
             },
             {
               "id": 3004,
@@ -316,7 +336,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "What existing, mature industry already knows how to mass-produce similar structures at scale?",
+              "explanation": "Superconducting circuits can be fabricated using techniques adapted from existing semiconductor chip manufacturing, making large arrays far more tractable to build than platforms needing individually-aimed laser control per qubit."
             }
           ]
         }
@@ -372,7 +394,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "These are the carriers of zero-resistance current in a superconductor, named after the physicist who predicted their pairing.",
+              "explanation": "Cooper pairs are the paired electrons that move through a superconductor with zero resistance, and it's these pairs that tunnel across a Josephson junction."
             },
             {
               "id": 3012,
@@ -387,7 +411,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The barrier has to be thin enough for something distinctly quantum to happen across it.",
+              "explanation": "A Josephson junction is two superconducting regions separated by a very thin insulating barrier -- thin enough that Cooper pairs can quantum-tunnel across it despite the barrier technically blocking normal current flow."
             }
           ]
         },
@@ -438,7 +464,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The transmon design trades one kind of sensitivity for stability -- what kind of noise is a bare Josephson junction especially vulnerable to?",
+              "explanation": "Adding a large shunting capacitor dramatically reduces the qubit's sensitivity to charge noise, which is what makes the transmon design far more stable than a bare Josephson junction qubit."
             }
           ]
         },
@@ -495,7 +523,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One reason is about the material itself; the other is about what could disturb the qubit's fragile state.",
+              "explanation": "Two separate reasons: superconductivity itself only exists below a critical temperature, and even below that threshold, ordinary thermal energy at higher temperatures would randomly disturb the qubit's delicate quantum state."
             },
             {
               "id": 3015,
@@ -510,7 +540,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Being technically superconducting isn't the same as being free of every noise source -- what else keeps causing trouble near the critical temperature?",
+              "explanation": "Cooling with real margin below the critical temperature further suppresses unwanted quasiparticle excitations, broken Cooper pairs, which are themselves a source of decoherence even once the material is technically superconducting."
             }
           ]
         },
@@ -559,7 +591,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "These are the carriers of zero-resistance current in a superconductor.",
+                    "explanation": "Cooper pairs are the paired electrons that enable zero-resistance current flow in a superconductor."
                   }
                 },
                 {
@@ -577,7 +611,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The barrier has to be thin enough for something distinctly quantum to happen across it.",
+                    "explanation": "A Josephson junction consists of two superconducting regions separated by a thin insulating barrier, thin enough for quantum tunneling."
                   }
                 },
                 {
@@ -595,7 +631,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The transmon design trades one kind of sensitivity for stability.",
+                    "explanation": "The transmon's large shunting capacitor dramatically reduces its sensitivity to charge noise, which is what makes the design far more stable than a bare Josephson junction qubit."
                   }
                 },
                 {
@@ -613,7 +651,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The same design change that fixes charge-noise sensitivity introduces a new complication somewhere else in the qubit's energy structure.",
+                    "explanation": "The transmon's charge-noise insensitivity comes with more closely spaced energy levels, which requires careful pulse shaping to avoid accidentally leaking population into an unwanted third level."
                   }
                 },
                 {
@@ -631,7 +671,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "One reason is about the material itself; the other is about what could disturb the qubit's fragile state.",
+                    "explanation": "Superconductivity itself requires cooling below a critical temperature, and thermal energy at higher temperatures would otherwise randomly disturb the qubit's state -- two independent reasons for extreme cooling."
                   }
                 },
                 {
@@ -649,7 +691,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's what's left over when a Cooper pair breaks apart -- and broken pairs are bad news for coherence.",
+                    "explanation": "A quasiparticle is an unwanted excitation from a broken Cooper pair that can disturb a qubit's state; suppressing it is part of why chips are cooled well below the bare superconducting critical temperature, not just barely below it."
                   }
                 },
                 {
@@ -667,7 +711,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Transmon qubits' energy-level spacing corresponds to a specific, familiar band of the electromagnetic spectrum.",
+                    "explanation": "Transmon qubits are controlled using microwave frequencies, roughly 3-8 GHz."
                   }
                 }
               ]
@@ -687,7 +733,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Transmon qubits' energy-level spacing corresponds to a specific, familiar band of the electromagnetic spectrum.",
+              "explanation": "Transmon qubits are typically controlled with microwave-frequency pulses, roughly 3-8 GHz, lasting roughly 10-50 nanoseconds -- fast enough to fit many operations within the qubit's limited coherence time."
             }
           ]
         }
@@ -743,7 +791,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "A two-qubit gate needs a real physical connection, not just proximity on the chip's overall layout.",
+              "explanation": "Two-qubit gates require actual physical coupling between qubits, which only exists where the chip was specifically designed to connect them -- two qubits with no engineered coupling simply can't interact directly, regardless of how close they sit on a diagram."
             },
             {
               "id": 3025,
@@ -758,7 +808,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Think in terms of an exponential-feeling jump over years, not a slow steady creep.",
+              "explanation": "Per the documented example, public superconducting qubit counts grew from single digits to over 1,000 across roughly seven years, with current chips now in the hundreds to low thousands."
             }
           ]
         },
@@ -902,7 +954,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The line represents a real physical property of the chip's fabrication, not something about the qubits' contents or history.",
+              "explanation": "A line connecting two qubits in a topology diagram represents a direct physical coupling -- meaning a two-qubit gate can be applied between exactly those two qubits."
             }
           ]
         },
@@ -958,7 +1012,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The line represents a real physical property of the chip's fabrication.",
+                    "explanation": "Topology diagram lines represent direct physical couplings, allowing two-qubit gates between the connected qubits."
                   }
                 },
                 {
@@ -976,7 +1032,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "A two-qubit gate needs a real physical connection, not just proximity.",
+                    "explanation": "Two qubits need a physical coupling between them, as designed into the chip, to interact directly via a two-qubit gate."
                   }
                 },
                 {
@@ -994,7 +1052,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "If two qubits aren't directly connected, their information has to travel there some other way.",
+                    "explanation": "Routing inserts extra gates, such as SWAPs, to move qubit information until the needed qubits become adjacent."
                   }
                 },
                 {
@@ -1012,7 +1072,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Every additional gate inserted into a circuit carries the same real-world cost as any other gate.",
+                    "explanation": "No -- every inserted SWAP gate adds extra circuit time and carries its own nonzero chance of error, just like any other gate in the circuit."
                   }
                 }
               ]
@@ -1032,7 +1094,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "If two qubits aren't directly connected, their information has to travel there some other way -- think about moving data, not deleting it.",
+              "explanation": "Routing inserts extra gates, typically SWAPs, to move qubit information around the chip until the qubits that need to interact become adjacent -- at the cost of extra time and additional chances for error."
             }
           ]
         }
@@ -1088,7 +1152,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Three physical properties of the pulse itself, not anything about the chip's appearance or the qubit's address.",
+              "explanation": "A pulse's precise shape, its duration, amplitude, and frequency, determines exactly which rotation it applies to the qubit -- different combinations of these three parameters produce different gates."
             },
             {
               "id": 3033,
@@ -1103,7 +1169,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's a correction aimed at a specific, known side effect of driving a qubit too aggressively.",
+              "explanation": "DRAG adds a calculated correction to a control pulse's shape specifically to cancel out unwanted leakage into a third energy level, a known risk given the transmon's closely spaced levels."
             }
           ]
         },
@@ -1140,7 +1208,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "A single-qubit gate only needs to talk to one qubit; a two-qubit gate needs a working relationship between two.",
+              "explanation": "A two-qubit gate requires exploiting the physical coupling between two specific, adjacent qubits via carefully coordinated pulses -- something a single-qubit gate, which only addresses one qubit, never needs."
             }
           ]
         },
@@ -1189,7 +1259,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Three physical properties of the pulse itself.",
+                    "explanation": "A pulse's duration, amplitude, and frequency together determine which specific rotation it applies to the qubit."
                   }
                 },
                 {
@@ -1207,7 +1279,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The same closely-spaced-levels issue mentioned earlier in this course, in the context of the transmon design.",
+                    "explanation": "A transmon's closely spaced energy levels risk unwanted leakage into a third level if pulses aren't shaped carefully -- which is why pulse shaping needs extra care on this platform specifically."
                   }
                 },
                 {
@@ -1225,7 +1299,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's a correction aimed at a specific, known side effect of driving a qubit too aggressively.",
+                    "explanation": "DRAG concretely adds a calculated correction to a pulse's shape to cancel out unwanted leakage into a third energy level."
                   }
                 },
                 {
@@ -1243,7 +1319,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "A single-qubit gate only needs to talk to one qubit; a two-qubit gate needs a working relationship between two.",
+                    "explanation": "A two-qubit gate requires exploiting the physical coupling between two specific, adjacent qubits via coordinated pulses -- unlike a single-qubit gate."
                   }
                 },
                 {
@@ -1261,7 +1339,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The qubit itself isn't probed directly -- something else, coupled to it, is measured instead.",
+                    "explanation": "Dispersive readout reveals a qubit's measured state via a shift in a coupled resonator's resonant frequency, which depends on the qubit's collapsed state."
                   }
                 }
               ]
@@ -1281,7 +1361,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The qubit itself isn't probed directly -- something else, coupled to it, is measured instead, and its behavior depends on the qubit's state.",
+              "explanation": "In dispersive readout, a coupled resonator's resonant frequency shifts slightly depending on the qubit's state; probing that resonator, not the qubit directly, reveals which state the qubit collapsed to."
             }
           ]
         }
@@ -1331,7 +1413,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's about information leaking OUT, from unwanted contact with the outside world -- not a deliberate action.",
+              "explanation": "Decoherence is the process by which unwanted interaction with the environment leaks quantum information out of a qubit, destroying the state that had been carefully prepared."
             }
           ]
         },
@@ -1378,7 +1462,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's specifically about losing energy and falling to the lower-energy state, not about phase or gate speed.",
+              "explanation": "T1 measures how long it takes, on average, for a qubit to spontaneously lose energy and decay from |1⟩ back to |0⟩ -- a measure of energy relaxation, not phase information."
             }
           ]
         },
@@ -1441,7 +1527,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "T2 is bounded above by a specific multiple of T1 -- it can't just be arbitrarily long or unrelated.",
+              "explanation": "T2 can never exceed 2×T1, and in practice is often considerably shorter, since dephasing can be caused by subtler environmental effects beyond just energy loss."
             }
           ]
         },
@@ -1485,7 +1573,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One platform's coherence is measured in microseconds, the other's in seconds -- a difference of many orders of magnitude.",
+              "explanation": "Superconducting qubits typically sustain coherence for microseconds to a few hundred microseconds, while trapped ions can sustain coherence for seconds or longer -- orders of magnitude better, part of the tradeoff introduced back in Chapter 1."
             }
           ]
         },
@@ -1553,7 +1643,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's about information leaking OUT, from unwanted contact with the outside world.",
+                    "explanation": "Decoherence is unwanted interaction with the environment leaking quantum information out of a qubit, destroying its prepared state."
                   }
                 },
                 {
@@ -1571,7 +1663,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's specifically about losing energy and falling to the lower-energy state.",
+                    "explanation": "T1 measures how long it takes, on average, for a qubit to spontaneously decay from |1⟩ to |0⟩."
                   }
                 },
                 {
@@ -1589,7 +1683,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "T2 is bounded above by a specific multiple of T1, and can be disturbed by more than just energy loss.",
+                    "explanation": "T2 measures how long phase information is preserved; it can be disturbed by subtler effects than energy loss alone, and is bounded by T2 ≤ 2×T1."
                   }
                 },
                 {
@@ -1607,7 +1703,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "A circuit needs to finish before the qubit's information decays away, no matter how many qubits are involved.",
+                    "explanation": "A circuit's total runtime must finish within the coherence window, or results become corrupted, regardless of how many qubits exist -- which is why coherence time, not qubit count alone, is the right metric for near-term capability."
                   }
                 },
                 {
@@ -1625,7 +1723,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "One platform's coherence is measured in microseconds, the other's in seconds.",
+                    "explanation": "Superconducting qubits: microseconds to a few hundred microseconds. Trapped ions: seconds or longer."
                   }
                 },
                 {
@@ -1643,7 +1743,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "One measures how long a qubit survives doing nothing; the other measures how well it performs when you actually do something to it.",
+                    "explanation": "Gate error rate measures how accurately an actively applied gate performs its intended effect, distinct from T1/T2, which measure passive survival time."
                   }
                 },
                 {
@@ -1661,7 +1763,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Single-qubit gates are typically the more reliable of the two gate types on current hardware.",
+                    "explanation": "Leading current superconducting processors report single-qubit gate errors below roughly 0.1%, while two-qubit gates run higher, in the rough 0.5%-1% range, reflecting how much harder two-qubit coordination is to get right."
                   }
                 }
               ]
@@ -1681,7 +1785,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One measures how long a qubit survives doing nothing; the other measures how well it performs when you actually do something to it.",
+              "explanation": "T1/T2 measure how long a qubit survives passively, with no operation applied. Gate error rate measures something different: how accurately an actively applied operation performs its intended effect -- a qubit can have great coherence times and still suffer imprecise gates, or vice versa."
             },
             {
               "id": 3046,
@@ -1696,7 +1802,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Coordinating an operation between two real, physical qubits is a harder engineering problem than controlling just one.",
+              "explanation": "Two-qubit gates typically have higher error rates than single-qubit gates, since coordinating a precise interaction between two real physical qubits is harder to perform accurately than controlling one qubit in isolation."
             },
             {
               "id": 3100,
@@ -1706,7 +1814,9 @@
                 "correctValue": 100,
                 "tolerance": 10
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Divide the total error budget you're trying to reach by the error contributed by each individual gate.",
+              "explanation": "10% ÷ 0.1% per gate = 100 gates -- using the simple linear approximation, that's roughly how many gates can run before the total expected error reaches 10%."
             }
           ]
         }
@@ -1756,7 +1866,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Classical redundancy relies on copying and directly checking bits -- which of those two things does quantum mechanics specifically forbid?",
+              "explanation": "The no-cloning theorem forbids simply copying an unknown quantum state, and directly measuring it to check for errors would collapse and destroy the very state you're trying to protect -- both of which classical majority-vote error correction relies on freely."
             }
           ]
         },
@@ -1806,7 +1918,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The goal is to detect an error without ever looking directly at the protected information itself.",
+              "explanation": "Ancilla qubits and syndrome measurement reveal whether and where an error occurred without collapsing or revealing the actual protected logical information -- checking indirectly instead of measuring the data qubits themselves."
             },
             {
               "id": 3101,
@@ -1824,7 +1938,9 @@
                   1
                 ]
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The ancilla qubits have to be linked to the data qubits before measuring them can reveal anything useful about an error.",
+              "explanation": "First entangle the ancilla qubits with the data qubits in a specific pattern, then measure only the ancilla qubits, never the data qubits directly, and finally interpret the resulting syndrome to locate the error."
             }
           ]
         },
@@ -1900,7 +2016,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "It's the same metric introduced earlier in this course as \"the other number that matters,\" not a decoherence time or a qubit count.",
+              "explanation": "The surface-code threshold refers to gate error rate, roughly in the 0.5%-1% per-gate range for current leading hardware, which is close to where typical error-correction thresholds are actually cited."
             },
             {
               "id": 3057,
@@ -1915,7 +2033,9 @@
                 ],
                 "correctOptionIndex": 2
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Below threshold, more redundancy should make the protected information more reliable, not less.",
+              "explanation": "Below the error threshold, a logical qubit's error rate decreases exponentially as the surface code encoding it gets larger -- more physical qubits devoted to redundancy produce a more reliable logical qubit."
             },
             {
               "id": 3058,
@@ -1930,7 +2050,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "The headline result was about crossing a specific comparison point between a logical qubit and its own individual physical qubits.",
+              "explanation": "Google's 2024 Willow result demonstrated that increasing a surface code's size measurably decreased the logical qubit's error rate below that of its single best individual physical qubit -- crossing the long-sought break-even point for error correction."
             },
             {
               "id": 3059,
@@ -1945,7 +2067,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "One approach adds redundant qubits to structurally prevent errors; the other works with software/statistics on the noisy results you already have.",
+              "explanation": "Error correction uses redundant physical qubits to structurally prevent errors, while error mitigation uses software/statistical techniques to reduce noise's effect on results without needing redundant qubits -- mitigation is what most near-term hardware actually relies on today, since full error correction at scale isn't yet practical."
             }
           ]
         },
@@ -2021,7 +2145,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Classical redundancy relies on copying and directly checking bits -- which of those two things does quantum mechanics forbid?",
+                    "explanation": "No-cloning forbids copying, and direct measurement would collapse and destroy the protected information -- both of which classical redundancy schemes rely on freely."
                   }
                 },
                 {
@@ -2039,7 +2165,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The goal is to detect an error without ever looking directly at the protected information itself.",
+                    "explanation": "Ancilla qubits and syndrome measurement reveal whether/where an error occurred without collapsing or revealing the protected logical information."
                   }
                 },
                 {
@@ -2057,7 +2185,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "It's the same metric introduced earlier in this course as \"the other number that matters.\"",
+                    "explanation": "The surface-code threshold refers to gate error rate, roughly 0.5%-1% per gate for current leading hardware, close to typical cited thresholds."
                   }
                 },
                 {
@@ -2075,7 +2205,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "The headline result was about crossing a specific comparison point between a logical qubit and its own individual physical qubits.",
+                    "explanation": "Google's 2024 Willow processor demonstrated that increasing code size measurably decreased the logical error rate below the best individual physical qubit's error rate, the break-even point."
                   }
                 },
                 {
@@ -2093,7 +2225,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "One approach adds redundant qubits to structurally prevent errors; the other works with software/statistics on noisy results you already have.",
+                    "explanation": "Correction uses redundant physical qubits to structurally prevent errors; mitigation reduces noise's effect via software/statistics without redundant qubits, and is what most near-term hardware relies on today."
                   }
                 },
                 {
@@ -2111,7 +2245,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Every qubit needs its own control and readout wire running into the extremely cold part of the fridge.",
+                    "explanation": "Routing growing numbers of control/readout wires into the dilution refrigerator, without introducing heat or noise, becomes a serious bottleneck as qubit counts scale into the thousands."
                   }
                 },
                 {
@@ -2129,7 +2265,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "Compare \"a hundred or so\" to \"many thousands.\"",
+                    "explanation": "No -- today's results use roughly a hundred or so physical qubits per logical qubit; real-scale applications like breaking RSA need many thousands of logical qubits."
                   }
                 },
                 {
@@ -2147,7 +2285,9 @@
                       ],
                       "correctOptionIndex": 0
                     },
-                    "created_by_id": "00000000-0000-0000-0000-000000000001"
+                    "created_by_id": "00000000-0000-0000-0000-000000000001",
+                    "hint": "No single number, qubit count, coherence time, or gate error alone, tells the whole story of what a machine can actually do.",
+                    "explanation": "No single metric alone captures a real machine's full practical capability, which is why the field uses composite benchmarks like quantum volume that combine several factors together."
                   }
                 }
               ]
@@ -2167,7 +2307,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Every qubit needs its own control and readout wire running into the extremely cold part of the fridge -- think about what happens as that count grows into the thousands.",
+              "explanation": "Routing growing numbers of individual control/readout wires into the dilution refrigerator, without introducing unwanted heat or noise, becomes an increasingly serious classical-side engineering bottleneck as qubit counts scale up."
             },
             {
               "id": 3061,
@@ -2182,7 +2324,9 @@
                 ],
                 "correctOptionIndex": 1
               },
-              "created_by_id": "00000000-0000-0000-0000-000000000001"
+              "created_by_id": "00000000-0000-0000-0000-000000000001",
+              "hint": "Compare \"a hundred or so\" to \"many thousands\" -- that's the size of the remaining gap.",
+              "explanation": "Today's demonstrated results use roughly a hundred or so physical qubits per reliable logical qubit, while breaking real RSA encryption via Shor's algorithm would need many thousands of logical qubits -- a substantial further step beyond current capability."
             }
           ]
         }

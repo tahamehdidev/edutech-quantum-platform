@@ -24,11 +24,11 @@ after(async () => {
   await closeTestDb();
 });
 
-async function attachMcqToScreen(instructorToken, screenId) {
+async function attachMcqToScreen(instructorToken, screenId, extraFields = {}) {
   const createRes = await request(app)
     .post("/questions")
     .set("Authorization", `Bearer ${instructorToken}`)
-    .send(MCQ_BODY);
+    .send({ ...MCQ_BODY, ...extraFields });
   const questionId = createRes.body.question.id;
   await request(app)
     .post(`/screens/${screenId}/questions`)
@@ -100,6 +100,48 @@ test("correctAnswer is present and correctly shaped on an incorrect attempt, abs
   const correct = await submit(1);
   assert.equal(correct.body.attempt.isCorrect, true);
   assert.equal("correctAnswer" in correct.body.attempt, false);
+});
+
+test("explanation is present on both a correct and incorrect attempt, and absent from the pre-attempt question payload for a learner", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const { screen } = await buildCourseHierarchy(instructorToken);
+  const explanation = "Because 2 + 2 = 4, not 3.";
+  const questionId = await attachMcqToScreen(instructorToken, screen.id, { explanation });
+
+  const preAttemptRes = await request(app)
+    .get(`/questions/${questionId}`)
+    .set("Authorization", `Bearer ${learnerToken}`);
+  assert.equal(preAttemptRes.body.question.explanation, undefined);
+
+  const submit = (selectedOptionIndex) =>
+    request(app).post("/attempts").set("Authorization", `Bearer ${learnerToken}`).send({
+      questionId,
+      contextType: "screen",
+      contextId: screen.id,
+      answer: { selectedOptionIndex },
+    });
+
+  const wrong = await submit(0);
+  assert.equal(wrong.body.attempt.explanation, explanation);
+
+  const correct = await submit(1);
+  assert.equal(correct.body.attempt.explanation, explanation);
+});
+
+test("explanation is null, not undefined, on an attempt for a question with none authored", async () => {
+  const { accessToken: instructorToken } = await createUserWithToken({ role: "instructor" });
+  const { accessToken: learnerToken } = await createUserWithToken({ role: "learner" });
+  const { screen } = await buildCourseHierarchy(instructorToken);
+  const questionId = await attachMcqToScreen(instructorToken, screen.id);
+
+  const res = await request(app).post("/attempts").set("Authorization", `Bearer ${learnerToken}`).send({
+    questionId,
+    contextType: "screen",
+    contextId: screen.id,
+    answer: { selectedOptionIndex: 1 },
+  });
+  assert.equal(res.body.attempt.explanation, null);
 });
 
 test("context-mismatch: question exists but isn't attached to the given context -> 422", async () => {

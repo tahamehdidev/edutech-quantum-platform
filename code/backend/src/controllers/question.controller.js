@@ -18,19 +18,21 @@ export const getQuestionController = asyncHandler(async (req, res) => {
 });
 
 export const createQuestionController = asyncHandler(async (req, res) => {
-  const { prompt, type, content } = req.validatedBody;
+  const { prompt, type, content, hint, explanation } = req.validatedBody;
   const validatedContent = validateQuestionContent(type, content);
   const question = await questionService.create({
     prompt,
     type,
     content: validatedContent,
     createdById: req.user.id,
+    hint,
+    explanation,
   });
   res.status(201).json({ question });
 });
 
 export const updateQuestionController = asyncHandler(async (req, res) => {
-  const { prompt, type, content } = req.validatedBody;
+  const { prompt, type, content, hint, explanation } = req.validatedBody;
   let validatedContent;
   if (content !== undefined) {
     // Full (unstripped) content needed to determine the effective type -- role "instructor" here
@@ -43,6 +45,8 @@ export const updateQuestionController = asyncHandler(async (req, res) => {
     prompt,
     type,
     content: validatedContent,
+    hint,
+    explanation,
   });
   res.status(200).json({ question });
 });

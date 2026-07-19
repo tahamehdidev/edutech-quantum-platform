@@ -47,3 +47,35 @@ test("renders a submission-error alert", () => {
   render(<AttemptFeedback status={ATTEMPT_STATUS.ERROR} result={null} />);
   expect(screen.getByRole("alert")).toHaveTextContent("Could not submit your answer");
 });
+
+test("renders the explanation on a correct attempt when present", () => {
+  render(
+    <AttemptFeedback
+      status={ATTEMPT_STATUS.CORRECT}
+      result={{ xpAwarded: true, explanation: "Because the Hadamard gate creates superposition." }}
+    />
+  );
+  expect(screen.getByText("Because the Hadamard gate creates superposition.")).toBeInTheDocument();
+});
+
+test("renders the explanation on an incorrect attempt when present", () => {
+  render(
+    <AttemptFeedback
+      status={ATTEMPT_STATUS.INCORRECT}
+      result={{ explanation: "Because the Hadamard gate creates superposition." }}
+    />
+  );
+  expect(screen.getByText("Because the Hadamard gate creates superposition.")).toBeInTheDocument();
+});
+
+test("renders no explanation block when the question has none authored (null)", () => {
+  const { container } = render(
+    <AttemptFeedback status={ATTEMPT_STATUS.CORRECT} result={{ xpAwarded: true, explanation: null }} />
+  );
+  expect(container.querySelector(".attempt-feedback__explanation")).not.toBeInTheDocument();
+});
+
+test("does not crash when result is null on an incorrect attempt", () => {
+  render(<AttemptFeedback status={ATTEMPT_STATUS.INCORRECT} result={null} />);
+  expect(screen.getByRole("status")).toHaveTextContent("Not quite — try again.");
+});

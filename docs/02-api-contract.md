@@ -349,6 +349,8 @@ List endpoints are never a bare array — always wrapped with a `pagination` obj
 
 This applies to every endpoint that returns `Question.content` embedded in a response — most directly `GET /screens/:id` and `GET /practice-sets/:id` (Group 2/3), where a naive implementation would otherwise expose the answer in the network response before the learner has attempted the question.
 
+`Question.hint` and `Question.explanation` follow the same role-shaping function (`toPublicQuestion`) but diverge from each other and from `content`: `hint` is always included, for every role, on every endpoint that returns a `Question` — it's a pre-attempt nudge, not the answer, so there's nothing to strip. `explanation` is excluded entirely for a `learner` caller from every one of those same endpoints; it only ever reaches a learner via `POST /attempts`' response (Section 5.3), after the server has already graded that specific attempt. `admin`/`instructor` callers see `explanation` everywhere, same as `content`.
+
 ### 4.5 `Question` edit access (Step 6 amendment)
 
 Editing or deleting a `Question` requires one of:
@@ -423,14 +425,16 @@ Note there is no `userId` field — it is **always derived from the authenticate
 
 **Response — `201 Created`:**
 ```json
-{ "attempt": { "id": 501, "questionId": 41, "isCorrect": true, "xpAwarded": true, "attemptedAt": "2026-06-25T18:02:00Z" } }
+{ "attempt": { "id": 501, "questionId": 41, "isCorrect": true, "xpAwarded": true, "attemptedAt": "2026-06-25T18:02:00Z", "explanation": "..." } }
 ```
 ```json
-{ "attempt": { "id": 502, "questionId": 41, "isCorrect": false, "xpAwarded": false, "attemptedAt": "2026-06-25T18:03:00Z", "correctAnswer": { "selectedOptionIndex": 1 } } }
+{ "attempt": { "id": 502, "questionId": 41, "isCorrect": false, "xpAwarded": false, "attemptedAt": "2026-06-25T18:03:00Z", "correctAnswer": { "selectedOptionIndex": 1 }, "explanation": "..." } }
 ```
 `xpAwarded` lets the frontend distinguish "correct, and you earned XP" from "correct, but you already had credit for this one" — both are `isCorrect: true`, but the UI should likely present them differently (e.g. no XP-gain animation on a repeat correct answer).
 
 `correctAnswer` is present only when `isCorrect: false`, shaped identically to the `answer` object the frontend submits for that question `type` (`{ selectedOptionIndex }` / `{ order }` / `{ value }`) — see the Frontend Milestone 6 amendment above.
+
+`explanation` is present on **every** response regardless of `isCorrect` (`null` if the question was never authored with one) — see Section 4.4. Unlike `correctAnswer`, it's worth reading on a correct answer too, not just a wrong one.
 
 **Errors:** `400` malformed answer shape for the question's `type` · `404` `questionId`/`contextId` doesn't exist · `422` question exists but isn't attached to the given context
 

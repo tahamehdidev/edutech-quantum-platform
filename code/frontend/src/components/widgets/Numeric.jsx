@@ -8,6 +8,7 @@ import {
 } from "../../hooks/useQuestionAttempt.js";
 import { AttemptFeedback } from "./AttemptFeedback.jsx";
 import { AttemptActions } from "./AttemptActions.jsx";
+import { QuestionHint } from "./QuestionHint.jsx";
 import "./Numeric.css";
 
 // Numeric questions have nothing safe to reveal pre-attempt (question.service.js strips
@@ -60,6 +61,9 @@ export function Numeric({ question, onSubmit }) {
       <label className="numeric__prompt" htmlFor={`numeric-${question.id}`}>
         {question.prompt}
       </label>
+
+      <QuestionHint hint={question.hint} />
+
       <div className="numeric__input-row">
         <input
           id={`numeric-${question.id}`}

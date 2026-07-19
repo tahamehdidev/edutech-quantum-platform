@@ -8,6 +8,7 @@ import {
 } from "../../hooks/useQuestionAttempt.js";
 import { AttemptFeedback } from "./AttemptFeedback.jsx";
 import { AttemptActions } from "./AttemptActions.jsx";
+import { QuestionHint } from "./QuestionHint.jsx";
 import "./DragDrop.css";
 
 // Remove-and-reinsert -- the one reorder primitive both input paths need. A swap (trading two
@@ -75,6 +76,8 @@ export function DragDrop({ question, onSubmit }) {
     <form className="drag-drop" onSubmit={handleSubmit}>
       <p className="drag-drop__prompt">{question.prompt}</p>
       <p className="drag-drop__instructions">Drag to reorder, or use the up/down buttons.</p>
+
+      <QuestionHint hint={question.hint} />
 
       <div
         className={[
