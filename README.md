@@ -189,8 +189,7 @@ audit log's grant enforcement verified against a real Postgres connection, not m
 
 Backend, frontend, all eight widgets, integration/QA, accessibility polish, and content for all
 three courses are complete and tested. Deployment prep (Render + Vercel configs, cross-origin
-cookie handling, Postgres TLS) is done and committed — the live deploy itself is the one
-remaining step.
+cookie handling, Postgres TLS) is done and committed.
 
 ## Author
 
