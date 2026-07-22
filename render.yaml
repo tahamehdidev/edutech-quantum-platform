@@ -2,18 +2,19 @@
 # backend web service and its Postgres database from one file instead of manual dashboard
 # clicks. Deploy via the Render dashboard's "New > Blueprint", pointed at this repo.
 #
-# Known limitation, deliberate for a demo deploy (see docs/03-security-architecture.md §8.2):
-# local dev uses TWO Postgres roles -- a bootstrap/owner role that runs migrations, and a
-# restricted `app_user` the running server connects as, with UPDATE/DELETE on `audit_log`
-# explicitly REVOKEd from `app_user` so that protection holds even if the app is compromised.
-# Render's single managed-Postgres connection string is one role that owns everything it
-# creates, and PostgreSQL table owners always bypass their own REVOKE/GRANT -- so on this
-# free-tier deploy, that specific defense-in-depth layer is a documented no-op, not a secret
-# gap. Recreating the two-role split would need a self-managed Postgres instance or a paid
-# tier with role-management access; out of scope for demo prep. If DATABASE_URL's role turns
-# out to lack CREATEROLE (migrations/000_create_app_role.sql's `CREATE ROLE app_user`), just
-# point ADMIN_DATABASE_URL and DATABASE_URL at the same connection string and skip 000/015's
-# role-specific statements when running migrate.js against this database.
+# Two-role Postgres setup, same as local dev (see docs/03-security-architecture.md §8.2):
+# a bootstrap/owner role runs migrations (000_create_app_role.sql's `CREATE ROLE app_user`
+# needs CREATEROLE, which Render's free-tier Postgres role turned out to actually have), and
+# the restricted `app_user` role -- created by that migration, with UPDATE/DELETE on
+# `audit_log` REVOKEd from it -- is what the running server connects as. DATABASE_URL is
+# therefore `sync: false` here, not `fromDatabase`: the database resource's own connection
+# string is the elevated owner role, used only for one-off migrate/seed runs from a local
+# machine (never by the running server), while DATABASE_URL is manually set in Render's
+# dashboard to a separate connection string using `app_user`'s own credentials (that role's
+# password was rotated away from migrations/000's hardcoded local-dev value before this was
+# set, since that file is public). If a future deploy's role genuinely lacks CREATEROLE, fall
+# back to pointing DATABASE_URL at the same owner connection string instead -- the REVOKE
+# becomes a documented no-op in that case, not a secret gap.
 
 databases:
   - name: qubit-postgres
@@ -32,10 +33,10 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Manually set in Render's dashboard to app_user's own connection string (not the
+      # database resource's owner connection string) -- see the file header comment.
       - key: DATABASE_URL
-        fromDatabase:
-          name: qubit-postgres
-          property: connectionString
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       # Set once the frontend's real Vercel URL is known (chicken-and-egg: this service needs
