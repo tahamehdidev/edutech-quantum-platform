@@ -2,19 +2,25 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { authService } from "../services/auth.service.js";
 import { env } from "../config/env.js";
 
-// httpOnly always; Secure and SameSite are both conditioned on NODE_ENV (02-api-contract.md
-// §2.1, 03-security-architecture.md §2.3). Locally the frontend and backend share `localhost`
-// (same site), so "strict" is the tightest setting that still works, and `secure` must stay
-// false there since a browser refuses to store a Secure cookie at all over plain HTTP. In
-// production the deployed frontend (Vercel) and backend (Render) sit on different top-level
-// domains -- every request between them is cross-site, and a "strict" cookie is never sent
-// cross-site at all, which would silently break refresh/logout/reload-session-restore. "none"
-// is required for a cross-origin deploy, which in turn requires `secure: true` (browsers reject
-// SameSite=None without it) -- already true in production since Render/Vercel both serve HTTPS.
+// httpOnly/SameSite=Strict always (02-api-contract.md §2.1, 03-security-architecture.md §2.3).
+// `secure` is conditioned on NODE_ENV rather than always true: a browser refuses to store a
+// Secure cookie at all over plain HTTP, which would silently break login/refresh during local
+// dev (http://localhost, no TLS). Production always runs behind HTTPS, so this never weakens
+// the production guarantee.
+//
+// SameSite=Strict genuinely works in production, not just locally, because the frontend
+// (code/frontend/vercel.json) proxies /api/* to the Render backend through Vercel's own edge --
+// the browser only ever talks to https://qubit-nust.vercel.app, so this cookie is first-party
+// from its perspective even though the real backend lives on a different domain. An earlier
+// version of this deploy called the backend directly cross-origin instead, which made the
+// cookie third-party -- SameSite=None was needed to make that work at all, but third-party
+// cookies are exactly what Chrome/Safari increasingly block by default regardless of SameSite,
+// which broke real sessions for real visitors. The proxy fixes the root cause instead of relaxing
+// the cookie policy around it.
 const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
-  sameSite: env.NODE_ENV === "production" ? "none" : "strict",
+  sameSite: "strict",
 };
 
 export const signupController = asyncHandler(async (req, res) => {

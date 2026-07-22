@@ -191,7 +191,7 @@ A third, separate concern: even once a request is authorized to access an endpoi
   "accessToken": "short-lived JWT — held in memory/React state on the frontend, never localStorage"
 }
 ```
-Also sets: `Set-Cookie: refreshToken=...; HttpOnly; Secure; SameSite=Strict` locally, `SameSite=None` in production (03-security-architecture.md §6.3 — the deployed frontend and backend are on different top-level domains). Each successful login inserts a new `RefreshToken` row (hash stored, never the raw token).
+Also sets: `Set-Cookie: refreshToken=...; HttpOnly; Secure; SameSite=Strict`. Always Strict, in every environment — the deployed frontend proxies `/api/*` to the backend through its own domain (03-security-architecture.md §6.3), so the cookie is first-party even though frontend and backend are hosted separately. Each successful login inserts a new `RefreshToken` row (hash stored, never the raw token).
 
 **Errors:** `400` missing fields · `401` invalid email or password (same message for both cases)
 
